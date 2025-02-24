@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\kas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -14,11 +15,15 @@ class DashboardController extends Controller
     if (!session()->has('key')) {
         return redirect()->back()->with('error', 'Anda harus login terlebih dahulu');
     }
-    // Ambil data pelanggan melalui database yang lain (kas)
-    $totalAsset = DB::table('kas')->where('jenis_kas', 'totalAsset')->get();
+     // Ambil data kas berdasarkan jenis_kas yang diperlukan
+     $kasData = Kas::whereIn('jenis_kas', [
+        'totalAsset', 'totalOnHand', 'totalOperasional', 'totalStock',
+        'totalUtang', 'totalPiutang', 'labaBersih', 'labaKotor',
+        'pengeluaran', 'selisih'
+    ])->get()->groupBy('jenis_kas');
 
-    // Menampilkan halaman dashboard dengan data session
-    return view('tampilan.dashboard', ['totalAsset'=> $totalAsset]);
+    // Menampilkan halaman dashboard dengan data kas yang telah dikelompokkan
+    return view('tampilan.dashboard', compact('kasData'));
 }
     }
 

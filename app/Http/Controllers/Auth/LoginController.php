@@ -21,7 +21,7 @@ class LoginController extends Controller
         'password' => 'required|string|min:4'
        ]);
 
-       $remember = $request->hash('remember');
+       $remember = $request->has('remember');
 
        $credentials =[
         'username' => $request->username,
