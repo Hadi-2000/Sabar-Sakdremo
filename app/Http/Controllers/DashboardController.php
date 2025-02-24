@@ -15,7 +15,7 @@ class DashboardController extends Controller
         return redirect()->back()->with('error', 'Anda harus login terlebih dahulu');
     }
     // Ambil data pelanggan melalui database yang lain (kas)
-    $totalAsset = kas::where('jenis_kas', 'totalAsset');
+    $totalAsset = DB::table('kas')->where('jenis_kas', 'totalAsset')->get();
 
     // Menampilkan halaman dashboard dengan data session
     return view('tampilan.dashboard', ['totalAsset'=> $totalAsset]);
