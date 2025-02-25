@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ArusKasController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ViewController;
 use App\Http\Controllers\Auth\LoginController;
@@ -21,7 +22,7 @@ Route::get('/dashboard/keuangan/utang', [ViewController::class, 'viewKeuanganUta
 Route::get('/dashboard/keuangan/piutang', [ViewController::class, 'viewKeuanganPiutang']);
 
 //tampilan laporan
-Route::get('/dashboard/laporan/arus_kas', [ViewController::class, 'viewLaporanArusKas']);
+Route::get('/dashboard/laporan/arus_kas', [ArusKasController::class, 'index']);
 Route::get('/dashboard/laporan/utang_piutang', [ViewController::class, 'viewLaporanUtangPiutang']);
 Route::get('/dashboard/laporan/laba_rugi', [ViewController::class, 'viewLaporanLabaRugi']);
 Route::get('/dashboard/laporan/stock', [ViewController::class, 'viewLaporanStock']);

@@ -9,4 +9,6 @@ class ArusKas extends Model
 {
     /** @use HasFactory<\Database\Factories\ArusKasFactory> */
     use HasFactory;
+
+    protected $fillable = ['tanggal', 'jenis_kas','jenis_transaksi','jumlah','keterangan'];
 }

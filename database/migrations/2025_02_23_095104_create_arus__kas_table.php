@@ -15,8 +15,9 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('idKas');
             $table->string('tanggal');
+            $table->string('jenis_kas');
             $table->string('jenis_transaksi');
-            $table->string('jumlah');
+            $table->decimal('jumlah',15,2);
             $table->string('keterangan');
             $table->foreign('idKas')->references('id')->on('kas');
             $table->timestamps();
