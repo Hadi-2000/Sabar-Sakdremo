@@ -14,11 +14,15 @@ class LogoutController extends Controller
 {
      //proses logout
      public function logout(Request $request){
-      Auth::logout();
-      $request->session()->invalidate();
-      $request->session()->regenerateToken();
-      return redirect('/login')->with('status', 'Berhasil Logout');
-     }
-
+          $user = Auth::user();
+      
+          Auth::logout();
+      
+          // Hapus sesi tetapi biarkan cookie remember me jika masih ada
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+      
+          return redirect('/login')->with('status', 'Berhasil Logout');
+      }
      //form login
 }

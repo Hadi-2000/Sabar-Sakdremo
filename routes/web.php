@@ -14,7 +14,9 @@ Route::post('/login', [LoginController::class, 'login']);
 Route::get('/logout', [LogoutController::class, 'logout'])->name('logout');
 
 //tampilan dashboard
-Route::get('/dashboard', [DashboardController::class, 'viewDashboard']);
+Route::middleware('auth')->group(function(){
+    Route::get('/dashboard', [DashboardController::class, 'viewDashboard']);
+});
 
 //tampilan keuangan
 Route::get('/dashboard/keuangan/kas', [ViewController::class, 'viewKeuanganKas']);

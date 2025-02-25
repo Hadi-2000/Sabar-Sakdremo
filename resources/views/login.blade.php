@@ -24,14 +24,14 @@
                             <label for="username">Username:</label>
                         </li>
                         <li>
-                            <input type="text" name="username" id="username" class="form-control" placeholder="Masukkan Username Anda" required>
+                            <input type="text" name="username" id="username" class="form-control" placeholder="Masukkan Username Anda" required value="{{ old('username') ?? (Cookie::get('remember_username') ?? '') }}">
                         </li>
                         <li>
                             <label for="password">Password:</label>
                         </li>
                         <li>
                             <div class="input-group">
-                                <input type="password" name="password" id="password" class="form-control" placeholder="Masukkan Password Anda" required>
+                                <input type="password" name="password" id="password" class="form-control" placeholder="Masukkan Password Anda" required value="{{ old('password') ?? (Cookie::get('remember_password') ?? '') }}">
                                 <button class="btn btn-outline-secondary" type="button" id="togglePassword" onclick="showPassword()">
                                     <i class="fa fa-eye" id="eyeIcon"></i>
                                 </button>
@@ -40,7 +40,7 @@
                     </ul>
                      <!-- Checkbox Remember Me -->
                     <div class="form-check mb-3">
-                        <input type="checkbox" name="remember" id="remember" class="form-check-input">
+                        <input type="checkbox" name="remember" id="remember" class="form-check-input"  {{ old('remember') || Cookie::get('remember_username') ? 'checked' : '' }}>
                         <label for="remember" class="form-check-label">Remember Me</label>
                     </div>
                     <button type="submit" class="btn btn-primary btn-block">Login</button>
