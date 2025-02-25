@@ -6,8 +6,6 @@ function showRememberPopup() {
         localStorage.getItem("remember_password")
     ) {
         document.getElementById("rememberPopup").style.display = "block";
-    } else {
-        alert("Tidak ada data login tersimpan.");
     }
 }
 
