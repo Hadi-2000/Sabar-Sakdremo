@@ -42,7 +42,7 @@ class ArusKasController extends Controller
     
         // Jika data kosong, redirect dengan pesan error
         if ($arus->isEmpty()) {
-            return redirect()->route('index')->with('error', 'Data tidak ditemukan!');
+            return redirect()->route('keuangan.kas.index')->with('error', 'Data tidak ditemukan!');
         }
     
         return view('tampilan.keuangan.kas', compact('arus', 'query'));
@@ -60,7 +60,7 @@ class ArusKasController extends Controller
         $param = Kas::where('jenis_kas', $request->jenis_kas)->first();
         
         if (!$param) {
-            return redirect()->route('create')->with('error', 'Jenis Kas tidak ditemukan!');
+            return redirect()->route('keuangan.kas.create')->with('error', 'Jenis Kas tidak ditemukan!');
         }
     
         // Tentukan kategori kas
@@ -73,7 +73,7 @@ class ArusKasController extends Controller
     
         // Pastikan saldo tidak negatif jika transaksi "Keluar"
         if ($jumlahFix2 < 0) {
-            return redirect()->route('create')->with('error', 'Saldo tidak mencukupi untuk transaksi keluar!');
+            return redirect()->route('keuangan.kas.create')->with('error', 'Saldo tidak mencukupi untuk transaksi keluar!');
         }
     
         // Update saldo di tabel Kas
@@ -88,13 +88,12 @@ class ArusKasController extends Controller
             'jenis_transaksi' => $request->jenis_transaksi,
             'jumlah' => $request->jumlah,
         ]);
-            
-        return redirect()->route('create')->with('success', 'Transaksi berhasil ditambahkan!');
+        return redirect()->route('keuangan.kas.create')->with('success', 'Tambah Data berhasil');
     }
     
     //hapus isi
     public function destroy($id){
         ArusKas::destroy($id);
-        return redirect()->route('hapus')->with('success', 'Data berhasil dihapus!');
+        return redirect()->route('keuangan.kas.destroy')->with('success', 'Data berhasil dihapus!');
     }
 }

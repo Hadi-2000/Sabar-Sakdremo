@@ -19,10 +19,12 @@ Route::middleware('auth')->group(function(){
 });
 
 //tampilan keuangan
-Route::get('/dashboard/keuangan/kas', [ArusKasController::class, 'index'])->name('index');
-Route::get('/dashboard/keuangan/kas/search', [ArusKasController::class, 'search'])->name('search');
-Route::get('/dashboard/keuangan/kas/create', [ArusKasController::class, 'create'])->name('create');
-Route::get('/dashboard/keuangan/kas/update', [ArusKasController::class, 'update'])->name('update');
+Route::get('/dashboard/keuangan/kas', [ArusKasController::class, 'index'])->name('keuangan.kas.index');
+Route::get('/dashboard/keuangan/kas/search', [ArusKasController::class, 'search'])->name('keuangan.kas.search');
+Route::post('/dashboard/keuangan/kas/create', [ArusKasController::class, 'create'])->name('keuangan.kas.create');
+Route::get('/dashboard/keuangan/kas/update', [ArusKasController::class, 'update'])->name('keuangan.kas.update');
+Route::delete('/dashboard/keuangan/kas/delete/{id}', [ArusKasController::class, 'destroy'])->name('keuangan.kas.destroy');
+
 
 Route::get('/dashboard/keuangan/utang', [ViewController::class, 'viewKeuanganUtang']);
 Route::get('/dashboard/keuangan/piutang', [ViewController::class, 'viewKeuanganPiutang']);
