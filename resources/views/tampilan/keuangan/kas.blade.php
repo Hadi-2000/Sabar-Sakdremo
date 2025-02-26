@@ -33,12 +33,12 @@
                 @endif
                 @foreach ($arus as $kas)
                 <tr>
-                    <td>{{$kas->tanggal}}</td>
+                    <td>{{$kas->created_at}}</td>
                     <td>{{$kas->keterangan}}</td>
                     <td>{{$kas->jenis_kas}}</td>
                     <td>{{$kas->jenis_transaksi}}</td>
                     <td>{{number_format($kas->jumlah, 0, ',', '.')}}</td>
-                    <td><a href="#">Edit</a> || <a href="#">Hapus</a></td>
+                    <td><a href="{{route('update')}}">Edit</a> || <a href="#">Hapus</a></td>
                 </tr>
                 @endforeach
                 

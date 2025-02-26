@@ -25,7 +25,6 @@ class ArusKasController extends Controller
         return view('tampilan.keuangan.kas', compact('arus','query'));
     }
     public function create(Request $request) {
-        $today = now()->format('YYYY-MM-DD');
 
         $request->validate([
             'keterangan' => 'required|string',
@@ -34,7 +33,7 @@ class ArusKasController extends Controller
             'jumlah' => 'required|numeric|min:1',
         ]);
 
-        $param = Kas::where('jenis_kas', $request->jenis_kas)->firstOrFail();
+        $param = Kas::where('jenis_kas', $request->jenis_kas)->first();
 
         // Tentukan kategori kas
         $kas = ($param->jenis_kas == 'totalOnHand') ? "OnHand" : "Operasional";
@@ -51,13 +50,33 @@ class ArusKasController extends Controller
         // Simpan transaksi ke ArusKas
         ArusKas::create([
             'idKas' => $idKas,
-            'tanggal' => $today,
             'keterangan' => $request->keterangan,
             'jenis_kas' => $kas,
             'jenis_transaksi' => $request->jenis_transaksi,
             'jumlah' => $request->jumlah,
         ]);
 
-        return redirect()->route('arus-kas.index')->with('success', 'Transaksi berhasil ditambahkan!');
+        return redirect()->route('create')->with('success', 'Transaksi berhasil ditambahkan!');
+    }
+
+    function update(Request $request){
+        $request->validate([
+            'keterangan' => 'required|string',
+            'jenis_kas' => 'required|string',
+            'jenis_transaksi' => 'required|in:Masuk,Keluar',
+            'jumlah' => 'required|numeric|min:1',
+        ]);
+
+        $param = Kas::where('id', $request->idKas)->first();
+
+        // Tentukan kategori kas
+        $kas = ($param->jenis_kas == 'totalOnHand')? "OnHand" : "Operasional";
+
+        // Hitung saldo baru
+        $jumlahFix2 = ($request->jenis_transaksi == 'Masuk')
+           ? $param->saldo + $request->jumlah
+            : $param->saldo - $request->jumlah;
+
+        // Update saldo di tabel Kas
     }
 }

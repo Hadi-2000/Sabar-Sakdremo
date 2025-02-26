@@ -13,8 +13,7 @@ return new class extends Migration
     {
         Schema::create('arus_kas', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('idKas');
-            $table->string('tanggal');
+            $table->unsignedBigInteger('idKas')->nullable();
             $table->string('jenis_kas');
             $table->string('jenis_transaksi');
             $table->decimal('jumlah',15,2);
