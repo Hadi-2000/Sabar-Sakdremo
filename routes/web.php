@@ -19,7 +19,7 @@ Route::middleware('auth')->group(function(){
 });
 
 //tampilan keuangan
-Route::get('/dashboard/keuangan/kas', [ArusKasController::class, 'index']);
+Route::get('/dashboard/keuangan/kas', [ArusKasController::class, 'index'])->name('index');
 Route::get('/dashboard/keuangan/kas/search', [ArusKasController::class, 'search'])->name('search');
 Route::get('/dashboard/keuangan/kas/create', [ArusKasController::class, 'create'])->name('create');
 Route::get('/dashboard/keuangan/kas/update', [ArusKasController::class, 'update'])->name('update');
