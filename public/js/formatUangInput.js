@@ -1,28 +1,9 @@
 function formatUangInput(input) {
-    let angka = input.value.replace(/\D/g, ""); // Hapus karakter selain angka
+    let value = input.value.replace(/\D/g, ""); // Hapus semua non-angka
+    let formatted = new Intl.NumberFormat("id-ID").format(value);
 
-    // Jika kosong, langsung keluar agar tidak menampilkan "0"
-    if (angka === "") {
-        input.value = "";
-        return;
-    }
-
-    // Format angka ke ribuan
-    let formatted = new Intl.NumberFormat("id-ID").format(angka);
-
-    // Simpan posisi kursor sebelum mengganti nilai input
-    let cursorPos = input.selectionStart;
-    let oldLength = input.value.length;
-
-    // Perbarui nilai input dengan format ribuan
-    input.value = formatted;
-
-    // Hitung perubahan panjang input setelah format
-    let newLength = formatted.length;
-    let diff = newLength - oldLength;
-
-    // Sesuaikan posisi kursor agar tetap di tempat yang benar
-    input.setSelectionRange(cursorPos + diff, cursorPos + diff);
+    input.value = formatted; // Tampilkan dengan format
+    document.getElementById("jumlah_hidden").value = value; // Simpan nilai asli
 }
 
 function handleBackspace(event, input) {

@@ -53,47 +53,143 @@ class ArusKasController extends Controller
             'keterangan' => 'required|string',
             'jenis_kas' => 'required|string',
             'jenis_transaksi' => 'required|in:Masuk,Keluar',
-            'jumlah' => 'required|numeric|min:1',
+            'jumlah_hidden' => 'required|numeric|min:1',
         ]);
-    
+        $jumlah = str_replace('.', '', $request->jumlah_hidden); // Hapus titik format rupiah
+        if ($jumlah <= 0) {
+            return redirect()->back()->with('error', 'Jumlah tidak valid!');
+        }
+
         // Cek apakah jenis kas ada di database
         $param = Kas::where('jenis_kas', $request->jenis_kas)->first();
+        $param2 = Kas::where('jenis_kas', 'totalAsset')->first();
+        if (!$param2) {
+            return redirect()->back()->with('error', 'Data total asset tidak ditemukan!');
+        }
         
         if (!$param) {
-            return redirect()->route('keuangan.kas.create')->with('error', 'Jenis Kas tidak ditemukan!');
+            return redirect()->back()->with('error', 'Jenis Kas tidak ditemukan!');
         }
     
         // Tentukan kategori kas
         $kas = ($param->jenis_kas == 'totalOnHand') ? "OnHand" : "Operasional";
-    
+        
+        $idKas = $param->id;
+        //cek jika idKas tidak ad
+        if (!$idKas) {
+            return redirect()->back()->with('error', 'Jenis Kas tidak ditemukan!');
+        }
         // Hitung saldo baru
         $jumlahFix2 = ($request->jenis_transaksi == 'Masuk')
-            ? $param->saldo + $request->jumlah
-            : $param->saldo - $request->jumlah;
+            ? $param->saldo + $jumlah
+            : $param->saldo - $jumlah;
+
+        $saldoAsset = $param2->saldo;
+
+        $saldoAssetFix = ($request->jenis_transaksi == 'Masuk')
+        ? $saldoAsset + $jumlah 
+        : $saldoAsset - $jumlah;
     
         // Pastikan saldo tidak negatif jika transaksi "Keluar"
-        if ($jumlahFix2 < 0) {
-            return redirect()->route('keuangan.kas.create')->with('error', 'Saldo tidak mencukupi untuk transaksi keluar!');
+        if ($jumlahFix2 < 0 || $saldoAssetFix < 0) {
+            return redirect()->back()->with('error', 'Saldo tidak mencukupi untuk transaksi keluar!');
         }
     
         // Update saldo di tabel Kas
         $param->update(['saldo' => $jumlahFix2]);
-        $idKas = $param->id;
+        $param2->update(['saldo' => $saldoAssetFix]);
     
         // Simpan transaksi ke ArusKas
         ArusKas::create([
-            'idKas' => $idKas, // Pastikan nama kolom benar
+            'idKas' => $param->id, // Pastikan nama kolom benar
             'keterangan' => $request->keterangan,
             'jenis_kas' => $kas,
             'jenis_transaksi' => $request->jenis_transaksi,
-            'jumlah' => $request->jumlah,
+            'jumlah' => $jumlah,
         ]);
-        return redirect()->route('keuangan.kas.create')->with('success', 'Tambah Data berhasil');
+        return redirect()->back()->with('success', 'Tambah Data berhasil');
     }
     
     //hapus isi
     public function destroy($id){
-        ArusKas::destroy($id);
-        return redirect()->route('keuangan.kas.destroy')->with('success', 'Data berhasil dihapus!');
+
+    // Cari data kas berdasarkan idKas dari transaksi
+    $param = ArusKas::find($id);
+    
+
+    $paramAsset = Kas::where('jenis_kas', 'totalAsset')->first();
+    if (!$paramAsset) {
+        return redirect()->back()->with('error', 'Data total asset tidak ditemukan!');
     }
+
+    $paramOnHand = Kas::where('jenis_kas', 'totalOnHand')->first();
+    if (!$paramOnHand) {
+        return redirect()->back()->with('error', 'Data total onhand tidak ditemukan!');
+    }
+
+    $paramOperasional = Kas::where('jenis_kas', 'totalOperasional')->first();
+    if (!$paramOperasional) {
+        return redirect()->back()->with('error', 'Data total operasional tidak ditemukan!');
+    }
+
+    // Jika kas tidak ditemukan, tampilkan pesan error
+    if (!$param) {
+        return redirect()->back()->with('error', 'Data Transaksi tidak ditemukan!');
+    }
+
+    // Cari saldo awal kas
+    if (!$paramOnHand && $param->jenis_kas == "OnHand") {
+        return redirect()->back()->with('error', 'Data total onhand tidak ditemukan!');
+    }
+    
+    if (!$paramOperasional && $param->jenis_kas == "Operasional") {
+        return redirect()->back()->with('error', 'Data total operasional tidak ditemukan!');
+    }
+
+    if($param->jenis_kas == "OnHand"){
+        // Hitung saldo baru
+        $jumlahFix2 = ($param->jenis_transaksi == 'Masuk')
+        ? $paramOnHand->saldo - $param->jumlah
+        : $paramOnHand->saldo + $param->jumlah;
+
+        $saldoAssetFix = ($param->jenis_transaksi == 'Masuk')
+        ? $paramAsset->saldo - $param->jumlah
+        : $paramAsset->saldo + $param->jumlah;
+
+         // Pastikan saldo tidak negatif setelah penghapusan
+            if ($jumlahFix2 < 0 || $saldoAssetFix < 0) {
+                return redirect()->back()->with('error', 'Saldo tidak mencukupi untuk menghapus transaksi!');
+            } else{
+                // Update saldo di tabel Kas
+                $paramOnHand->update(['saldo' => $jumlahFix2]);
+                $paramAsset->update(['saldo' => $saldoAssetFix]);
+            }
+    } else if($param->jenis_kas == "Operasional"){
+        // Hitung saldo baru
+        $jumlahFix2 = ($param->jenis_transaksi == 'Masuk')
+        ? $paramOperasional->saldo - $param->jumlah
+        : $paramOperasional->saldo + $param->jumlah;
+
+        $saldoAssetFix = ($param->jenis_transaksi == 'Masuk')
+        ? $paramAsset->saldo - $param->jumlah
+        : $paramAsset->saldo + $param->jumlah;
+
+        // Pastikan saldo tidak negatif setelah penghapusan
+        if ($jumlahFix2 < 0 || $saldoAssetFix < 0) {
+            return redirect()->back()->with('error', 'Saldo tidak mencukupi untuk menghapus transaksi!');
+        } else{
+            // Update saldo di tabel Kas
+            $paramOperasional->update(['saldo' => $jumlahFix2]);
+            $paramAsset->update(['saldo' => $saldoAssetFix]);
+        }
+    }
+
+    // Hapus transaksi di ArusKas
+    $param->delete();
+
+    return redirect()->back()->with('success', 'Data berhasil dihapus!');
 }
+
+
+}
+

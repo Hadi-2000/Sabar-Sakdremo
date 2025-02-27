@@ -41,8 +41,12 @@
                         <td>{{ $kas->jenis_transaksi }}</td>
                         <td>{{ number_format($kas->jumlah, 0, ',', '.') }}</td>
                         <td>
-                            <button type="button" data-bs-toggle="modal" data-bs-target="#update{{ $kas->id }}">Edit</button> |
-                            <a href="#">Hapus</a>
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#update{{ $kas->id }}">Edit</button>
+                            <form action="{{ route('keuangan.kas.destroy', $kas->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Apakah anda yakin ingin menghapus data ini?');">
+                              @csrf
+                              @method('DELETE')
+                              <button type="submit" class="btn btn-danger">Hapus</button>
+                          </form>
                         </td>
                     </tr>
                 @endforeach
@@ -87,7 +91,8 @@
             </div>
             <div class="form-group">
                 <label for="jumlah">Jumlah</label>
-                <input type="text" class="form-control" name="jumlah" id="jumlah" aria-describedby="keteranganHelp" placeholder="Masukan nominal" oninput="formatUangInput(this)" onkeydown="handleBackspace(event, this)">
+                <input type="hidden" id="jumlah_hidden" name="jumlah_hidden">
+                <input type="text" class="form-control" id="jumlah" placeholder="Masukkan nominal" oninput="formatUangInput(this)">
               </div><hr>
         <div class="modal-footer">
           <button type="submit" name="submit" class="btn btn-primary">Simpan</button>
@@ -105,8 +110,9 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form action="{{route('keuangan.kas.update')}}">
+        <form action="{{route('keuangan.kas.update', $kas->id)}}" method="POST">
           @csrf
+          <input type="hidden" name="id" value="{{$kas->id}}">
           <div class="form-group">
             <label for="keteranganUpdate">Keterangan</label>
             <input type="text" class="form-control" id="keteranganUpdate" name="keteranganUpdate" aria-describedby="keteranganHelp">

@@ -22,7 +22,7 @@ Route::middleware('auth')->group(function(){
 Route::get('/dashboard/keuangan/kas', [ArusKasController::class, 'index'])->name('keuangan.kas.index');
 Route::get('/dashboard/keuangan/kas/search', [ArusKasController::class, 'search'])->name('keuangan.kas.search');
 Route::post('/dashboard/keuangan/kas/create', [ArusKasController::class, 'create'])->name('keuangan.kas.create');
-Route::get('/dashboard/keuangan/kas/update', [ArusKasController::class, 'update'])->name('keuangan.kas.update');
+Route::post('/dashboard/keuangan/kas/update/{id}', [ArusKasController::class, 'update'])->name('keuangan.kas.update');
 Route::delete('/dashboard/keuangan/kas/delete/{id}', [ArusKasController::class, 'destroy'])->name('keuangan.kas.destroy');
 
 
