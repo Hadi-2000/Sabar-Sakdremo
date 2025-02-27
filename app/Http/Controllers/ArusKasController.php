@@ -28,14 +28,17 @@ class ArusKasController extends Controller
         $arus = ArusKas::query();
     
         if (!empty($query)) {
-            $arus->where('keterangan', 'LIKE', '%'.$query.'%')
-                ->orWhere('jenis_kas', 'LIKE', '%'.$query.'%')
-                ->orWhere('jenis_transaksi', 'LIKE', '%'.$query.'%');
-    
-            // Jika query berupa tanggal, tambahkan filter pada created_at
-            if ($isDate) {
-                $arus->orWhereDate('created_at', '=', date('Y-m-d', strtotime($query)));
-            }
+            $arus->where(function($q) use ($query, $isDate) {
+                $q->where('keterangan', 'LIKE', '%'.$query.'%')
+                  ->orWhere('created_at', 'LIKE', '%'.$query.'%')
+                  ->orWhere('jenis_kas', 'LIKE', '%'.$query.'%')
+                  ->orWhere('jenis_transaksi', 'LIKE', '%'.$query.'%');
+        
+                // Jika query berupa tanggal valid, tambahkan filter pada created_at
+                if ($isDate && strtotime($query) !== false) {
+                    $q->orWhereDate('created_at', '=', date('Y-m-d', strtotime($query)));
+                }
+            });
         }
     
         $arus = $arus->get(); // Ambil hasil query
