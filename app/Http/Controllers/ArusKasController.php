@@ -203,7 +203,9 @@ class ArusKasController extends Controller
     // edit
     public function update(Request $request, $id){
         $arus = ArusKas::find($id);
-        $kas = Kas::all();
+        $kas_onhand = Kas::where('jenis_kas', 'totalOnHand')->first();
+        $kas_asset = Kas::where('jenis_kas', 'totalAsset')->first();
+        $kas_operasional = Kas::where('jenis_kas', 'totalOperasional')->first();
 
         $request->validate([
             'keterangan' => 'required|string',
@@ -215,10 +217,82 @@ class ArusKasController extends Controller
         if ($jumlah <= 0) {
             return redirect()->back()->with('error', 'Jumlah tidak valid!');
         }
-        $jenis_kas = null;
-        if($request->jenis_kas == $arus->jenis_kas && $jenis_kas == 'OnHand') {
-            if($request->jenis_transaksi == $arus) {
-              )
+        $jumlah_sebelum = $arus->jumlah;
+        //OnHand -> OnHand
+        if($request->jenis_kas == $arus->jenis_kas && $arus->jenis_kas == 'OnHand') {
+             //OnHand -> OnHand && masuk = masuk
+            if($request->jenis_transaksi == $arus->transaksi && $arus->transaksi == 'Masuk') {
+                //sama menyesuaikan pada kas di jenis_kas dari totalAsset,dan totalOnHand
+                $kas_onhand->update(['saldo' => $kas_onhand->saldo - $jumlah_sebelum + $jumlah]);
+                $kas_asset->update(['saldo' => $kas_asset->saldo - $jumlah_sebelum + $jumlah]);
+                //mengurngi jumlah di arus kas menjadi 0 lalu menambkan data yang dimasukan tadi
+                $arus->update(['jumlah' => 0]);
+                $arus->update(['keterangan' => $request->keterangan,'jenis_transaksi' => $request->jenis_transaksi, 'jumlah' => $jumlah]);
+            //OnHand -> OnHand && masuk = keluar
+            }elseif($request->jenis_transaksi != $arus->transaksi && $arus->transaksi == 'Masuk'){
+                //sama menyesuaikan pada kas di jenis_kas dari totalAsset,dan totalOnHand
+                $kas_onhand->update(['saldo' => $kas_onhand->saldo - $jumlah_sebelum - $jumlah]);
+                $kas_asset->update(['saldo' => $kas_asset->saldo - $jumlah_sebelum - $jumlah]);
+                //menambahkan data yang dimasukan tadi
+                $arus->update(['jumlah' => 0]);
+                $arus->update(['keterangan' => $request->keterangan,'jenis_transaksi' => $request->jenis_transaksi, 'jumlah' => $jumlah]);
+            //OnHand -> OnHand && keluar = keluar
+            }elseif($request->jenis_transaksi == $arus->transaksi && $arus->transaksi == 'Keluar') {
+                //sama menyesuaikan pada kas di jenis_kas dari totalAsset,dan totalOnHand
+                $kas_onhand->update(['saldo' => $kas_onhand->saldo + $jumlah_sebelum - $jumlah]);
+                $kas_asset->update(['saldo' => $kas_asset->saldo + $jumlah_sebelum - $jumlah]);
+                //mengurngi jumlah di arus kas menjadi 0 lalu menambkan data yang dimasukan tadi
+                $arus->update(['jumlah' => 0]);
+                $arus->update(['keterangan' => $request->keterangan,'jenis_transaksi' => $request->jenis_transaksi, 'jumlah' => $jumlah]);
+            //OnHand -> OnHand && keluar = masuk
+            }elseif($request->jenis_transaksi != $arus->transaksi && $arus->transaksi == 'Keluar'){
+                //sama menyesuaikan pada kas di jenis_kas dari totalAsset,dan totalOnHand
+                $kas_onhand->update(['saldo' => $kas_onhand->saldo + $jumlah_sebelum + $jumlah]);
+                $kas_asset->update(['saldo' => $kas_asset->saldo + $jumlah_sebelum + $jumlah]);
+                //menambahkan data yang dimasukan tadi
+                $arus->update(['jumlah' => 0]);
+                $arus->update(['keterangan' => $request->keterangan,'jenis_transaksi' => $request->jenis_transaksi, 'jumlah' => $jumlah]);
+            }
+        //OnHand -> Operasional
+        }elseif($request->jenis_kas != $arus->jenis_kas && $arus->jenis_kas == 'OnHand') {
+            //OnHand -> OnPerasional && masuk = masuk
+            if($request->jenis_transaksi == $arus->transaksi && $arus->transaksi == 'Masuk') {
+                //sama menyesuaikan pada kas di jenis_kas dari totalAsset,dan totalOnHand
+                $kas_operasional->update(['saldo' => $kas_operasional->saldo + $jumlah]);
+                $kas_onhand->update(['saldo' => $kas_onhand->saldo - $jumlah_sebelum]);
+                $kas_asset->update(['saldo' => $kas_asset->saldo - $jumlah_sebelum + $jumlah]);
+                //mengurngi jumlah di arus kas menjadi 0 lalu menambkan data yang dimasukan tadi
+                $arus->update(['jumlah' => 0]);
+                $arus->update(['keterangan' => $request->keterangan,'jenis_transaksi' => $request->jenis_transaksi, 'jumlah' => $jumlah]);
+            //OnHand -> OnPerasional && masuk = keluar
+            }elseif($request->jenis_transaksi != $arus->transaksi && $arus->transaksi == 'Masuk'){
+                //sama menyesuaikan pada kas di jenis_kas dari totalAsset,dan totalOnHand
+                $kas_operasional->update(['saldo' => $kas_operasional->saldo - $jumlah]);
+                $kas_onhand->update(['saldo' => $kas_onhand->saldo - $jumlah_sebelum]);
+                $kas_asset->update(['saldo' => $kas_asset->saldo - $jumlah_sebelum - $jumlah]);
+                //menambahkan data yang dimasukan tadi
+                $arus->update(['jumlah' => 0]);
+                $arus->update(['keterangan' => $request->keterangan,'jenis_transaksi' => $request->jenis_transaksi, 'jumlah' => $jumlah]);
+            //OnHand -> OnPerasional && keluar = keluar
+            }elseif($request->jenis_transaksi == $arus->transaksi && $arus->transaksi == 'Keluar') {
+                //sama menyesuaikan pada kas di jenis_kas dari totalAsset,dan totalOnHand
+                $kas_operasional->update(['saldo' => $kas_operasional->saldo -  $jumlah]);
+                $kas_onhand->update(['saldo' => $kas_onhand->saldo + $jumlah_sebelum]);
+                $kas_asset->update(['saldo' => $kas_asset->saldo + $jumlah_sebelum - $jumlah]);
+                //mengurngi jumlah di arus kas menjadi 0 lalu menambkan data yang dimasukan tadi
+                $arus->update(['jumlah' => 0]);
+                $arus->update(['keterangan' => $request->keterangan,'jenis_transaksi' => $request->jenis_transaksi, 'jumlah' => $jumlah]);
+            //OnHand -> OnPerasional && keluar = masuk
+            }elseif($request->jenis_transaksi != $arus->transaksi && $arus->transaksi == 'Keluar'){
+                //sama menyesuaikan pada kas di jenis_kas dari totalAsset,dan totalOnHand
+                $kas_operasional->update(['saldo' => $kas_operasional->saldo + $jumlah]);
+                $kas_onhand->update(['saldo' => $kas_onhand->saldo + $jumlah_sebelum]);
+                $kas_asset->update(['saldo' => $kas_asset->saldo + $jumlah_sebelum + $jumlah]);
+                //menambahkan data yang dimasukan tadi
+                $arus->update(['jumlah' => 0]);
+                $arus->update(['keterangan' => $request->keterangan,'jenis_transaksi' => $request->jenis_transaksi, 'jumlah' => $jumlah]);
+            }
+        }
 
         return redirect()->route('keuangan.kas.index')->with('success', 'Data berhasil diubah!');
     }
