@@ -11,8 +11,8 @@
             <button class="btn btn-outline-success" type="submit">Search</button>
         </form>
         <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">
-        + Tambah Data
+    <button type="button" class="btn btn-primary">
+        <a href="/dashboard/keuangan/kas/create"> + Tambah Data</a>
       </button>
       <table class="table table-bordered mt-3">
         <thead>
@@ -41,7 +41,9 @@
                         <td>{{ $kas->jenis_transaksi }}</td>
                         <td>{{ number_format($kas->jumlah, 0, ',', '.') }}</td>
                         <td>
-                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#update{{ $kas->id }}">Edit</button>
+                          <a href="{{ route('keuangan.kas.update', $kas->id) }}" class="btn btn-primary">
+                            Edit
+                          </a>
                             <form action="{{ route('keuangan.kas.destroy', $kas->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Apakah anda yakin ingin menghapus data ini?');">
                               @csrf
                               @method('DELETE')
@@ -49,6 +51,7 @@
                           </form>
                         </td>
                     </tr>
+      
                 @endforeach
             @else
                 <tr>
@@ -59,88 +62,5 @@
     </table>
     </div>
 
-    <!-- Modal Create -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-lg">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel">Tambah Data</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <form action="{{route('keuangan.kas.create')}}" method="POST">
-            @csrf
-            <div class="form-group">
-              <label for="keterangan">Keterangan</label>
-              <input type="text" class="form-control" id="keterangan" name="keterangan" aria-describedby="keteranganHelp">
-              <small id="keteranganHelp" class="form-text text-muted">Masukkan keterangan laporan kas.</small><hr>
-            </div>
-            <div class="form-group">
-                <label for="jenis_kas">Jenis Kas</label><br>>
-                <select class="bg-primary" id="jenis_kas" name="jenis_kas">
-                  <option value="totalOnHand">On Hand</option>
-                  <option value="totalOperasional">Operasional</option>
-                </select><hr>
-              </div>
-            <div class="form-group">
-              <label for="jenis_transaksi">Jenis Transaksi</label><br>>
-              <select class="bg-primary" id="jenis_transaksi" name="jenis_transaksi">
-                <option value="Masuk">Masuk</option>
-                <option value="Keluar">Keluar</option>
-              </select><hr>
-            </div>
-            <div class="form-group">
-                <label for="jumlah">Jumlah</label>
-                <input type="hidden" id="jumlah_hidden" name="jumlah_hidden">
-                <input type="text" class="form-control" id="jumlah" placeholder="Masukkan nominal" oninput="formatUangInput(this)">
-              </div><hr>
-        <div class="modal-footer">
-          <button type="submit" name="submit" class="btn btn-primary">Simpan</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-     <!-- Modal Update -->
-<div class="modal fade" id="update{{$kas->id}}" tabindex="-1" aria-labelledby="exampleModalUpdate" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalUpdate">Edit Data</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <form action="{{route('keuangan.kas.update', $kas->id)}}" method="POST">
-          @csrf
-          <input type="hidden" name="id" value="{{$kas->id}}">
-          <div class="form-group">
-            <label for="keteranganUpdate">Keterangan</label>
-            <input type="text" class="form-control" id="keteranganUpdate" name="keteranganUpdate" aria-describedby="keteranganHelp">
-            <small id="keteranganHelp" class="form-text text-muted">Masukkan keterangan laporan kas.</small><hr>
-          </div>
-          <div class="form-group">
-              <label for="jenisKasUpdate">Jenis Kas</label><br>>
-              <select class="bg-primary" id="jenisKasUpdate" name="jenisKasUpdate">
-                <option value="totalOnHand">On Hand</option>
-                <option value="totalOperasional">Operasional</option>
-              </select><hr>
-            </div>
-          <div class="form-group">
-            <label for="jenisTransaksiUpdate">Jenis Transaksi</label><br>>
-            <select class="bg-primary" id="jenisTransaksiUpdate" name="jenisTransaksiUpdate">
-              <option value="Masuk">Masuk</option>
-              <option value="Keluar">Keluar</option>
-            </select><hr>
-          </div>
-          <div class="form-group">
-              <label for="jumlahUpdate">Jumlah</label>
-              <input type="number" class="form-control" name="jumlahUpdate" id="jumlahUpdate" aria-describedby="keteranganHelp" placeholder="Masukan nominal" oninput="formatUangInput(this)">
-            </div><hr>
-      <div class="modal-footer">
-        <button type="submit" name="submitUpdate" class="btn btn-primary">Simpan</button>
-      </div>
-    </div>
-  </div>
-</div>
     <script src="{{ asset('js/formatUangInput.js') }}"></script>
 @endsection

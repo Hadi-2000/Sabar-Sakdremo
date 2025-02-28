@@ -15,6 +15,13 @@ class ArusKasController extends Controller
         $arus = ArusKas::all();
         return view('tampilan.keuangan.kas', compact('arus'));
     }
+    public function indexCreate(){
+        return view('tampilan.keuangan.kas-create');
+    }
+    public function indexUpdate($id){
+        $arus = ArusKas::findOrFail($id); // Ambil data sesuai ID
+            return view('tampilan.keuangan.kas-update', compact('arus'));
+    }
     public function search(Request $request){
         if (session()->has('error')) {
             session()->forget('error');
@@ -90,7 +97,7 @@ class ArusKasController extends Controller
         $saldoAsset = $param2->saldo;
 
         $saldoAssetFix = ($request->jenis_transaksi == 'Masuk')
-        ? $saldoAsset + $jumlah 
+        ? $saldoAsset + $jumlah
         : $saldoAsset - $jumlah;
     
         // Pastikan saldo tidak negatif jika transaksi "Keluar"
@@ -110,7 +117,7 @@ class ArusKasController extends Controller
             'jenis_transaksi' => $request->jenis_transaksi,
             'jumlah' => $jumlah,
         ]);
-        return redirect()->back()->with('success', 'Tambah Data berhasil');
+        return redirect()->route('keuangan.kas.index')->with('success', 'Tambah Data berhasil');
     }
     
     //hapus isi
@@ -167,7 +174,7 @@ class ArusKasController extends Controller
                 $paramOnHand->update(['saldo' => $jumlahFix2]);
                 $paramAsset->update(['saldo' => $saldoAssetFix]);
             }
-    } else if($param->jenis_kas == "Operasional"){
+    } elseif($param->jenis_kas == "Operasional"){
         // Hitung saldo baru
         $jumlahFix2 = ($param->jenis_transaksi == 'Masuk')
         ? $paramOperasional->saldo - $param->jumlah
@@ -193,6 +200,26 @@ class ArusKasController extends Controller
     return redirect()->back()->with('success', 'Data berhasil dihapus!');
 }
 
+    // edit
+    public function update(Request $request, $id){
+        $arus = ArusKas::find($id);
+        $kas = Kas::all();
 
+        $request->validate([
+            'keterangan' => 'required|string',
+            'jenis_kas' => 'required|string',
+            'jenis_transaksi' => 'required|in:Masuk,Keluar',
+            'jumlah_hidden' => 'required|numeric|min:1',
+        ]);
+        $jumlah = str_replace('.', '', $request->jumlah_hidden); // Hapus titik format rupiah
+        if ($jumlah <= 0) {
+            return redirect()->back()->with('error', 'Jumlah tidak valid!');
+        }
+        $jenis_kas = null;
+        if($request->jenis_kas == $arus->jenis_kas && $jenis_kas == 'OnHand') {
+            if($request->jenis_transaksi == $arus) {
+              )
+
+        return redirect()->route('keuangan.kas.index')->with('success', 'Data berhasil diubah!');
+    }
 }
-
