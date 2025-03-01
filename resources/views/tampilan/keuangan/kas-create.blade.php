@@ -16,8 +16,8 @@
         <div class="form-group">
             <label for="jenis_kas">Jenis Kas</label><br>>
             <select class="bg-primary" id="jenis_kas" name="jenis_kas">
-              <option value="totalOnHand">On Hand</option>
-              <option value="totalOperasional">Operasional</option>
+              <option value="OnHand">On Hand</option>
+              <option value="Operasional">Operasional</option>
             </select><hr>
           </div>
         <div class="form-group">

@@ -11,9 +11,11 @@ class UtangPiutangController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function indexUtang()
     {
-        //
+        $Utang = UtangPiutang::paginate(10);
+
+        return view('utang-piutang.index', compact('Utang'));
     }
 
     /**

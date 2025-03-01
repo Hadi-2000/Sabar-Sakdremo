@@ -28,24 +28,24 @@
       <!-- /.KasOnHand -->
         <div class="card kas-on-hand">
           <div class="card-body">
-            <a href="/dashboard/keuangan/kas">
+            <a href="/dashboard/keuangan/kas/search?query=OnHand">
             <h5 class="card-title">Kas On Hand</h5>
-            <p class="card-text format" data-saldo="{{ $kasData['totalOnHand'][0]['saldo'] ?? 0 }}">
-              Rp. {{ number_format($kasData['totalOnHand'][0]['saldo'] ?? 0, 0, ',', '.') }}
+            <p class="card-text format" data-saldo="{{ $kasData['OnHand'][0]['saldo'] ?? 0 }}">
+              Rp. {{ number_format($kasData['OnHand'][0]['saldo'] ?? 0, 0, ',', '.') }}
           </p>
-            <p class="card-text"><small class="text-body-secondary">{{"last update ".$kasData['totalOnHand'][0]['updated_at']}}</small></p>
+            <p class="card-text"><small class="text-body-secondary">{{"last update ".$kasData['OnHand'][0]['updated_at']}}</small></p>
           </a></div>
         </div>
 
        <!-- /.KasOnOperasional -->
         <div class="card kas-operasional w-30">
             <div class="card-body">
-              <a href="/dashboard/keuangan/kas">
+              <a href="/dashboard/keuangan/kas/search?query=Operasional">
               <h5 class="card-title">Kas On Operasional</h5>
-              <p class="card-text format" data-saldo="{{ $kasData['totalOperasional'][0]['saldo'] ?? 0 }}">
-                Rp. {{ number_format($kasData['totalOperasional'][0]['saldo'] ?? 0, 0, ',', '.') }}
+              <p class="card-text format" data-saldo="{{ $kasData['Operasional'][0]['saldo'] ?? 0 }}">
+                Rp. {{ number_format($kasData['Operasional'][0]['saldo'] ?? 0, 0, ',', '.') }}
             </p>
-              <p class="card-text"><small class="text-body-secondary">{{"last update ".$kasData['totalOperasional'][0]['updated_at']}}</small></p>
+              <p class="card-text"><small class="text-body-secondary">{{"last update ".$kasData['Operasional'][0]['updated_at']}}</small></p>
             </a></div>
           </div>
 
@@ -54,10 +54,10 @@
             <div class="card-body">
               <a href="/dashboard/laporan/stock">
               <h5 class="card-title">Total Stock</h5>
-              <p class="card-text format" data-saldo="{{ $kasData['totalStock'][0]['saldo'] ?? 0 }}">
-                Rp. {{ number_format($kasData['totalStock'][0]['saldo'] ?? 0, 0, ',', '.') }}
+              <p class="card-text format" data-saldo="{{ $kasData['Stock'][0]['saldo'] ?? 0 }}">
+                Rp. {{ number_format($kasData['Stock'][0]['saldo'] ?? 0, 0, ',', '.') }}
             </p>
-              <p class="card-text"><small class="text-body-secondary">{{"last update ".$kasData['totalStock'][0]['updated_at']}}</small></p>
+              <p class="card-text"><small class="text-body-secondary">{{"last update ".$kasData['Stock'][0]['updated_at']}}</small></p>
             </a></div>
           </div>
       </div>
@@ -68,10 +68,10 @@
           <div class="card-body">
             <a href="/dashboard/laporan/utang_piutang">
             <h5 class="card-title">Total Utang</h5>
-            <p class="card-text format" data-saldo="{{ $kasData['totalUtang'][0]['saldo'] ?? 0 }}">
-              Rp. {{ number_format($kasData['totalUtang'][0]['saldo'] ?? 0, 0, ',', '.') }}
+            <p class="card-text format" data-saldo="{{ $kasData['Utang'][0]['saldo'] ?? 0 }}">
+              Rp. {{ number_format($kasData['Utang'][0]['saldo'] ?? 0, 0, ',', '.') }}
           </p>
-            <p class="card-text"><small class="text-body-secondary">{{"last update ".$kasData['totalUtang'][0]['updated_at']}}</small></p>
+            <p class="card-text"><small class="text-body-secondary">{{"last update ".$kasData['Utang'][0]['updated_at']}}</small></p>
           </a></div>
         </div>
 
@@ -80,10 +80,10 @@
             <div class="card-body">
               <a href="/dashboard/laporan/utang_piutang">
               <h5 class="card-title">Total Piutang</h5>
-              <p class="card-text format" data-saldo="{{ $kasData['totalPiutang'][0]['saldo'] ?? 0 }}">
-                Rp. {{ number_format($kasData['totalPiutang'][0]['saldo'] ?? 0, 0, ',', '.') }}
+              <p class="card-text format" data-saldo="{{ $kasData['Piutang'][0]['saldo'] ?? 0 }}">
+                Rp. {{ number_format($kasData['Piutang'][0]['saldo'] ?? 0, 0, ',', '.') }}
             </p>
-              <p class="card-text"><small class="text-body-secondary">{{"last update ".$kasData['totalPiutang'][0]['updated_at']}}</small></p>
+              <p class="card-text"><small class="text-body-secondary">{{"last update ".$kasData['Piutang'][0]['updated_at']}}</small></p>
             </a></div>
           </div>
 
@@ -161,7 +161,7 @@
             <!-- Grafik -->
             <canvas id="myChart"></canvas>
         </div>
-    </div>    
+    </div>
      
 
 @endsection

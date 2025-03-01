@@ -16,14 +16,14 @@
         </div>
         <div class="form-group">
             <label for="jenis_kas">Jenis Kas</label><br>>
-            <select class="bg-primary" id="jenis_kas" name="jenis_kas" selected="$arus['jenis_kas']">
+            <select class="bg-primary" id="jenis_kas" name="jenis_kas">
               <option value="OnHand" {{ $arus->jenis_kas == 'OnHand' ? 'selected' : '' }}>On Hand</option>
               <option value="Operasional" {{ $arus->jenis_kas == 'Operasional' ? 'selected' : '' }}>Operasional</option>
             </select><hr>
           </div>
         <div class="form-group">
           <label for="jenis_transaksi">Jenis Transaksi</label><br>>
-          <select class="bg-primary" id="jenis_transaksi" name="jenis_transaksi" selected="$arus_transaksi">
+          <select class="bg-primary" id="jenis_transaksi" name="jenis_transaksi">
             <option value="Masuk" {{ $arus->jenis_transaksi == 'Masuk' ? 'selected' : '' }}>Masuk</option>
             <option value="Keluar" {{ $arus->jenis_transaksi == 'Keluar' ? 'selected' : '' }}>Keluar</option>
           </select><hr>

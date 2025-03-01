@@ -12,5 +12,5 @@ class ArusKas extends Model
 
     protected $table = 'arus_kas';
 
-    protected $fillable = ['tanggal', 'jenis_kas','jenis_transaksi','jumlah','keterangan'];
+    protected $fillable = ['idKas', 'jenis_kas','jenis_transaksi','jumlah','keterangan'];
 }

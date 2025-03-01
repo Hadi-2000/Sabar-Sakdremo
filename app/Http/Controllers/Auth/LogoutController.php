@@ -14,8 +14,6 @@ class LogoutController extends Controller
 {
      //proses logout
      public function logout(Request $request){
-          $user = Auth::user();
-      
           Auth::logout();
       
           // Hapus sesi tetapi biarkan cookie remember me jika masih ada

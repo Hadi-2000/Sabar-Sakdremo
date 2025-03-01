@@ -16,7 +16,21 @@ class LoginController extends Controller
 {
      //proses login
      public function login(Request $request){
-       $request->validate([
+     // Cek apakah ada cookie remember
+    if (Cookie::has('remember_username') && Cookie::has('remember_password')) {
+     $credentials = [
+         'username' => Cookie::get('remember_username'),
+         'password' => Cookie::get('remember_password'),
+     ];
+     
+     if (Auth::attempt($credentials, true)) {
+         session(['key' => 'true']);
+         $request->session()->regenerate();
+         return redirect()->intended('/dashboard')->with('berhasil', 'Selamat Datang Kembali');
+     }
+ }
+
+     $request->validate([
         'username' =>'required|string|max:255',
         'password' => 'required|string|min:4'
        ]);

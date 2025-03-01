@@ -18,7 +18,7 @@ Route::middleware('auth')->group(function(){
     Route::get('/dashboard', [DashboardController::class, 'viewDashboard']);
 });
 
-//tampilan keuangan
+//tampilan keuangan kas
 Route::get('/dashboard/keuangan/kas', [ArusKasController::class, 'index'])->name('keuangan.kas.index');
 Route::get('/dashboard/keuangan/kas/search', [ArusKasController::class, 'search'])->name('keuangan.kas.search');
 Route::get('/dashboard/keuangan/kas/create', [ArusKasController::class, 'indexCreate'])->name('keuangan.kas.create');
@@ -27,8 +27,10 @@ Route::get('/dashboard/keuangan/kas/update/{id}', [ArusKasController::class, 'in
 Route::put('/dashboard/keuangan/kas/update/{id}', [ArusKasController::class, 'update'])->name('keuangan.kas.update.proses');
 Route::delete('/dashboard/keuangan/kas/delete/{id}', [ArusKasController::class, 'destroy'])->name('keuangan.kas.destroy');
 
-
+//tampilan keuangan Utang
 Route::get('/dashboard/keuangan/utang', [ViewController::class, 'viewKeuanganUtang']);
+
+//tampilan keuangan Piutang
 Route::get('/dashboard/keuangan/piutang', [ViewController::class, 'viewKeuanganPiutang']);
 
 //tampilan laporan

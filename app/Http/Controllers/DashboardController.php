@@ -17,8 +17,8 @@ class DashboardController extends Controller
     }
      // Ambil data kas berdasarkan jenis_kas yang diperlukan
      $kasData = Kas::whereIn('jenis_kas', [
-        'totalAsset', 'totalOnHand', 'totalOperasional', 'totalStock',
-        'totalUtang', 'totalPiutang', 'labaBersih', 'labaKotor',
+        'totalAsset', 'OnHand', 'Operasional', 'Stock',
+        'Utang', 'Piutang', 'labaBersih', 'labaKotor',
         'pengeluaran', 'selisih'
     ])->get()->groupBy('jenis_kas');
 
