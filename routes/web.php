@@ -6,6 +6,7 @@ use App\Http\Controllers\ViewController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\UtangPiutangController;
 
 //tampilan login log out
 Route::get('/', [ViewController::class, 'viewLogin']);
@@ -28,10 +29,12 @@ Route::put('/dashboard/keuangan/kas/update/{id}', [ArusKasController::class, 'up
 Route::delete('/dashboard/keuangan/kas/delete/{id}', [ArusKasController::class, 'destroy'])->name('keuangan.kas.destroy');
 
 //tampilan keuangan Utang
-Route::get('/dashboard/keuangan/utang', [ViewController::class, 'viewKeuanganUtang']);
-
+Route::get('/dashboard/keuangan/utang', [UtangPiutangController::class, 'indexUtang'])->name('keuangan.utang.index');
+Route::get('/dashboard/keuangan/utang/search', [UtangPiutangController::class, 'searchUtang'])->name('keuangan.utang.search');
+Route::get('/dashboard/keuangan/utang/create', [UtangPiutangController::class, 'createIndexUtang'])->name('keuangan.utang.create');
+Route::post('/dashboard/keuangan/utang/create/proses', [UtangPiutangController::class, 'createUtang'])->name('keuangan.utang.create.proses');
 //tampilan keuangan Piutang
-Route::get('/dashboard/keuangan/piutang', [ViewController::class, 'viewKeuanganPiutang']);
+Route::get('/dashboard/keuangan/piutang', [UtangPiutangController::class, 'indexPiutang'])->name('keuangan.piutang.index');
 
 //tampilan laporan
 Route::get('/dashboard/laporan/arus_kas', [ArusKasController::class, 'index']);

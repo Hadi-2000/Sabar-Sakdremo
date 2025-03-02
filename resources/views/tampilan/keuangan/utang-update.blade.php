@@ -20,26 +20,20 @@
                 <th>Alamat</th>
                 <th>Jumlah</th>
                 <th>Status</th>
-                <th>Tanggal Perubahan</th>
+                <th>Tanggal Pelunasan</th>
                 <th>Aksi</th>
             </tr>
         </thead>
         <tbody>
-            @foreach ($piutang as $item)
             <tr>
-                <td>{{$item->created_at}}</td>
-                <td>{{$item->nama}}</td>
-                <td>{{$item->alamat}}</td>
-                <td>{{$item->nominal}}</td>
-                <td>{{$item->status}}</td>
-                <td>{{$item->updated_at}}</td>
-                <td><a href="#">Lunas</a> ||
-                    <a href="#">Nyicil</a> ||
-                    <a href="#">Edit</a> ||
-                    <a href="#">Hapus</a>
-                </td>
+                <td>tanggal</td>
+                <td>nama</td>
+                <td>alamat</td>
+                <td>jumlah</td>
+                <td>status</td>
+                <td>tanggal pelunasan</td>
+                <td><a href="#">Edit</a> || <a href="#">Hapus</a></td>
             </tr>
-            @endforeach
         </tbody>
     </table>
 </div>

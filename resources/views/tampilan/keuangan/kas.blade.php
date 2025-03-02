@@ -17,7 +17,8 @@
       <table class="table table-bordered mt-3">
         <thead>
             <tr>
-                <th>Tanggal</th>
+                <th>Tgl Dibuat</th>
+                <th>Tgl Diupdate</th>
                 <th>Keterangan</th>
                 <th>Jenis Kas</th>
                 <th>Jenis Transaksi</th>
@@ -36,6 +37,7 @@
                 @foreach ($arus as $kas)
                     <tr>
                         <td>{{ $kas->created_at }}</td>
+                        <td>{{ $kas->updated_at }}</td>
                         <td>{{ $kas->keterangan }}</td>
                         <td>{{ $kas->jenis_kas }}</td>
                         <td>{{ $kas->jenis_transaksi }}</td>

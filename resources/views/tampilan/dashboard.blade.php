@@ -66,7 +66,7 @@
          <!-- /.Stock -->
         <div class="card utang w-30">
           <div class="card-body">
-            <a href="/dashboard/laporan/utang_piutang">
+            <a href="/dashboard/keuangan/utang">
             <h5 class="card-title">Total Utang</h5>
             <p class="card-text format" data-saldo="{{ $kasData['Utang'][0]['saldo'] ?? 0 }}">
               Rp. {{ number_format($kasData['Utang'][0]['saldo'] ?? 0, 0, ',', '.') }}
@@ -78,7 +78,7 @@
       <!-- /.Piutang -->
         <div class="card piutang">
             <div class="card-body">
-              <a href="/dashboard/laporan/utang_piutang">
+              <a href="/dashboard/keuangan/piutang">
               <h5 class="card-title">Total Piutang</h5>
               <p class="card-text format" data-saldo="{{ $kasData['Piutang'][0]['saldo'] ?? 0 }}">
                 Rp. {{ number_format($kasData['Piutang'][0]['saldo'] ?? 0, 0, ',', '.') }}

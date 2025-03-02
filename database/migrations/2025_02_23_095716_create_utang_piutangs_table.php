@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('utang_piutangs', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_pelanggan');
-            $table->date('tanggal');
+            $table->string('nama');
+            $table->string('alamat');
             $table->string('keterangan');
             $table->string('jenis');
             $table->decimal('nominal', 15, 2);

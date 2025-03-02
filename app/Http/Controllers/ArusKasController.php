@@ -12,7 +12,7 @@ use App\Http\Requests\UpdatekasRequest;
 class ArusKasController extends Controller
 {
     public function index(){
-        $arus = ArusKas::all();
+        $arus = ArusKas::orderBy('created_at', 'desc')->get();
         return view('tampilan.keuangan.kas', compact('arus'));
     }
     public function indexCreate(){
@@ -48,7 +48,7 @@ class ArusKasController extends Controller
             });
         }
     
-        $arus = $arus->get(); // Ambil hasil query
+        $arus = $arus->orderBy('created_at', 'desc')->get(); // Ambil hasil query
     
         // Jika data kosong, redirect dengan pesan error
         if ($arus->isEmpty()) {
