@@ -13,21 +13,20 @@
 
                 <!--Keuangan-->
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="nav-link dropdown-toggle text-secondary" href="#" data-bs-toggle="dropdown" aria-expanded="false" onkeyup="#">
                       Keuangan
-                    </a>
+                    </button>
                     <ul class="dropdown-menu">
                       <li><a class="dropdown-item" href="/dashboard/keuangan/kas">Kas</a></li>
-                      <li><a class="dropdown-item" href="/dashboard/keuangan/utang">Utang</a></li>
-                      <li><a class="dropdown-item" href="/dashboard/keuangan/piutang">Piutang</a></li>
+                      <li><a class="dropdown-item" href="/dashboard/keuangan/utang">UtangPiutang</a></li>
                     </ul>
                   </li>
 
                 <!--Penggiligan-->
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="nav-link dropdown-toggle text-secondary" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                       Penggilingan
-                    </a>
+                    </button>
                     <ul class="dropdown-menu">
                       <li><a class="dropdown-item" href="/dashboard/penggilingan/pelanggan">Pelanggan</a></li>
                       <li><a class="dropdown-item" href="/dashboard/penggilingan/tenaga_kerja">Tenaga Kerja</a></li>
@@ -39,9 +38,9 @@
 
                 <!--Laporan-->
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <button class="nav-link dropdown-toggle text-secondary" href="#" data-bs-toggle="dropdown" aria-expanded="false">
                       Laporan
-                    </a>
+                    </button>
                     <ul class="dropdown-menu">
                       <li><a class="dropdown-item" href="/dashboard/laporan/arus_kas">Arus Kas</a></li>
                       <li><a class="dropdown-item" href="/dashboard/laporan/utang_piutang">Utang Piutang</a></li>
@@ -55,10 +54,10 @@
                 <button class="btn btn-outline-success" type="submit">Search</button>
             </form>
             <!-- Dropdown -->
-            <a class="nav-link dropdown-toggle d-flex" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <button class="nav-link dropdown-toggle d-flex" data-bs-toggle="dropdown" aria-expanded="false">
                 <img src="{{ asset('images/profil/'.Auth::user()->foto_user)}}" width="40px" height="40px" alt="profil"><br>
                 <p>{{ Auth::user()->username}}</p>
-            </a>
+            </button>
             <ul class="dropdown-menu dropdown-menu-end">
                 <li><a class="dropdown-item" href="/dashboard/profil">profil</a></li>
                 <li><a class="dropdown-item" href="/dashboard/profil/pengaturan">pengaturan</a></li>
