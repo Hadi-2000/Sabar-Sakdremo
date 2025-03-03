@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facedes\view;
 use App\Models\Kas;
+use App\Models\ArusKas;
 use App\Models\Pelanggan;
 use App\Models\UtangPiutang;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facedes\view;
 use App\Http\Requests\StoreUtangPiutangRequest;
 use App\Http\Requests\UpdateUtangPiutangRequest;
 
@@ -70,61 +71,98 @@ class UtangPiutangController extends Controller
     public function createIndexUtang(){
         return view('tampilan.keuangan.utang-create');
     }
-    public function create(Request $request){
+    public function create(Request $request) {
         $request->validate([
             'nama_pelanggan' => self::VALIDATION_RULE_STRING,
             'alamat_pelanggan' => self::VALIDATION_RULE_STRING,
-            'no_telepon' => 'numeric',
+            'no_telepon' => 'nullable|numeric',
             'jumlah_hidden' => 'required|numeric|min:1',
-            'jenis' =>self::VALIDATION_RULE_STRING,
-           'status' => self::VALIDATION_RULE_STRING
+            'jenis' => self::VALIDATION_RULE_STRING,
+            'status' => self::VALIDATION_RULE_STRING,
+            'keterangan' => 'nullable|string'
         ]);
-        $jumlah = str_replace('.','',$request->jumlah_hidden);
-
-        $utang = Kas::where('jenis_kas','Utang')->first();
-        $piutang = Kas::where('jenis_kas','Piutang')->first();
-        $totalAsset = Kas::where('jenis_kas','totalAsset')->first();
-        $pelanggan = Pelanggan::where('nama',$request->nama_pelanggan)->first();
     
+        // Format angka (menghilangkan titik pemisah ribuan)
+        $jumlah = (int) str_replace('.', '', $request->jumlah_hidden);
+    
+        // Mengambil data kas berdasarkan jenisnya
+        $utang = Kas::where('jenis_kas', 'Utang')->first();
+        $piutang = Kas::where('jenis_kas', 'Piutang')->first();
+        $operasional = Kas::where('jenis_kas', 'Operasional')->first();
+        $totalAsset = Kas::where('jenis_kas', 'totalAsset')->first();
+    
+        // Validasi apakah kas ditemukan
+        if (!$utang || !$piutang || !$operasional || !$totalAsset) {
+            return back()->with('error', 'Kas tidak ditemukan.');
+        }
+    
+        // Mencari atau membuat pelanggan baru
+        $pelanggan = Pelanggan::firstOrCreate(
+            ['nama' => $request->nama_pelanggan],
+            ['alamat' => $request->alamat_pelanggan, 'no_telepon' => '']
+        );
+    
+        // Hitung saldo kas baru
         $utang_fix = $utang->saldo + $jumlah;
         $totalAsset_fix = $totalAsset->saldo - $jumlah;
-
-        if(!$pelanggan){
-            Pelanggan::create([
-                'nama' => $request->nama_pelanggan,
-                'alamat' => $request->alamat_pelanggan,
-                'no_telepon' => ''
-            ]);
+    
+        // Simpan transaksi utang/piutang
+        UtangPiutang::create([
+            'id_pelanggan' => $pelanggan->id,
+            'nama' => $request->nama_pelanggan,
+            'alamat' => $request->alamat_pelanggan,
+            'keterangan' => $request->keterangan ?? '-',
+            'jenis' => $request->jenis,
+            'nominal' => $jumlah,
+            'status' => $request->status
+        ]);
+    
+        // Update saldo kas & total asset
+        if ($request->jenis == 'Utang') {
+            $utang->update(['saldo' => $utang_fix]);
+            $totalAsset->update(['saldo' => $totalAsset_fix]);
+        } else {
+            $piutang->update(['saldo' => $utang_fix]);
         }
-
-        if($request->jenis == 'Utang'){
-            UtangPiutang::create([
-                'id_pelanggan' => $pelanggan->id,
-                'nama' => $request->nama_pelanggan,
-                'alamat' => $request->alamat_pelanggan,
-                'keterangan' => $request->keterangan,
-                'jenis' => 'Utang',
-                'nominal' => $jumlah,
-               'status' => $request->status
-            ]);
-            $utang->update(['saldo'=>$utang_fix]);
-            $totalAsset->update(['saldo'=>$totalAsset_fix]);
-            return view('tampilan.keuangan.utang');
+    
+        // Update pelanggan dan kas operasional sesuai jenis transaksi
+        if (empty($pelanggan->utangPiutang) || $pelanggan->utangPiutang == 'Utang') {
+            $jenis_transaksi = 'Keluar';
+            $pelanggan->update(['total' => $utang_fix, 'utangPiutang' => 'Utang']);
+            $operasional->update(['saldo' => $operasional->saldo - $utang_fix]);
+            $utang->update(['saldo' => $utang->saldo + $utang_fix]);
+            $totalAsset->update(['saldo' => $totalAsset_fix - $utang_fix]);
+        } elseif ($pelanggan->utangPiutang == 'Piutang') {
+            if ($jumlah > $pelanggan->total) {
+                $jenis_transaksi = 'Masuk';
+                $utang_sebelum = $pelanggan->total;
+                $piutang_fix = $jumlah - $utang_sebelum;
+                $totalAsset->update(['saldo' => $totalAsset_fix - $utang->saldo + $piutang_fix]);
+                $pelanggan->update(['total' => $piutang_fix, 'utangPiutang' => 'Piutang']);
+                $operasional->update(['saldo' => $operasional->saldo - $piutang_fix]);
+                $utang->update(['saldo' => 0]);
+                $piutang->update(['saldo' => $piutang_fix]);
+            } else {
+                $jenis_transaksi = 'Keluar';
+                $utang_fix2 = $pelanggan->total - $jumlah;
+                $totalAsset->update(['saldo' => $totalAsset_fix - $jumlah]);
+                $pelanggan->update(['total' => $utang_fix2, 'utangPiutang' => 'Piutang']);
+                $operasional->update(['saldo' => $operasional->saldo + $utang_fix]);
+                $utang->update(['saldo' => $utang->saldo + $utang_fix]);
+                $piutang->update(['saldo' => $piutang->saldo - $utang_fix]);
+            }
         }
-        elseif($request->jenis =='Piutang'){
-            UtangPiutang::create([
-                'id_pelanggan' => $pelanggan->id,
-                'nama' => $request->nama_pelanggan,
-                'alamat' => $request->alamat_pelanggan,
-                'keterangan' => $request->keterangan,
-                'jenis' => 'Piutang',
-                'nominal' => $jumlah,
-               'status' => $request->status
-            ]);
-            $piutang->update(['saldo'=>$utang_fix]);
-            $totalAsset->update(['saldo'=>$totalAsset_fix]);
-            return view('tampilan.keuangan.utang');
-        }
+    
+        // Simpan transaksi arus kas
+        ArusKas::create([
+            'idKas' => 10, // Pastikan ID benar
+            'keterangan' => $request->keterangan ?? '-',
+            'jenis_kas' => 'Operasional',
+            'jenis_transaksi' => $jenis_transaksi,
+            'jumlah' => $jumlah
+        ]);
+    
+        return view('keuangan.utang');
     }
 
     //cek Pelanggan ada tidak

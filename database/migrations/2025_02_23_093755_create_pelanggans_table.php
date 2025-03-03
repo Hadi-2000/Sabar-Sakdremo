@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('nama');
             $table->text('alamat');
             $table->string('no_telepon');
+            $table->string('utangPiutang');
+            $table->decimal('total',15,2);
             $table->timestamps();
         });
     }

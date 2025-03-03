@@ -2,6 +2,9 @@ $(document).ready(function () {
     $("#cek_button").on("click", function (event) {
         let namaPelanggan = $("#nama_pelanggan").val();
 
+        const cek = document.getElementById("cek_button");
+        cek.style.display = "none";
+
         if (namaPelanggan.length > 2) {
             $.ajax({
                 url: cekPelangganUrl,
