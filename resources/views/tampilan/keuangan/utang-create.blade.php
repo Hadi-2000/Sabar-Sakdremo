@@ -11,7 +11,7 @@
         <!-- Input Nama Pelanggan -->
         <div class="mb-3">
             <label for="nama_pelanggan" class="form-label">Nama Pelanggan</label>
-            <input type="text" class="form-control" id="nama_pelanggan" name="nama_pelanggan" placeholder="Masukan Nama Pelanggan">
+            <input type="text" class="suggestion-item form-control" id="nama_pelanggan" name="nama_pelanggan" placeholder="Masukan Nama Pelanggan">
             <span id="status_pelanggan" class="form-control text-danger"></span>
         </div>
 
@@ -28,6 +28,18 @@
                     <option value="Utang">Utang</option>
                     <option value="Piutang">Piutang</option>
                 </select>
+            </div>
+            <div class="mb-3">
+                <label for="jenis" class="form-label">Dari</label>
+                <select class="form-select" id="ambil" name="ambil">
+                    <option value="OnHand">OnHand</option>
+                    <option value="Operasional">Opeasional</option>
+                    <option value="Stock">Stock</option>
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="keterangan" class="form-label">Keterangan</label>
+                <input type="text" class="form-control" id="keterangan" name="keterangan" placeholder="Masukan keterangan">
             </div>
 
             <div class="mb-3">
@@ -51,6 +63,7 @@
 </div>
 <script>
       var cekPelangganUrl = "{{ route('keuangan.utang.create.cek-pelanggan') }}";
+      var cekPelangganAuto = "{{ route('keuangan.utang.create.cek-auto')}}"
 </script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="{{asset('js/formatUangInput.js')}}"></script>

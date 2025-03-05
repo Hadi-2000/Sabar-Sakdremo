@@ -36,11 +36,11 @@ class UtangPiutangController extends Controller
     
         // Cek apakah query terkait dengan jenis "Utang" atau "Piutang" secara langsung
         if (strtolower($query) == 'utang') {
-            $utang = UtangPiutang::where('jenis', 'Utang')->orderBy('nama', 'desc')->paginate(10);
+            $utang = UtangPiutang::where('jenis', 'Utang')->orderBy('nama', 'desc')->get();
         } elseif (strtolower($query) == 'piutang') {
-            $utang = UtangPiutang::where('jenis', 'Piutang')->orderBy('nama', 'desc')->paginate(10);
+            $utang = UtangPiutang::where('jenis', 'Piutang')->orderBy('nama', 'desc')->get();
         } else {
-            $utang = UtangPiutang::query(); // Default hanya mencari "Utang"
+            $utang = UtangPiutang::all(); // Default hanya mencari "Utang"
     
             $utang->where(function($q) use ($query, $isDate) {
                 $q->where('keterangan', 'LIKE', '%'.$query.'%')
@@ -102,7 +102,7 @@ class UtangPiutangController extends Controller
         
         // Simpan transaksi arus kas
         ArusKas::create([
-            'idKas' => $kas[$request->ambil]->id ?? null,
+            'idKas' => 10,
             'keterangan' => $request->keterangan ?? '-',
             'jenis_kas' => $request->ambil,
             'jenis_transaksi' => $jenis_transaksi,
@@ -161,9 +161,8 @@ class UtangPiutangController extends Controller
     private function updateSumberKas($kas, $jumlah, $ambil) {
         if (isset($kas[$ambil])) {
             $kas[$ambil]->update(['saldo' => $kas[$ambil]->saldo - $jumlah]);
-        }elseif (isset($kas[$ambil]) == 'Stock') {
-            $test = true;
-    }}
+        }
+    }
     
     //cek Pelanggan ada tidak
     public function checkPelanggan(Request $request) {

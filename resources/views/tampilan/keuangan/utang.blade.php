@@ -51,5 +51,8 @@
             @endif
         </tbody>
     </table>
+    <div class="d-flex justify-content-center">
+        {{ $utang->links() }}
+    </div>
 </div>
 @endsection

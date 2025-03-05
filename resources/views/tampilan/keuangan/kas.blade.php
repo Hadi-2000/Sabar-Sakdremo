@@ -62,6 +62,9 @@
             @endif
         </tbody>
     </table>
+    <div class="d-flex justify-content-center">
+        {{ $arus->links() }}
+    </div>
     </div>
 
     <script src="{{ asset('js/formatUangInput.js') }}"></script>

@@ -1,6 +1,7 @@
 $(document).ready(function () {
     $("#cek_button").on("click", function (event) {
         let namaPelanggan = $("#nama_pelanggan").val();
+        event.preventDefault();
 
         const cek = document.getElementById("cek_button");
         cek.style.display = "none";
@@ -31,3 +32,12 @@ $(document).ready(function () {
         }
     });
 });
+
+//membuat fuction autocomplete 
+$(document).ready(function(){
+ $("#nama_pelanggan").autocomplete({
+    source: namaPelanggan,
+    minLength: 3
+ });
+ 
+}

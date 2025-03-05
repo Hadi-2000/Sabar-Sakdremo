@@ -32,8 +32,9 @@ Route::delete('/dashboard/keuangan/kas/delete/{id}', [ArusKasController::class, 
 Route::get('/dashboard/keuangan/utang', [UtangPiutangController::class, 'indexUtang'])->name('keuangan.utang.index');
 Route::get('/dashboard/keuangan/utang/search', [UtangPiutangController::class, 'searchUtang'])->name('keuangan.utang.search');
 Route::get('/dashboard/keuangan/utang/create', [UtangPiutangController::class, 'createIndexUtang'])->name('keuangan.utang.create');
+Route::get('/dashboard/keuangan/utang/create/cek-auto', [UtangPiutangController::class,'checkPelanggan'])->name('keuangan.utang.create.cek-auto');
 Route::get('/dashboard/keuangan/utang/create/cek-pelanggan', [UtangPiutangController::class,'checkPelanggan'])->name('keuangan.utang.create.cek-pelanggan');
-Route::post('/dashboard/keuangan/utang/create/proses', [UtangPiutangController::class, 'create'])->name('keuangan.utang.create.proses');
+Route::post('/dashboard/keuangan/utang/create/proses', [UtangPiutangController::class, 'createUtang'])->name('keuangan.utang.create.proses');
 
 //tampilan laporan
 Route::get('/dashboard/laporan/arus_kas', [ArusKasController::class, 'index']);
