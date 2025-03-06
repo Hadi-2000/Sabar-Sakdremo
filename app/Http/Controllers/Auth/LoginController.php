@@ -50,8 +50,8 @@ class LoginController extends Controller
 
         if ($remember) {
                // Simpan username dan password ke dalam cookie selama 7 hari
-               Cookie::queue('remember_username', $request->username, 10080);
-               Cookie::queue('remember_password', $request->password, 10080);
+               Cookie::queue('remember_username', $request->username, 1440);
+               Cookie::queue('remember_password', $request->password, 1440);
           } else {
                // Hapus cookie jika remember tidak dicentang
                Cookie::queue(Cookie::forget('remember_username'));

@@ -48,14 +48,6 @@
                 <input type="text" class="form-control" id="jumlah" name="jumlah" placeholder="Masukan jumlah utang" oninput="formatUangInput(this)">
             </div>
 
-            <div class="mb-3">
-                <label for="status" class="form-label">Status</label>
-                <select class="form-select" id="status" name="status">
-                    <option value="Belum Lunas">Belum Lunas</option>
-                    <option value="Lunas">Lunas</option>
-                </select>
-            </div>
-
             <button type="submit" class="btn btn-success">Simpan</button>
         </div>
     </form>

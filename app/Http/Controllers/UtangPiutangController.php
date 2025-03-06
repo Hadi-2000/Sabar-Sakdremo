@@ -7,17 +7,17 @@ use App\Models\ArusKas;
 use App\Models\Pelanggan;
 use App\Models\UtangPiutang;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facedes\view;
 use App\Http\Requests\StoreUtangPiutangRequest;
 use App\Http\Requests\UpdateUtangPiutangRequest;
 
 class UtangPiutangController extends Controller
 {
-    private const VALIDATION_RULE_STRING = 'request|string';
    // Utang
     public function indexUtang()
     {
-        $utang = UtangPiutang::orderBy('nama', 'desc')->paginate(10);
+        $utang = UtangPiutang::orderBy('nama')->paginate(10);
         return view('tampilan.keuangan.utang', compact('utang'));
     }
     public function searchUtang(Request $request){
@@ -25,7 +25,7 @@ class UtangPiutangController extends Controller
             session()->forget('error');
         }
     
-        $query = $request->input('query');
+        $query = strtolower($request->input('query'));
     
         // Jika query kosong, langsung kembali ke index tanpa error
         if (empty($query)) {
@@ -35,14 +35,10 @@ class UtangPiutangController extends Controller
         $isDate = strtotime($query) !== false;
     
         // Cek apakah query terkait dengan jenis "Utang" atau "Piutang" secara langsung
-        if (strtolower($query) == 'utang') {
-            $utang = UtangPiutang::where('jenis', 'Utang')->orderBy('nama', 'desc')->paginate(10);
-        } elseif (strtolower($query) == 'piutang') {
-            $utang = UtangPiutang::where('jenis', 'Piutang')->orderBy('nama', 'desc')->paginate(10);
+        if (strtolower($query) == 'utang' || (strtolower($query) == 'piutang')) {
+            $utang = UtangPiutang::where('jenis', ucfirst($query))->orderBy('nama')->paginate(10);
         } else {
-            $utang = UtangPiutang::query(); // Default hanya mencari "Utang"
-    
-            $utang->where(function($q) use ($query, $isDate) {
+            $utang=UtangPiutang::where(function($q) use ($query, $isDate) {
                 $q->where('keterangan', 'LIKE', '%'.$query.'%')
                   ->orWhere('nama', 'LIKE', '%'.$query.'%')
                   ->orWhere('alamat', 'LIKE', '%'.$query.'%')
@@ -54,23 +50,20 @@ class UtangPiutangController extends Controller
                 if ($isDate) {
                     $q->orWhereDate('updated_at', '=', date('Y-m-d', strtotime($query)));
                 }
-            });
-    
-            $utang = $utang->orderBy('nama', 'desc')->paginate(10);
+            })->orderBy('nama')->paginate(10);
         }
     
-        // Jika data tidak ditemukan, kembali ke halaman utama dengan error
-        if ($utang->isEmpty()) {
-            return redirect()->route('keuangan.utang.index')->with('error', 'Data Tidak Ada.');
-        }
-    
-        return view('tampilan.keuangan.utang', compact('utang', 'query'));
+        return $utang->isEmpty() 
+        ? redirect()->route('keuangan.utang.index')->with('error', 'Data Tidak Ada.')
+        : view('tampilan.keuangan.utang', compact('utang', 'query'));
     }
     
 
     public function createIndexUtang(){
         return view('tampilan.keuangan.utang-create');
     }
+
+    //create UtangPiutang
     public function createUtang(Request $request) {
         $request->validate([
             'nama_pelanggan' => 'required|string',
@@ -78,9 +71,9 @@ class UtangPiutangController extends Controller
             'jumlah_hidden' => 'required|numeric|min:1',
             'jenis' => 'required|string',
             'keterangan' => 'required|string',
-            'status' => 'required|string',
             'ambil' => 'required|string'
         ]);
+        $req = $request;
         $jumlah = (int) str_replace('.', '', $request->jumlah_hidden);
         
         $kas = $this->getKas();
@@ -90,11 +83,8 @@ class UtangPiutangController extends Controller
         $jenis_transaksi = '';
     
         // Hitung saldo utang/piutang
-        if ($request->jenis === 'Utang') {
-            $this->prosesUtang($pelanggan, $jumlah, $kas, $jenis_transaksi);
-        } else {
-            $this->prosesPiutang($pelanggan, $jumlah, $kas, $jenis_transaksi);
-        }
+        $method = $request->jenis === 'Utang' ? 'prosesUtang' : 'prosesPiutang';
+        $this->$method($req, $pelanggan, $jumlah, $kas, $jenis_transaksi);
         
         // Update totalAsset dan sumber pengambilan kas
         $this->updateTotalAsset($kas['totalAsset'], $jumlah, $request->jenis);
@@ -118,7 +108,7 @@ class UtangPiutangController extends Controller
             'operasional' => Kas::where('jenis_kas', 'Operasional')->first(),
             'totalAsset' => Kas::where('jenis_kas', 'totalAsset')->first(),
             'stok' => Kas::where('jenis_kas', 'Stok')->first(),
-            'kasOnHand' => Kas::where('jenis_kas', 'KasOnHand')->first(),
+            'OnHand' => Kas::where('jenis_kas', 'OnHand')->first(),
         ];
     }
     
@@ -129,14 +119,23 @@ class UtangPiutangController extends Controller
         );
     }
     
-    private function prosesUtang($pelanggan, $jumlah, $kas, &$jenis_transaksi) {
+    private function prosesUtang($req, $pelanggan, $jumlah, $kas, &$jenis_transaksi) {
         $utang_fix = $kas['utang']->saldo + $jumlah;
         $kas['utang']->update(['saldo' => $utang_fix]);
         $pelanggan->update(['total' => $utang_fix, 'utangPiutang' => 'Utang']);
         $jenis_transaksi = 'Keluar';
+        UtangPiutang::create([
+            'id_pelanggan' => $pelanggan->id,
+            'nama' => $pelanggan->nama,
+            'alamat' => $pelanggan->alamat,
+            'keterangan' => $req->keterangan,
+            'jenis' => 'Utang',
+            'nominal' => $jumlah,
+            'status' => 'Belum Lunas'
+        ]);
     }
     
-    private function prosesPiutang($pelanggan, $jumlah, $kas, &$jenis_transaksi) {
+    private function prosesPiutang($req,$pelanggan, $jumlah, $kas, &$jenis_transaksi) {
         if ($jumlah > $pelanggan->total) {
             $piutang_fix = $jumlah - $pelanggan->total;
             $kas['piutang']->update(['saldo' => $piutang_fix]);
@@ -148,6 +147,15 @@ class UtangPiutangController extends Controller
             $pelanggan->update(['total' => $utang_fix, 'utangPiutang' => 'Piutang']);
             $jenis_transaksi = 'Keluar';
         }
+        UtangPiutang::create([
+            'id_pelanggan' => $pelanggan->id,
+            'nama' => $pelanggan->nama,
+            'alamat' => $pelanggan->alamat,
+            'keterangan' => $req->keterangan,
+            'jenis' => 'Utang',
+            'nominal' => $jumlah,
+            'status' => 'Belum Lunas'
+        ]);
     }
     
     private function updateTotalAsset($totalAsset, $jumlah, $jenis) {
@@ -161,9 +169,8 @@ class UtangPiutangController extends Controller
     private function updateSumberKas($kas, $jumlah, $ambil) {
         if (isset($kas[$ambil])) {
             $kas[$ambil]->update(['saldo' => $kas[$ambil]->saldo - $jumlah]);
-        }elseif (isset($kas[$ambil]) == 'Stock') {
-            $test = true;
-    }}
+        }
+    }
     
     //cek Pelanggan ada tidak
     public function checkPelanggan(Request $request) {
@@ -182,5 +189,11 @@ class UtangPiutangController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+    //fubnction cek auto 
+    public function cekAuto(Request $request){
+        $query = $request->query('query');
+        $pelanggan = DB::table('pelanggan')->where('nama','LIKE','%'.$query.'%')->limit(5)->get(['nama','alamat']);
+        return response()->json($pelanggan);
     
+}
 }

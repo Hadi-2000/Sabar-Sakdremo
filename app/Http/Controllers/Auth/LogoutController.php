@@ -19,7 +19,7 @@ class LogoutController extends Controller
           // Hapus sesi tetapi biarkan cookie remember me jika masih ada
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-      
+
           return redirect('/login')->with('status', 'Berhasil Logout');
       }
      //form login
