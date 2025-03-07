@@ -13,7 +13,11 @@ class Pelanggan extends Model
     protected $table = 'pelanggans';
 
     protected $fillable = [
-        'nama', 'alamat', 'no_telepon','utangPiutang','total'
+        'nama',
+        'alamat',
+        'no_telepon',
+        'utangPiutang',
+        'total' => 0
     ];
 }
 

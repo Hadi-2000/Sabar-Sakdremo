@@ -57,50 +57,46 @@ class ArusKasController extends Controller
     
         return view('tampilan.keuangan.kas', compact('arus', 'query'));
     }
-    private const VALIDATION_RULE_STRING = 'required|string';
-    public function create(Request $request) {
+
+    public function create(StoreArus_KasRequest $request) {
         // Validasi input
-        $request->validate([
-            'keterangan' => self::VALIDATION_RULE_STRING,
-            'jenis_kas' => self::VALIDATION_RULE_STRING,
-            'jenis_transaksi' => 'required|in:Masuk,Keluar',
-            'jumlah_hidden' => 'required|numeric|min:1',
-        ]);
-        $jumlah = str_replace('.', '', $request->jumlah_hidden); // Hapus titik format rupiah
+        $data = $request->validated();
+
+        $jumlah = str_replace('.', '', $data['jumlah_hidden']); // Hapus titik format rupiah
 
         // Cek apakah jenis kas ada di database
-        $kasData = Kas::whereIn('jenis_kas', [$request->jenis_kas, 'totalAsset'])->get()->keyBy('jenis_kas');
-        $kas = ($kasData[$request->jenis_kas]->jenis_kas == 'OnHand') ? "OnHand" : "Operasional";
-        $idKas = ($request->jenis_kas == 'OnHand') ? 2 : 10;
+        $kasData = Kas::whereIn('jenis_kas', [$data['jenis_kas'], 'totalAsset'])->get()->keyBy('jenis_kas');
+        $kas = ($kasData[$data['jenis_kas']] == 'OnHand') ? "OnHand" : "Operasional";
+        $idKas = ($data['jenis_kas'] == 'OnHand') ? 2 : 10;
             
         // Hitung saldo baru
-        if(isset($kasData[$request->jenis_kas])){
-            $jumlahFix2 = ($request->jenis_transaksi == 'Masuk')
-            ? $kasData[$request->jenis_kas]->saldo + $jumlah
-            : $kasData[$request->jenis_kas]->saldo - $jumlah;
+        if(isset($kasData[$data['jenis_kas']])){
+            $jumlahFix2 = ($data['jenis_transaksi'] == 'Masuk')
+            ? $kasData[$data['jenis_kas']]->saldo + $jumlah
+            : $kasData[$data['jenis_kas']]->saldo - $jumlah;
         }else {
-            return redirect()->back()->with('error', 'Jenis kas tidak ditemukan!');
+            return back()->with('error', 'Jenis kas tidak ditemukan!');
         }
 
-        $saldoAssetFix = ($request->jenis_transaksi == 'Masuk')
+        $saldoAssetFix = ($data['jenis_transaksi'] == 'Masuk')
         ? $kasData['totalAsset']->saldo + $jumlah
         : $kasData['totalAsset']->saldo - $jumlah;
     
         // Pastikan saldo tidak negatif jika transaksi "Keluar"
         if ($jumlahFix2 < 0 || $saldoAssetFix < 0) {
-            return redirect()->back()->with('error', 'Saldo tidak mencukupi untuk transaksi keluar!');
+            return back()->with('error', 'Saldo tidak mencukupi untuk transaksi keluar!');
         }
     
         // Update saldo di tabel Kas
-        $kasData[$request->jenis_kas]->update(['saldo' => $jumlahFix2]);
+        $kasData[$data['jenis_kas']]->update(['saldo' => $jumlahFix2]);
         $kasData['totalAsset']->update(['saldo' => $saldoAssetFix]);
     
         // Simpan transaksi ke ArusKas
         ArusKas::create([
             'idKas' => $idKas, // Pastikan nama kolom benar
-            'keterangan' => $request->keterangan,
+            'keterangan' => $data['keterangan'],
             'jenis_kas' => $kas,
-            'jenis_transaksi' => $request->jenis_transaksi,
+            'jenis_transaksi' => $data['jenis_transaksi'],
             'jumlah' => $jumlah,
         ]);
         return redirect()->route('keuangan.kas.index')->with('success', 'Tambah Data berhasil');
@@ -147,26 +143,21 @@ class ArusKasController extends Controller
 }
 
     // edit
-    public function update(Request $request, $id)
+    public function update(StoreArus_KasRequest $request, $id)
 {
     $arus = ArusKas::findOrFail($id);
     $kasData = Kas::whereIn('jenis_kas',['totalAsset','OnHand','Operasional'])->get()->keyBy('jenis_kas');
 
     // Validasi input
-    $request->validate([
-        'keterangan' => self::VALIDATION_RULE_STRING,
-        'jenis_kas' => self::VALIDATION_RULE_STRING,
-        'jenis_transaksi' => self::VALIDATION_RULE_STRING,
-        'jumlah_hidden' => 'numeric|min:1',
-    ]);
+    $data = $request->validated();
 
     // Format jumlah dari input
-    $jumlah = str_replace('.', '', $request->jumlah_hidden);
+    $jumlah = str_replace('.', '', $data['jumlah_hidden']);
     if ($jumlah <= 0) {
-        return redirect()->back()->with('error', 'Jumlah tidak valid!');
+        return back()->with('error', 'Jumlah tidak valid!');
     }
     [$jumlah_sebelum, $jenis_kas_lama, $jenis_kas_baru, $transaksi_lama, $transaksi_baru] =
-    tap($arus, fn($a) => [$a->jumlah, $a->jenis_kas, $request->jenis_kas, $a->jenis_transaksi, $request->jenis_transaksi]);
+    tap($arus, fn($a) => [$a->jumlah, $a->jenis_kas, $data['jenis_kas'], $a->jenis_transaksi, $data['jenis_transaksi']]);
 
     // Hitung faktor perubahan saldo
     $factor = ($transaksi_baru == $transaksi_lama) ? 1 : -1;
@@ -191,13 +182,13 @@ class ArusKasController extends Controller
         }
     }
 
-    $idKas = ($request->jenis_kas == 'OnHand') ? 2 : 10;
+    $idKas = ($data['jenis_kas'] == 'OnHand') ? 2 : 10;
 
     // Update data transaksi
     $arus->update([
         'idKas' => $idKas, // Pastikan nama kolom benar
-        'keterangan' => $request->keterangan,
-        'jenis_kas' => $request->jenis_kas,
+        'keterangan' => $data['keterangan'],
+        'jenis_kas' => $data['jenis_kas'],
         'jenis_transaksi' => $transaksi_baru,
         'jumlah' => $jumlah
     ]);
@@ -217,4 +208,3 @@ class ArusKasController extends Controller
     }
     
     }
-    

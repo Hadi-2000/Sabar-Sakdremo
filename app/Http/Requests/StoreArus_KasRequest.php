@@ -11,7 +11,7 @@ class StoreArus_KasRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -21,8 +21,20 @@ class StoreArus_KasRequest extends FormRequest
      */
     public function rules(): array
     {
+        //variable untuk required|string
         return [
-            //
+            'keterangan' => 'required|string|min:1',
+            'jenis_kas' => 'required|string|min:2',
+            'jenis_transaksi' => 'required|string|min:1',
+            'jumlah_hidden' => 'required|numeric|min:1',
+        ];
+    }
+    public function messages(): array
+    {
+        return [
+            'keterangan.required' => 'Keterangan kas harus diisi',
+            'jenis_kas.required' => 'Jenis kas harus diisi',
+            'jenis_transaksi.required' => 'Jenis transaksi harus diisi'
         ];
     }
 }

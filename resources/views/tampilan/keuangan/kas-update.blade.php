@@ -4,6 +4,11 @@
 <div class="judul-container">
     <h1>Update Data</h1>
 </div>
+@if (session('error'))
+        <div class="alert alert-danger" role="alert">
+            {{ session('error') }}
+        </div>
+@endif
         
     <div class="ms-5  me-5 p-4 border rounded shadow w-60">
       <form action="{{route('keuangan.kas.update.proses', $arus->id)}}" method="POST">

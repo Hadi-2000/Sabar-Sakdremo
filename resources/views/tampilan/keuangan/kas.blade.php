@@ -14,6 +14,11 @@
     <button type="button" class="btn btn-primary">
         <a href="/dashboard/keuangan/kas/create"> + Tambah Data</a>
       </button>
+      @if(session('success'))
+        <p class="alert alert text-center">
+            {{ session('success') }}
+        </tr>
+     @endif
       <table class="table table-bordered mt-3">
         <thead>
             <tr>
@@ -60,6 +65,7 @@
                     <td colspan="6" class="text-center">Data Kosong</td>
                 </tr>
             @endif
+
         </tbody>
     </table>
     <div class="d-flex justify-content-center">

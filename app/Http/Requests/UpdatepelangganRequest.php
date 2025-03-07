@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\ValidePhoneNumber;
 use Illuminate\Foundation\Http\FormRequest;
 
 class UpdatepelangganRequest extends FormRequest
@@ -11,7 +12,7 @@ class UpdatepelangganRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +23,11 @@ class UpdatepelangganRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'nama' => 'required|string|max:100',
+            'alamat' => 'nullable|string|max:255',
+            'no_telepon' => ['nullable', new ValidePhoneNumber()],
+            'utangPiutang'=> 'nullable|string',
+            'total'=> ['nullable', 'numeric', 'regex:/^\d{1,13}(\.\d{1,2})?$/'],
         ];
     }
 }

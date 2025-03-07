@@ -6,6 +6,7 @@ use App\Http\Controllers\ViewController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PelangganController;
 use App\Http\Controllers\UtangPiutangController;
 
 //tampilan login log out
@@ -43,7 +44,15 @@ Route::get('/dashboard/laporan/laba_rugi', [ViewController::class, 'viewLaporanL
 Route::get('/dashboard/laporan/stock', [ViewController::class, 'viewLaporanStock']);
 
 //tampilan penggilingan
-Route::get('/dashboard/penggilingan/pelanggan', [ViewController::class, 'viewPenggilinganPelanggan']);
+//tampilan pelanggan
+Route::get('/dashboard/penggilingan/pelanggan', [PelangganController::class, 'index'])->name('penggilingan.pelanggan.index');
+Route::get('/dashboard/penggilingan/pelanggan/search', [PelangganController::class, 'search'])->name('penggilingan.pelanggan.search');
+Route::get('/dashboard/penggilingan/pelanggan/create', [PelangganController::class, 'create'])->name('penggilingan.pelanggan.create');
+Route::post('/dashboard/penggilingan/pelanggan/create/proses', [PelangganController::class, 'store'])->name('penggilingan.pelanggan.create.proses');
+Route::get('/dashboard/penggilingan/pelanggan/update/{id}', [PelangganController::class, 'indexUpdate'])->name('penggilingan.pelanggan.update');
+Route::put('/dashboard/penggilingan/pelanggan/update/{id}', [PelangganController::class, 'update'])->name('penggilingan.pelanggan.update.proses');
+Route::delete('/dashboard/penggilingan/pelanggan/delete/{id}', [PelangganController::class, 'destroy'])->name('penggilingan.pelanggan.destroy');
+
 Route::get('/dashboard/penggilingan/tenaga_kerja', [ViewController::class, 'viewPenggilinganTenagaKerja']);
 Route::get('/dashboard/penggilingan/penitipan', [ViewController::class, 'viewPenggilinganPenitipan']);
 Route::get('/dashboard/penggilingan/mesin', [ViewController::class, 'viewPenggilinganMesin']);

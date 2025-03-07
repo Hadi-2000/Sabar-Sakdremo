@@ -14,6 +14,11 @@
         <button class="btn btn-outline-success" type="submit">Search</button>
     </form>
     <a href="/dashboard/keuangan/utang/create"> + Tambah Data</a>
+    @if(session('success'))
+        <p class="alert alert text-center">
+            {{ session('success') }}
+        </tr>
+     @endif
     <table class="table table-bordered bg-light text-dark mt-3">
         <thead>
             <tr>
