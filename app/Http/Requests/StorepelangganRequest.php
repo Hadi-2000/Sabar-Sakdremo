@@ -27,7 +27,7 @@ class StorepelangganRequest extends FormRequest
             'alamat' => 'nullable|string|max:255',
             'no_telepon' => ['nullable', new ValidePhoneNumber()],
             'utangPiutang'=> 'nullable|string',
-            'total'=> ['nullable', 'numeric', 'regex:/^\d{1,13}(\.\d{1,2})?$/'],
+            'total'=> ['nullable', 'numeric', 'regex:/^\d{1,15}(\.\d{1,2})?$/'],
         ];
     }
 }

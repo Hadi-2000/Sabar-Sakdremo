@@ -13,7 +13,13 @@ class PenitipanBarangController extends Controller
      */
     public function index()
     {
-        //
+        
+        $data = PenitipanBarang::join('pelanggans', 'penitipan_barangs.id_pelanggan', '=', 'pelanggans.id')
+        ->select('penitipan_barangs.*', 'pelanggans.nama as nama_pelanggan')
+        ->orderBy('pelanggans.nama')
+        ->paginate(10);
+
+        return view('tampilan.penggilingan.penitipan', compact('data'));
     }
 
     /**

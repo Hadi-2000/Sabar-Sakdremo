@@ -9,4 +9,8 @@ class PenitipanBarang extends Model
 {
     /** @use HasFactory<\Database\Factories\PenitipanBarangFactory> */
     use HasFactory;
+
+    protected $table = 'penitipan_barangs';
+
+    protected $fillable = ['id_pelanggan','barang','jumah','status'];
 }

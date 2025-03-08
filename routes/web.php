@@ -6,7 +6,9 @@ use App\Http\Controllers\ViewController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\PelangganController;
+use App\Http\Controllers\PenitipanBarangController;
 use App\Http\Controllers\UtangPiutangController;
 
 //tampilan login log out
@@ -53,8 +55,26 @@ Route::get('/dashboard/penggilingan/pelanggan/update/{id}', [PelangganController
 Route::put('/dashboard/penggilingan/pelanggan/update/{id}', [PelangganController::class, 'update'])->name('penggilingan.pelanggan.update.proses');
 Route::delete('/dashboard/penggilingan/pelanggan/delete/{id}', [PelangganController::class, 'destroy'])->name('penggilingan.pelanggan.destroy');
 
-Route::get('/dashboard/penggilingan/tenaga_kerja', [ViewController::class, 'viewPenggilinganTenagaKerja']);
-Route::get('/dashboard/penggilingan/penitipan', [ViewController::class, 'viewPenggilinganPenitipan']);
+//tenga kerja list
+Route::get('/dashboard/penggilingan/tenaga_kerja', [PegawaiController::class, 'index'])->name('penggilingan.tenaga_kerja.index');
+Route::get('/dashboard/penggilingan/tenaga_kerja/search',[PegawaiController::class, 'search'])->name('penggilingan.tenaga_kerja.search');
+Route::get('/dashboard/penggilingan/tenaga_kerja/create', [PegawaiController::class, 'create'])->name('penggilingan.tenaga_kerja.create');
+Route::post('/dashboard/penggilingan/tenaga_kerja/create/proses', [PegawaiController::class,'store'])->name('penggilingan.tenaga_kerja.create.proses');
+Route::get('/dashboard/penggilingan/tenaga_kerja/update/{id}', [PegawaiController::class, 'indexUpdate'])->name('penggilingan.tenaga_kerja.update');
+Route::put('/dashboard/penggilingan/tenaga_kerja/update/{id}', [PegawaiController::class, 'update'])->name('penggilingan.tenaga_kerja.update.proses');
+Route::delete('/dashboard/penggilingan/tenaga_kerja/delete/{id}', [PegawaiController::class, 'destroy'])->name('penggilingan.tenaga_kerja.destroy');
+Route::get('/dashboard/penggilingan/tenaga_kerja/hadir/{id}', [PegawaiController::class, 'hadir'])->name('penggilingan.tenaga_kerja.hadir');
+Route::get('/dashboard/penggilingan/tenaga_kerja/tidak_hadir/{id}', [PegawaiController::class, 'tidakHadir'])->name('penggilingan.tenaga_kerja.tidak_hadir');
+
+//penitipan
+Route::get('/dashboard/penggilingan/penitipan', [PenitipanBarangController::class, 'index'])->name('penggilingn.penitipan.index');
+Route::get('/dashboard/penggilingan/search', [PenitipanBarangController::class, 'search'])->name('penggilingan.penitipan.search');
+Route::get('/dashboard/penggilingan/penitipan/create', [PenitipanBarangController::class, 'create'])->name('penggilingan.penitipan.create');
+Route::post('/dashboard/penggilingan/penitipan/create/proses', [PenitipanBarangController::class, 'create'])->name('penggilingan.penitipan.create.proses');
+Route::get('/dashboard/penggilingan/penitipan/update/{id}', [PenitipanBarangController::class, 'indexUpdate'])->name('penggilingan.penitipan.update');
+Route::put('/dashboard/penggilingan/penitipan/update/{id}', [PenitipanBarangController::class, 'update'])->name('penggilingan.penitipan.update.proses');
+Route::delete('/dashboard/penggilingan/penitipan/delete/{id}', [PenitipanBarangController::class, 'destroy'])->name('penggilingan.penitipan.destroy');
+
 Route::get('/dashboard/penggilingan/mesin', [ViewController::class, 'viewPenggilinganMesin']);
 Route::get('/dashboard/penggilingan/perbaikan', [ViewController::class, 'viewPenggilinganPerbaikan']);
 

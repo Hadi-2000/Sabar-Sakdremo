@@ -9,4 +9,17 @@ class Pegawai extends Model
 {
     /** @use HasFactory<\Database\Factories\PegawaiFactory> */
     use HasFactory;
+
+    protected $table = 'pegawais';
+
+    protected $fillable = [
+        'nama',
+        'alamat',
+        'no_telp',
+        'status',
+        'kehadiran',
+        'gaji'
+    ];
+
+
 }

@@ -46,7 +46,7 @@
                         <td>{{ $kas->keterangan }}</td>
                         <td>{{ $kas->jenis_kas }}</td>
                         <td>{{ $kas->jenis_transaksi }}</td>
-                        <td>{{ number_format($kas->jumlah, 0, ',', '.') }}</td>
+                        <td>{{ "Rp. ".number_format($kas->jumlah, 0, ',', '.') }}</td>
                         <td>
                           <a href="{{ route('keuangan.kas.update', $kas->id) }}" class="btn btn-primary">
                             Edit

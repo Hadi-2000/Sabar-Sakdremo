@@ -10,20 +10,39 @@ class DashboardController extends Controller
 {
 
     public function viewDashboard()
-    { // Pastikan hanya user login yang bisa akses
-        // Pastikan hanya user login yang bisa akses
+{
+    // Pastikan user login
     if (!session()->has('key')) {
         return redirect()->back()->with('error', 'Anda harus login terlebih dahulu');
     }
-     // Ambil data kas berdasarkan jenis_kas yang diperlukan
-     $kasData = Kas::whereIn('jenis_kas', [
+
+    // Ambil data kas dan jadikan key-nya sebagai jenis_kas
+    $kasData = Kas::whereIn('jenis_kas', [
         'totalAsset', 'OnHand', 'Operasional', 'Stock',
         'Utang', 'Piutang', 'labaBersih', 'labaKotor',
         'pengeluaran', 'selisih'
-    ])->get()->groupBy('jenis_kas');
+    ])->get()->keyBy('jenis_kas');
 
-    // Menampilkan halaman dashboard dengan data kas yang telah dikelompokkan
+    //   // Hitung total asset
+    // $AssetFix = ($kasData['OnHand']->saldo ?? 0) 
+    //           + ($kasData['Operasional']->saldo ?? 0) 
+    //           + ($kasData['Stock']->saldo ?? 0) 
+    //           + ($kasData['Piutang']->saldo ?? 0) 
+    //           - ($kasData['Utang']->saldo ?? 0);
+
+    // // Jika total asset tidak sesuai, perbarui saldo
+    // if (($kasData['totalAsset']->saldo ?? 0) != $AssetFix) {
+    //     $kasData['totalAsset']->update(['saldo' => $AssetFix]);
+    //     $kasData = Kas::whereIn('jenis_kas', [
+    //         'totalAsset', 'OnHand', 'Operasional', 'Stock',
+    //         'Utang', 'Piutang', 'labaBersih', 'labaKotor',
+    //         'pengeluaran', 'selisih'
+    //     ])->get()->keyBy('jenis_kas');
+    // }
+
+    // Tampilkan halaman dashboard dengan data kas
     return view('tampilan.dashboard', compact('kasData'));
 }
+
     }
 

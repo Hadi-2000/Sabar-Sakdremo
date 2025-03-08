@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use App\Rules\ValidePhoneNumber;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 
 class StorePegawaiRequest extends FormRequest
 {
@@ -11,7 +13,7 @@ class StorePegawaiRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +24,10 @@ class StorePegawaiRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'nama'=> 'required|string|min:2',
+            'alamat'=> 'required|string|min:2',
+            'no_telp'=> ['nullable',new ValidePhoneNumber()],
+            'jumlah_hidden'=>  'required|numeric|min:1',
         ];
     }
 }

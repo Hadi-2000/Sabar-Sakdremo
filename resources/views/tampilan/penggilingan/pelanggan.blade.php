@@ -39,7 +39,7 @@
                 <td><a href="{{route('penggilingan.pelanggan.update', $p->id)}}">
                         <button class="btn btn-primary">Edit</button>
                     </a> |
-                    | <form method="POST" action="{{route('penggilingan.pelanggan.destroy', $p->id)}}">
+                    | <form method="POST" action="{{route('penggilingan.pelanggan.destroy', $p->id)}}" style="display: inline;">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-danger">Hapus</button>

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('penitipan_barangs', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('id_pelanggan');
-            $table->string('penitipan_barang');
+            $table->string('barang');
             $table->string('jumlah');
             $table->string('status');
             $table->foreign('id_pelanggan')->references('id')->on('pelanggans');
