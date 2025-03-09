@@ -9,4 +9,9 @@ class Aset extends Model
 {
     /** @use HasFactory<\Database\Factories\AsetFactory> */
     use HasFactory;
+
+    protected $table = 'asets';
+    protected $fillable = [
+        'nama', 'deskripsi', 'jumlah', 'satuan',
+    ];
 }

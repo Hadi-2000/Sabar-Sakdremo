@@ -12,7 +12,7 @@ class PelangganController extends Controller
     public function index()
     {
         $pelanggan = Pelanggan::orderBy('nama')->paginate(10);
-        return view('tampilan.penggilingan.pelanggan',compact('pelanggan'));
+        return view('tampilan.penggilingan.pelanggan.pelanggan',compact('pelanggan'));
     }
 
     public function search(Request $request){
@@ -29,7 +29,7 @@ class PelangganController extends Controller
             ->orWhere('no_telepon', 'like', '%'.$query.'%');
             })->orderBy('nama')->paginate(10);
 
-            return view('tampilan.penggilingan.pelanggan',compact('pelanggan','query'));
+            return view('tampilan.penggilingan.pelanggan.pelanggan',compact('pelanggan','query'));
     }else{
         $pelanggan = Pelanggan::orderBy('nama')->paginate(10);
     }
@@ -40,7 +40,7 @@ class PelangganController extends Controller
 
     public function create()
     {
-        return view('tampilan.penggilingan.pelanggan-create');
+        return view('tampilan.penggilingan.pelanggan.pelanggan-create');
     }
 
     /**
@@ -68,7 +68,7 @@ class PelangganController extends Controller
         if ($pelanggan === null) {
             return redirect()->route('penggilingan.pelanggan.index')->with('error', 'Data pelanggan tidak ditemukan.');
         }
-        return view('tampilan.penggilingan.pelanggan-update', compact('pelanggan'));
+        return view('tampilan.penggilingan.pelanggan.pelanggan-update', compact('pelanggan'));
     }
     /**
      * Show the form for editing the specified resource.

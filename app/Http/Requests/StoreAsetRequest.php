@@ -11,7 +11,7 @@ class StoreAsetRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,10 @@ class StoreAsetRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'nama'=> 'required|string|min:1',
+            'deskripsi' => 'required|string|min:2',
+            'satuan' => 'required|string|min:1',
+            'jumlah' => 'required|string|min:1',
         ];
     }
 }

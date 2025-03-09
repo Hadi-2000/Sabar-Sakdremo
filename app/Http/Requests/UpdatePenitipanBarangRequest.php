@@ -11,7 +11,7 @@ class UpdatePenitipanBarangRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,11 @@ class UpdatePenitipanBarangRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'nama_pelanggan' => 'required|string',
+            'barang' => 'required|string|min:1',
+            'jumlah_hidden' => 'nullable|numeric|min:1',
+            'jumlah' => 'nullable|numeric|min:1',
+            'status'=>'required|string|min:1',
         ];
     }
 }

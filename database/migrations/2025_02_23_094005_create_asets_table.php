@@ -13,11 +13,10 @@ return new class extends Migration
     {
         Schema::create('asets', function (Blueprint $table) {
             $table->id();
-            $table->string('nama_aset');
-            $table->string('keterangan');
-            $table->string('harga_aset');
-            $table->string('jumlah_aset');
-            $table->date('tanggal_beli');
+            $table->string('nama');
+            $table->string('deskripsi');
+            $table->string('jumlah');
+            $table->string('satuan');
             $table->timestamps();
         });
     }

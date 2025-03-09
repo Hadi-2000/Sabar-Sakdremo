@@ -17,8 +17,8 @@
     @endif
     <div class="col-md-9" id="accordion">
         <!-- penitipan -->
-            <form class="d-flex kas-search mb-3" role="search">
-                <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
+            <form action="{{route('penggilingan.penitipan.search')}}" method="get" class="d-flex kas-search mb-3" role="search">
+                <input class="form-control me-2" name="query" id="query" type="search" placeholder="Search" aria-label="Search">
                 <button class="btn btn-outline-success" type="submit">Search</button>
             </form>
             <a href="{{route('penggilingan.penitipan.create')}}"> + Tambah Data</a>
@@ -30,7 +30,6 @@
                         <th>Status</th>
                         <th>Barang</th>
                         <th>Jumlah</th> 
-                        <th>Riwayat</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -43,9 +42,8 @@
                                 <td>{{$p->status}}</td>
                                 <td>{{$p->barang}}</td>
                                 <td>{{number_format($p->jumlah)}}</td>
-                                <td><a class="btn btn-success" href="#">Riwayat</a></td>
                                 <td><a class="btn btn-primary" href="{{route('penggilingan.penitipan.update', $p->id)}}">Update</a> ||
-                                    <form method="POST" action="{{route('penggilingan.penitipan.destroy', $p->id)}}">
+                                    <form method="POST" action="{{route('penggilingan.penitipan.destroy', $p->id)}}" style="display: inline;">
                                         @csrf
                                         @method('DELETE')
                                         <button class="btn btn-danger">Hapus</button>
@@ -55,7 +53,7 @@
                         @endforeach
                     @else
                      <tr>
-                         <td colspan="6">Data Tidak Ditemukan</td>
+                         <td colspan="5">Data Tidak Ditemukan</td>
                      </tr> 
                     @endif
                 </tbody>

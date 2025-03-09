@@ -11,7 +11,7 @@ class StorePenitipanBarangRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,11 @@ class StorePenitipanBarangRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'nama_pelanggan' => 'required|string|min:2',
+            'alamat_pelanggan' => 'nullable|string|min:2',
+            'barang' => 'required|string|min:1',
+            'jumlah_hidden' => 'nullable|min:1',
+            'jumlah' => 'nullable|string',
         ];
     }
 }

@@ -28,11 +28,22 @@
                       Penggilingan
                     </button>
                     <ul class="dropdown-menu">
-                      <li><a class="dropdown-item" href="/dashboard/penggilingan/pelanggan">Pelanggan</a></li>
                       <li><a class="dropdown-item" href="/dashboard/penggilingan/tenaga_kerja">Tenaga Kerja</a></li>
-                      <li><a class="dropdown-item" href="/dashboard/penggilingan/penitipan">Penitipan</a></li>
+                      <li><a class="dropdown-item" href="/dashboard/penggilingan/aset">Produk</a></li>
+                      <li><a class="dropdown-item" href="/dashboard/penggilingan/penitipan">Stock</a></li>
                       <li><a class="dropdown-item" href="/dashboard/penggilingan/mesin">Mesin</a></li>
                       <li><a class="dropdown-item" href="/dashboard/penggilingan/perbaikan">Perbaikan Mesin</a></li>
+                    </ul>
+                  </li>
+
+                  <!--pelanggan -->
+                  <li class="nav-item dropdown">
+                    <button class="nav-link dropdown-toggle text-secondary" href="#" data-bs-toggle="dropdown" aria-expanded="false">
+                      Pelanggan
+                    </button>
+                    <ul class="dropdown-menu">
+                      <li><a class="dropdown-item" href="/dashboard/penggilingan/pelanggan">Pelanggan</a></li>
+                      <li><a class="dropdown-item" href="/dashboard/penggilingan/penitipan">Penitipan</a></li>
                     </ul>
                   </li>
 

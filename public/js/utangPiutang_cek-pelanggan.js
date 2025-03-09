@@ -58,6 +58,7 @@ $(document).ready(function () {
     $("#cek_button").on("click", function (event) {
         event.preventDefault();
         let namaPelanggan = $("#nama_pelanggan").val();
+        $("#cek_button").hide();
 
         if (namaPelanggan.length > 2) {
             $.ajax({

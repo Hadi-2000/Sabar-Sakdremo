@@ -15,7 +15,7 @@ class PegawaiController extends Controller
     public function index()
     {
         $pegawai = Pegawai::orderBy('nama')->paginate(10);
-        return view('tampilan.penggilingan.tenaga_kerja',compact('pegawai'));
+        return view('tampilan.penggilingan.tenaga_kerja.tenaga_kerja',compact('pegawai'));
     }
 
     public function search(Request $request){
@@ -36,14 +36,14 @@ class PegawaiController extends Controller
         if($pegawai->isEmpty()) {
             return redirect()->back()->withErrors('Data not found');
         }
-        return view('tampilan.penggilingan.tenaga_kerja',compact('pegawai','query'));
+        return view('tampilan.penggilingan.tenaga_kerja.tenaga_kerja',compact('pegawai','query'));
     }
     /**
      * Show the form for creating a new resource.
      */
     public function create()
     {
-        return view('tampilan.penggilingan.tenaga_kerja-create');
+        return view('tampilan.penggilingan.tenaga_kerja.tenaga_kerja-create');
     }
 
     /**
@@ -78,7 +78,7 @@ class PegawaiController extends Controller
     public function indexUpdate($id)
     {
         $pegawai = Pegawai::find($id);
-        return view('tampilan.penggilingan.tenaga_kerja-update', compact('pegawai'));
+        return view('tampilan.penggilingan.tenaga_kerja.tenaga_kerja-update', compact('pegawai'));
     }
 
     /**
