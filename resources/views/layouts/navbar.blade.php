@@ -30,7 +30,7 @@
                     <ul class="dropdown-menu">
                       <li><a class="dropdown-item" href="/dashboard/penggilingan/tenaga_kerja">Tenaga Kerja</a></li>
                       <li><a class="dropdown-item" href="/dashboard/penggilingan/aset">Produk</a></li>
-                      <li><a class="dropdown-item" href="/dashboard/penggilingan/penitipan">Stock</a></li>
+                      <li><a class="dropdown-item" href="/dashboard/penggilingan/stock">Stock</a></li>
                       <li><a class="dropdown-item" href="/dashboard/penggilingan/mesin">Mesin</a></li>
                       <li><a class="dropdown-item" href="/dashboard/penggilingan/perbaikan">Perbaikan Mesin</a></li>
                     </ul>

@@ -94,6 +94,8 @@ Route::get('/dashboard/penggilingan/stock', [StockController::class, 'index'])->
 Route::get('/dashboard/penggilingan/stock/search', [StockController::class,'search'])->name('penggilingan.stock.search');
 Route::get('/dashboard/penggilingan/stock/create', [StockController::class, 'create'])->name('penggilingan.stock.create');
 Route::post('/dashboard/penggilingan/stock/create/proses', [StockController::class,'store'])->name('penggilingan.stock.create.proses');
+Route::get('/dashboard/penggilingan/stock/create/cek', [StockController::class, 'cek'])->name('penggilingan.stock.create.cek');
+Route::get('/dashboard/penggilingan/stock/create/cek-auto', [StockController::class, 'cekAuto'])->name('penggilingan.stock.create.cek-auto');
 Route::get('/dashboard/penggilingan/stock/update/{id}', [StockController::class, 'edit'])->name('penggilingan.stock.update');
 Route::put('/dashboard/penggilingan/stock/update/{id}', [StockController::class, 'update'])->name('penggilingan.stock.update.proses');
 Route::delete('/dashboard/penggilingan/stock/delete/{id}', [StockController::class, 'destroy'])->name('penggilingan.stock.destroy');
