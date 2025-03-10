@@ -32,7 +32,9 @@ class PegawaiController extends Controller
                 ->orWhere('kehadiran', 'like', '%'.$query.'%')
                 ->orWhere('gaji', 'like', '%'.$query.'%');
             })->orderBy('nama')->paginate(10);
-        } 
+        }else{
+            $pegawai = Pegawai::orderBy('nama')->paginate(10);
+        }
         if($pegawai->isEmpty()) {
             return redirect()->back()->withErrors('Data not found');
         }
@@ -65,17 +67,17 @@ class PegawaiController extends Controller
                 'alamat' => $data['alamat'],
                'no_telp' => $data['no_telp'] ?? '',
                'status' => 'Aktif',
-               'kehadiran' => 'Tidak Masuk',
+               'kehadiran' => 'Tidak Hadir',
                'gaji' => $jumlah,
             ]);
         }
-        return redirect()->route('penggilingan.tenaga_kerja.index')->with('success','Data Pegawai Berhasil Ditambahkan');
+        return redirect()->route('tenaga_kerja.index')->with('success','Data Pegawai Berhasil Ditambahkan');
     }
 
     /**
      * Display the specified resource.
      */
-    public function indexUpdate($id)
+    public function edit($id)
     {
         $pegawai = Pegawai::find($id);
         return view('tampilan.penggilingan.tenaga_kerja.tenaga_kerja-update', compact('pegawai'));
@@ -87,7 +89,8 @@ class PegawaiController extends Controller
     public function update(UpdatePegawaiRequest $request, $id)
     {
         $data = $request->validated();
-        $cek = Pegawai::where('nama',$data['nama'])
+        $cek = Pegawai::where('id','!=',$id)
+        ->where('nama',$data['nama'])
         ->where('alamat',$data['alamat'])->first();
 
         if($cek){
@@ -100,7 +103,7 @@ class PegawaiController extends Controller
             'no_telp' => $data['no_telp']?? '',
             'gaji' => $jumlah
         ]);
-        return redirect()->route('penggilingan.tenaga_kerja.index')->with('success','Data Pegawai Berhasil Diubah');
+        return redirect()->route('tenaga_kerja.index')->with('success','Data Pegawai Berhasil Diubah');
     }
 
     /**
@@ -109,18 +112,18 @@ class PegawaiController extends Controller
     public function destroy($id)
     {
         Pegawai::find($id)->delete();
-        return redirect()->route('penggilingan.tenaga_kerja.index')->with('success','Data Pegawai Berhasil Dihapus');
+        return redirect()->route('tenaga_kerja.index')->with('success','Data Pegawai Berhasil Dihapus');
     }
      public function hadir($id){
         Pegawai::find($id)->update([
             'kehadiran' => 'Hadir'
         ]);
-        return redirect()->route('penggilingan.tenaga_kerja.index')->with('success','Data Pegawai Berhasil Diubah');
+        return redirect()->route('tenaga_kerja.index')->with('success','Data Pegawai Berhasil Diubah');
      }
      public function tidakHadir($id){
         Pegawai::find($id)->update([
             'kehadiran' => 'Pulang'
         ]);
-        return redirect()->route('penggilingan.tenaga_kerja.index')->with('success','Data Pegawai Berhasil Diubah');
+        return redirect()->route('tenaga_kerja.index')->with('success','Data Pegawai Berhasil Diubah');
 }
 }

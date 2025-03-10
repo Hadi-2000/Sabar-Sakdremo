@@ -11,7 +11,7 @@
     </div>
 @endif
 <div>
-    <form action="{{ route('penggilingan.tenaga_kerja.create.proses') }}" method="post">
+    <form action="{{ route('tenaga_kerja.store') }}" method="post">
         @csrf
         <!-- Input Nama -->
         <div class="mb-3">

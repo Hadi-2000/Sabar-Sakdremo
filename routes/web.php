@@ -50,55 +50,30 @@ Route::get('/dashboard/laporan/stock', [ViewController::class, 'viewLaporanStock
 
 //tampilan penggilingan
 //tampilan pelanggan
-Route::get('/dashboard/penggilingan/pelanggan', [PelangganController::class, 'index'])->name('penggilingan.pelanggan.index');
-Route::get('/dashboard/penggilingan/pelanggan/search', [PelangganController::class, 'search'])->name('penggilingan.pelanggan.search');
-Route::get('/dashboard/penggilingan/pelanggan/create', [PelangganController::class, 'create'])->name('penggilingan.pelanggan.create');
-Route::post('/dashboard/penggilingan/pelanggan/create/proses', [PelangganController::class, 'store'])->name('penggilingan.pelanggan.create.proses');
-Route::get('/dashboard/penggilingan/pelanggan/update/{id}', [PelangganController::class, 'indexUpdate'])->name('penggilingan.pelanggan.update');
-Route::put('/dashboard/penggilingan/pelanggan/update/{id}', [PelangganController::class, 'update'])->name('penggilingan.pelanggan.update.proses');
-Route::delete('/dashboard/penggilingan/pelanggan/delete/{id}', [PelangganController::class, 'destroy'])->name('penggilingan.pelanggan.destroy');
+Route::resource('/penggilingan/pelanggan', PelangganController::class)->except(['show']);
+Route::get('/pelanggan/search', [PelangganController::class, 'search'])->name('penggilingan.pelanggan.search');
 
 //tenga kerja list
-Route::get('/dashboard/penggilingan/tenaga_kerja', [PegawaiController::class, 'index'])->name('penggilingan.tenaga_kerja.index');
-Route::get('/dashboard/penggilingan/tenaga_kerja/search',[PegawaiController::class, 'search'])->name('penggilingan.tenaga_kerja.search');
-Route::get('/dashboard/penggilingan/tenaga_kerja/create', [PegawaiController::class, 'create'])->name('penggilingan.tenaga_kerja.create');
-Route::post('/dashboard/penggilingan/tenaga_kerja/create/proses', [PegawaiController::class,'store'])->name('penggilingan.tenaga_kerja.create.proses');
-Route::get('/dashboard/penggilingan/tenaga_kerja/update/{id}', [PegawaiController::class, 'indexUpdate'])->name('penggilingan.tenaga_kerja.update');
-Route::put('/dashboard/penggilingan/tenaga_kerja/update/{id}', [PegawaiController::class, 'update'])->name('penggilingan.tenaga_kerja.update.proses');
-Route::delete('/dashboard/penggilingan/tenaga_kerja/delete/{id}', [PegawaiController::class, 'destroy'])->name('penggilingan.tenaga_kerja.destroy');
-Route::get('/dashboard/penggilingan/tenaga_kerja/hadir/{id}', [PegawaiController::class, 'hadir'])->name('penggilingan.tenaga_kerja.hadir');
-Route::get('/dashboard/penggilingan/tenaga_kerja/tidak_hadir/{id}', [PegawaiController::class, 'tidakHadir'])->name('penggilingan.tenaga_kerja.tidak_hadir');
+Route::resource('/penggilingan/tenaga_kerja', PegawaiController::class)->except(['show']);
+Route::get('/penggilingan/tenaga_kerja/search',[PegawaiController::class, 'search'])->name('tenaga_kerja.search');
+Route::get('/penggilingan/tenaga_kerja/hadir/{id}', [PegawaiController::class, 'hadir'])->name('penggilingan.tenaga_kerja.hadir');
+Route::get('/penggilingan/tenaga_kerja/tidak_hadir/{id}', [PegawaiController::class, 'tidakHadir'])->name('penggilingan.tenaga_kerja.tidak_hadir');
 
 //penitipan
-Route::get('/dashboard/penggilingan/penitipan', [PenitipanBarangController::class, 'index'])->name('penggilingan.penitipan.index');
+Route::resource('/penggilingan/penitipan', PenitipanBarangController::class)->except(['show']);
 Route::get('/dashboard/penggilingan/penitipan/search', [PenitipanBarangController::class, 'search'])->name('penggilingan.penitipan.search');
-Route::get('/dashboard/penggilingan/penitipan/create', [PenitipanBarangController::class, 'create'])->name('penggilingan.penitipan.create');
 Route::get('/dashboard/penggilingan/penitipan/create/cek-pelanggan', [PenitipanBarangController::class, 'cekPelanggan'])->name('penggilingan.penitipan.create.cek-pelanggan');
 Route::get('/dashboard/penggilingan/penitipan/create/cek-auto', [PenitipanBarangController::class, 'cekAuto'])->name('penggilingan.penitipan.create.cek-auto');
-Route::post('/dashboard/penggilingan/penitipan/create/proses', [PenitipanBarangController::class, 'store'])->name('penggilingan.penitipan.create.proses');
-Route::get('/dashboard/penggilingan/penitipan/update/{id}', [PenitipanBarangController::class, 'indexUpdate'])->name('penggilingan.penitipan.update');
-Route::put('/dashboard/penggilingan/penitipan/update/{id}', [PenitipanBarangController::class, 'update'])->name('penggilingan.penitipan.update.proses');
-Route::delete('/dashboard/penggilingan/penitipan/delete/{id}', [PenitipanBarangController::class, 'destroy'])->name('penggilingan.penitipan.destroy');
 
 //Aset
-Route::get('/dashboard/penggilingan/aset', [AsetController::class, 'index'])->name('penggilingan.aset.index');
+Route::resource('/penggilingan/aset', AsetController::class)->except(['show']);
 Route::get('/dashboard/penggilingan/aset/search', [AsetController::class,'search'])->name('penggilingan.aset.search');
-Route::get('/dashboard/penggilingan/aset/create', [AsetController::class, 'create'])->name('penggilingan.aset.create');
-Route::post('/dashboard/penggilingan/aset/create/proses', [AsetController::class,'store'])->name('penggilingan.aset.create.proses');
-Route::get('/dashboard/penggilingan/aset/update/{id}', [AsetController::class, 'edit'])->name('penggilingan.aset.update');
-Route::put('/dashboard/penggilingan/aset/update/{id}', [AsetController::class, 'update'])->name('penggilingan.aset.update.proses');
-Route::delete('/dashboard/penggilingan/aset/delete/{id}', [AsetController::class, 'destroy'])->name('penggilingan.aset.destroy');
 
 //stock
-Route::get('/dashboard/penggilingan/stock', [StockController::class, 'index'])->name('penggilingan.stock.index');
+Route::resource('/penggilingan/stock', StockController::class)->except(['show']);
 Route::get('/dashboard/penggilingan/stock/search', [StockController::class,'search'])->name('penggilingan.stock.search');
-Route::get('/dashboard/penggilingan/stock/create', [StockController::class, 'create'])->name('penggilingan.stock.create');
-Route::post('/dashboard/penggilingan/stock/create/proses', [StockController::class,'store'])->name('penggilingan.stock.create.proses');
 Route::get('/dashboard/penggilingan/stock/create/cek', [StockController::class, 'cek'])->name('penggilingan.stock.create.cek');
 Route::get('/dashboard/penggilingan/stock/create/cek-auto', [StockController::class, 'cekAuto'])->name('penggilingan.stock.create.cek-auto');
-Route::get('/dashboard/penggilingan/stock/update/{id}', [StockController::class, 'edit'])->name('penggilingan.stock.update');
-Route::put('/dashboard/penggilingan/stock/update/{id}', [StockController::class, 'update'])->name('penggilingan.stock.update.proses');
-Route::delete('/dashboard/penggilingan/stock/delete/{id}', [StockController::class, 'destroy'])->name('penggilingan.stock.destroy');
 
 //tampilan penggilingan
 Route::get('/dashboard/penggilingan/mesin', [ViewController::class, 'viewPenggilinganMesin']);

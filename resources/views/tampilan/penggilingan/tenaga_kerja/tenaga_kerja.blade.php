@@ -6,11 +6,11 @@
     <h1>Manajemen Penggilingan Tenaga Kerja</h1>
 </div>
 <div class="row">
-            <form action="{{route('penggilingan.tenaga_kerja.search')}}" class="d-flex utang-search mb-3" role="search">
+            <form action="{{route('tenaga_kerja.search')}}" class="d-flex utang-search mb-3" role="search">
                 <input class="form-control me-2" id="query" name="query" type="search" placeholder="Search" aria-label="Search">
                 <button class="btn btn-outline-success" type="submit">Search</button>
             </form>
-            <a href="{{route('penggilingan.tenaga_kerja.create')}}"> + Tambah Data</a>
+            <a href="{{route('tenaga_kerja.create')}}"> + Tambah Data</a>
             @if (session('error'))
                 <div class="alert alert-danger" role="alert">
                     {{ session('error') }}
@@ -43,7 +43,7 @@
                             <td>{{$p->status}}</td>
                             <td>
                                 @if ($p->kehadiran == 'Tidak Hadir')
-                                    <a class="btn btn-primary" href="{{route('penggilingan.tenaga_kerja.hadir',$p->id)}}">Masuk</a>
+                                    <a class="btn btn-primary" href="{{route('penggilingan.tenaga_kerja.hadir',$p->id)}}">Hadir</a>
                                 @elseif($p->kehadiran == 'Hadir')
                                     <a class="btn btn-danger" href="{{route('penggilingan.tenaga_kerja.tidak_hadir', $p->id)}}">Pulang</a>
                                 @else
@@ -52,8 +52,8 @@
                             </td>
                             <td>{{"Rp. ".number_format($p->gaji)}}</td>
                             <td>
-                                <a class="btn btn-primary" href="{{route('penggilingan.tenaga_kerja.update', $p->id)}}">Edit</a> ||
-                                <form method="POST" action="{{route('penggilingan.tenaga_kerja.destroy', $p->id)}}" style="display: inline;">
+                                <a class="btn btn-primary" href="{{route('tenaga_kerja.edit', $p->id)}}">Edit</a> ||
+                                <form method="POST" action="{{route('tenaga_kerja.destroy', $p->id)}}" style="display: inline;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger">Hapus</button>

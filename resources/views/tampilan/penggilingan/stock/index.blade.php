@@ -25,7 +25,7 @@
                 </div>
             </form>
             <div class="col-md-6">
-                <a href="{{route('penggilingan.stock.create')}}" class="btn btn-success">+ Tambah Data</a>
+                <a href="{{route('stock.create')}}" class="btn btn-success">+ Tambah Data</a>
             </div>
             <div class="table-responsive">
                 <table class="table table-bordered mt-3">
@@ -48,8 +48,8 @@
                                 <td>{{ number_format($s->harga_satuan) }}</td>
                                 <td>{{ number_format($s->total) }}</td>
                                 <td class="d-flex">
-                                    <a href="{{route('penggilingan.stock.update', $s->id)}}" class="btn btn-warning me-2">Edit</a>
-                                    <form action="{{route('penggilingan.stock.destroy', $s->id)}}" method="post" style="display: inline">
+                                    <a href="{{route('stock.edit', $s->id)}}" class="btn btn-warning me-2">Edit</a>
+                                    <form action="{{route('stock.destroy', $s->id)}}" method="post" style="display: inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger">Hapus</button>

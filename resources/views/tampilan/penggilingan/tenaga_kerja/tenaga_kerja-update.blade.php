@@ -10,7 +10,7 @@
     </div>
 @endif
 <div>
-    <form action="{{ route('penggilingan.tenaga_kerja.update.proses', $pegawai->id) }}" method="post">
+    <form action="{{ route('tenaga_kerja.update', $pegawai->id) }}" method="post">
         @csrf
         @method('PUT')
         <!-- Input Nama -->

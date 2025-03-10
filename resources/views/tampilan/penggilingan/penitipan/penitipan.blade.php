@@ -21,7 +21,7 @@
                 <input class="form-control me-2" name="query" id="query" type="search" placeholder="Search" aria-label="Search">
                 <button class="btn btn-outline-success" type="submit">Search</button>
             </form>
-            <a href="{{route('penggilingan.penitipan.create')}}"> + Tambah Data</a>
+            <a href="{{route('penitipan.create')}}"> + Tambah Data</a>
             <table class="table table-bordered mt-3">
                 <thead>
                     <tr>
@@ -42,8 +42,8 @@
                                 <td>{{$p->status}}</td>
                                 <td>{{$p->barang}}</td>
                                 <td>{{number_format($p->jumlah)}}</td>
-                                <td><a class="btn btn-primary" href="{{route('penggilingan.penitipan.update', $p->id)}}">Update</a> ||
-                                    <form method="POST" action="{{route('penggilingan.penitipan.destroy', $p->id)}}" style="display: inline;">
+                                <td><a class="btn btn-primary" href="{{route('penitipan.edit', $p->id)}}">Update</a> ||
+                                    <form method="POST" action="{{route('penitipan.destroy', $p->id)}}" style="display: inline;">
                                         @csrf
                                         @method('DELETE')
                                         <button class="btn btn-danger">Hapus</button>

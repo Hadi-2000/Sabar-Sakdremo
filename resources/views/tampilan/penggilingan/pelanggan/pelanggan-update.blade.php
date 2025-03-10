@@ -3,7 +3,7 @@
 @section('container')
     <div class="judul-container">Tambah Pelanggan</div>
     <div>
-        <form action="{{ route('penggilingan.pelanggan.update.proses', $pelanggan->id) }}" method="post">
+        <form action="{{ route('pelanggan.update', $pelanggan->id) }}" method="post">
             @csrf
             @method('PUT')
             <div class="mb-3">

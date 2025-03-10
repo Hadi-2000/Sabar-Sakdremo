@@ -11,7 +11,7 @@
     </div>
 @endif
 <div>
-    <form action="{{ route('penggilingan.stock.create.proses') }}" method="post">
+    <form action="{{ route('stock.store') }}" method="post">
         @csrf
         <!-- Input Nama -->
         <div class="mb-3">

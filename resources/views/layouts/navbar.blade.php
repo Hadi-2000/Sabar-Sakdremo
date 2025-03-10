@@ -28,9 +28,9 @@
                       Penggilingan
                     </button>
                     <ul class="dropdown-menu">
-                      <li><a class="dropdown-item" href="/dashboard/penggilingan/tenaga_kerja">Tenaga Kerja</a></li>
-                      <li><a class="dropdown-item" href="/dashboard/penggilingan/aset">Produk</a></li>
-                      <li><a class="dropdown-item" href="/dashboard/penggilingan/stock">Stock</a></li>
+                      <li><a class="dropdown-item" href="{{route('tenaga_kerja.index')}}">Tenaga Kerja</a></li>
+                      <li><a class="dropdown-item" href="{{route('aset.index')}}">Produk</a></li>
+                      <li><a class="dropdown-item" href="{{route('stock.index')}}">Stock</a></li>
                       <li><a class="dropdown-item" href="/dashboard/penggilingan/mesin">Mesin</a></li>
                       <li><a class="dropdown-item" href="/dashboard/penggilingan/perbaikan">Perbaikan Mesin</a></li>
                     </ul>
@@ -42,8 +42,8 @@
                       Pelanggan
                     </button>
                     <ul class="dropdown-menu">
-                      <li><a class="dropdown-item" href="/dashboard/penggilingan/pelanggan">Pelanggan</a></li>
-                      <li><a class="dropdown-item" href="/dashboard/penggilingan/penitipan">Penitipan</a></li>
+                      <li><a class="dropdown-item" href="{{route('pelanggan.index')}}">Pelanggan</a></li>
+                      <li><a class="dropdown-item" href="{{route('penitipan.index')}}">Penitipan</a></li>
                     </ul>
                   </li>
 

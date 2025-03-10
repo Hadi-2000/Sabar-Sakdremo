@@ -60,13 +60,13 @@ class PelangganController extends Controller
             'no_telepon' => $data['no_telepon'] ?? '',
         ]);
 
-        return redirect()->route('penggilingan.pelanggan.index')->with('success','Data pelanggan berhasil ditambahkan');
+        return redirect()->route('pelanggan.index')->with('success','Data pelanggan berhasil ditambahkan');
     }
 
-    public function indexUpdate($id){
+    public function edit($id){
         $pelanggan = Pelanggan::find($id);
         if ($pelanggan === null) {
-            return redirect()->route('penggilingan.pelanggan.index')->with('error', 'Data pelanggan tidak ditemukan.');
+            return redirect()->route('pelanggan.index')->with('error', 'Data pelanggan tidak ditemukan.');
         }
         return view('tampilan.penggilingan.pelanggan.pelanggan-update', compact('pelanggan'));
     }
@@ -76,8 +76,12 @@ class PelangganController extends Controller
     public function update(UpdatepelangganRequest $request, $id)
     {
         $data = $request->validated();
-        $cek = Pelanggan::where('nama',$data['nama'])->orWhere('alamat',$data['alamat'])->first();
-        
+        $cek = Pelanggan::where('id', '!=', $id)
+        ->where(function ($query) use ($data) {
+            $query->where('nama', $data['nama'])
+                ->orWhere('alamat', $data['alamat']);
+        })->first();
+
       if($cek){
             return back()->with('error', 'Nama dan alamat pelanggan sudah dipakai.');
         }
@@ -87,7 +91,7 @@ class PelangganController extends Controller
             'no_telepon' => $data['no_telepon']?? '',
         ]);
 
-        return redirect()->route('penggilingan.pelanggan.index')->with('success','Data pelanggan berhasil diubah');
+        return redirect()->route('pelanggan.index')->with('success','Data pelanggan berhasil diubah');
     }
     /**
      * Remove the specified resource from storage.
@@ -95,6 +99,6 @@ class PelangganController extends Controller
     public function destroy($id)
     {
         Pelanggan::find($id)->delete();
-        return redirect()->route('penggilingan.pelanggan.index')->with('success','Data pelanggan berhasil dihapus');
+        return redirect()->route('pelanggan.index')->with('success','Data pelanggan berhasil dihapus');
     }
 }

@@ -11,7 +11,7 @@
     </div>
 @endif
 <div>
-    <form action="{{ route('penggilingan.aset.update', $produk->id) }}" method="post">
+    <form action="{{ route('aset.update', $produk->id) }}" method="post">
         @csrf
         @method('PUT')
         <!-- Input Nama -->

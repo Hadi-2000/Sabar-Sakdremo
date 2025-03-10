@@ -110,13 +110,13 @@ class PenitipanBarangController extends Controller
             'jumlah' => $jumlah, // Tidak perlu ?? '0', karena selalu ada nilai
             'status' => 'Menitipkan'
         ]);     
-        return redirect()->route('penggilingan.penitipan.index')->with('success', 'Data penitipan berhasil disimpan');
+        return redirect()->route('penitipan.index')->with('success', 'Data penitipan berhasil disimpan');
     }
 
     /**
      * Display the specified resource.
      */
-    public function indexUpdate($id)
+    public function edit($id)
     {
         $penitipan = PenitipanBarang::find($id);
         if (!$penitipan) {
@@ -142,7 +142,7 @@ class PenitipanBarangController extends Controller
                'status' => $data['status'],
             ]);
     }
-    return redirect()->route('penggilingan.penitipan.index')->with('success', 'Data penitipan berhasil diupdate');
+    return redirect()->route('penitipan.index')->with('success', 'Data penitipan berhasil diupdate');
 }
 
     /**
@@ -153,6 +153,6 @@ class PenitipanBarangController extends Controller
         $penitipan = PenitipanBarang::find($id);
         $penitipan->delete();
 
-        return redirect()->route('penggilingan.penitipan.index')->with('success', 'Data penitipan berhasil dihapus');
+        return redirect()->route('penitipan.index')->with('success', 'Data penitipan berhasil dihapus');
     }
 }

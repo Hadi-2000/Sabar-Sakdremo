@@ -11,7 +11,7 @@
     </div>
 @endif
 <div>
-    <form action="{{ route('penggilingan.aset.create.proses') }}" method="post">
+    <form action="{{ route('aset.store') }}" method="post">
         @csrf
         <!-- Input Nama -->
         <div class="mb-3">
@@ -32,7 +32,7 @@
             <label for="satuan">Satuan</label>
             <select class="form-select" id="satuan" name="satuan" required>
                 <option value="">Pilih Satuan</option>
-                <option value="kg">Kilogram</option>
+                <option value="Kg">Kilogram</option>
                 <option value="Liter">Liter</option>
                 <option value="Buah">Buah</option>
             </select>

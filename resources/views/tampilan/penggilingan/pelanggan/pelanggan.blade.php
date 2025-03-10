@@ -9,7 +9,7 @@
     <input class="form-control me-2" id="query" name="query" type="search" placeholder="Search" aria-label="Search">
     <button class="btn btn-outline-success" type="submit">Search</button>
 </form>
-<a href="{{route('penggilingan.pelanggan.create')}}"> + Tambah Data</a>
+<a href="{{route('pelanggan.create')}}"> + Tambah Data</a>
 @if(session('success'))
         <p class="alert alert text-center">
             {{ session('success') }}
@@ -36,10 +36,10 @@
                 <td>{{$p->nama}}</td>
                 <td>{{$p->alamat}}</td>
                 <td>{{$p->no_telepon}}</td>
-                <td><a href="{{route('penggilingan.pelanggan.update', $p->id)}}">
+                <td><a href="{{route('pelanggan.edit', $p->id)}}">
                         <button class="btn btn-primary">Edit</button>
                     </a> |
-                    | <form method="POST" action="{{route('penggilingan.pelanggan.destroy', $p->id)}}" style="display: inline;">
+                    | <form method="POST" action="{{route('pelanggan.destroy', $p->id)}}" style="display: inline;">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-danger">Hapus</button>

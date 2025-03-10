@@ -8,7 +8,7 @@
         </div>
     @endif
     <div>
-        <form action="{{ route('penggilingan.pelanggan.create.proses') }}" method="post">
+        <form action="{{ route('pelanggan.store') }}" method="post">
             @csrf
             <div class="mb-3">
                 <label for="nama">Nama</label>

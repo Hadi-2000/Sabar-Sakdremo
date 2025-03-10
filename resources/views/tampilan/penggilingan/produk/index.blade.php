@@ -21,7 +21,7 @@
                     <input class="form-control me-2" name="query" id="query" type="search" placeholder="Search" aria-label="Search">
                     <button class="btn btn-outline-success" type="submit">Search</button>
                 </form>
-                <a href="{{route('penggilingan.aset.create')}}"> + Tambah Data</a>
+                <a href="{{route('aset.create')}}"> + Tambah Data</a>
                 <div class="table-responsive">
                 <table class="table table-bordered table-striped mt-3">
                     <thead>
@@ -42,8 +42,8 @@
                                     <td>{{ number_format($p->jumlah ?? 0) . " " . ($p->satuan ?? '') }}</td>
                                     <td>{{$p->deskripsi}}</td>
                                     <td class="d-flex m-1">
-                                        <a class="btn btn-primary me-1" href="{{route('penggilingan.aset.update', $p->id)}}">Update</a>
-                                        <form method="POST" action="{{route('penggilingan.aset.destroy', $p->id)}}" style="display: inline;">
+                                        <a class="btn btn-primary me-1" href="{{route('aset.edit', $p->id)}}">Update</a>
+                                        <form method="POST" action="{{route('aset.destroy', $p->id)}}" style="display: inline;">
                                             @csrf
                                             @method('DELETE')
                                             <button class="btn btn-danger">Hapus</button>

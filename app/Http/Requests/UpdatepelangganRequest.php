@@ -26,8 +26,6 @@ class UpdatepelangganRequest extends FormRequest
             'nama' => 'required|string|max:100',
             'alamat' => 'nullable|string|max:255',
             'no_telepon' => ['nullable', new ValidePhoneNumber()],
-            'utangPiutang'=> 'nullable|string',
-            'total'=> ['nullable', 'numeric', 'regex:/^\d{1,13}(\.\d{1,2})?$/'],
         ];
     }
 }

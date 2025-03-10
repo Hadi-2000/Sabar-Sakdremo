@@ -48,7 +48,7 @@ class AsetController extends Controller
             $produk = Aset::orderBy('nama')->paginate(10);
         }
         if ($produk->isEmpty()) {
-            return redirect()->route('penggilingan.produk.index')->with('error', 'Data Tidak Ada.');
+            return redirect()->route('aset.index')->with('error', 'Data Tidak Ada.');
         }
 
         return view('tampilan.penggilingan.produk.index', compact('produk','query'));
@@ -74,7 +74,7 @@ class AsetController extends Controller
             'deskripsi' => $data['deskripsi'],
             'jumlah' => $jumlah,
         ]);
-        return redirect()->route('penggilingan.aset.index')->with('success', 'Data Berhasil Ditambahkan.');
+        return redirect()->route('aset.index')->with('success', 'Data Berhasil Ditambahkan.');
     }
 
     /**
@@ -84,7 +84,7 @@ class AsetController extends Controller
     {
         $produk = Aset::find($id);
         if ($produk === null) {
-            return redirect()->route('penggilingan.aset.index')->with('error', 'Data Aset Tidak Ditemukan.');
+            return redirect()->route('aset.index')->with('error', 'Data Aset Tidak Ditemukan.');
         }
         return view('tampilan.penggilingan.produk.update', compact('produk'));
     }
@@ -97,7 +97,7 @@ class AsetController extends Controller
         $data = $request->validated();
         $aset = Aset::find($id);
         if ($aset === null) {
-            return redirect()->route('penggilingan.aset.index')->with('error', 'Data Aset Tidak Ditemukan.');
+            return redirect()->route('aset.index')->with('error', 'Data Aset Tidak Ditemukan.');
         }
         $jumlah = str_replace('.','',$data['jumlah']);
         $aset->update([
@@ -105,7 +105,7 @@ class AsetController extends Controller
             'deskripsi' => $data['deskripsi'],
             'jumlah' => $jumlah,
         ]);
-        return redirect()->route('penggilingan.aset.index')->with('success', 'Data Berhasil Diubah.');
+        return redirect()->route('aset.index')->with('success', 'Data Berhasil Diubah.');
     }
 
     /**
@@ -115,9 +115,9 @@ class AsetController extends Controller
     {
         $aset = Aset::find($id);
         if ($aset === null) {
-            return redirect()->route('penggilingan.aset.index')->with('error', 'Data Aset Tidak Ditemukan.');
+            return redirect()->route('aset.index')->with('error', 'Data Aset Tidak Ditemukan.');
         }
         $aset->delete();
-        return redirect()->route('penggilingan.aset.index')->with('success', 'Data Berhasil Dihapus.');
+        return redirect()->route('aset.index')->with('success', 'Data Berhasil Dihapus.');
     }
 }
