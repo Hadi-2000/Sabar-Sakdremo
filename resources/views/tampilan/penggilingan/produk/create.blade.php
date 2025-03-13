@@ -37,6 +37,10 @@
                 <option value="Buah">Buah</option>
             </select>
         </div>
+        <div class="mb-3">
+            <label for="harga_satuan">Harga Satuan</label>
+            <input class="form-control" type="text" name="harga_satuan" id="harga_satuan" placeholder="Masukan Harga Per Satuan Produk">
+        </div>
         <!-- Submit -->
         <button type="submit" class="btn btn-primary">Submit</button>
     </form>

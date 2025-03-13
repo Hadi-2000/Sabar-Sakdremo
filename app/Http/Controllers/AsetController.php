@@ -73,6 +73,8 @@ class AsetController extends Controller
             'nama' => $data['nama'],
             'deskripsi' => $data['deskripsi'],
             'jumlah' => $jumlah,
+            'satuan' => $data['satuan'],
+            'harga_satuan' =>$data['harga_satuan']
         ]);
         return redirect()->route('aset.index')->with('success', 'Data Berhasil Ditambahkan.');
     }
@@ -104,6 +106,8 @@ class AsetController extends Controller
             'nama' => $data['nama'],
             'deskripsi' => $data['deskripsi'],
             'jumlah' => $jumlah,
+            'satuan' => $data['satuan'],
+            'harga_satuan' =>$data['harga_satuan']
         ]);
         return redirect()->route('aset.index')->with('success', 'Data Berhasil Diubah.');
     }

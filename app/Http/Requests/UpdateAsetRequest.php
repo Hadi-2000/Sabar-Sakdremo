@@ -26,6 +26,7 @@ class UpdateAsetRequest extends FormRequest
             'deskripsi' => 'required|string|min:2',
             'satuan' => 'required|string|min:1',
             'jumlah' => 'required|string|min:1',
+            'harga_satuan' => 'required|string|min:1'
         ];
     }
 }

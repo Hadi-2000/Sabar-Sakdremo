@@ -45,11 +45,24 @@
                                 <td>{{ $s->created_at }}</td>
                                 <td>{{ $s->nama }}</td>
                                 <td>{{ $s->stock }}</td>
-                                <td>{{ number_format($s->harga_satuan) }}</td>
-                                <td>{{ number_format($s->total) }}</td>
+
+                                @php
+                                    // Cari produk yang sesuai dengan nama stock
+                                    $produkItem = $produk->firstWhere('nama', $s->nama);
+                                @endphp
+
+                                <td>
+                                    @if ($produkItem)
+                                        Rp. {{ number_format($produkItem->harga_satuan) }}
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+
+                                <td>Rp. {{ number_format($s->total) }}</td>
                                 <td class="d-flex">
-                                    <a href="{{route('stock.edit', $s->id)}}" class="btn btn-warning me-2">Edit</a>
-                                    <form action="{{route('stock.destroy', $s->id)}}" method="post" style="display: inline">
+                                    <a href="{{ route('stock.edit', $s->id) }}" class="btn btn-warning me-2">Edit</a>
+                                    <form action="{{ route('stock.destroy', $s->id) }}" method="post" style="display: inline">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-danger">Hapus</button>
@@ -57,18 +70,21 @@
                                 </td>
                             </tr>
                         @endforeach
+
                         @if($stock->isEmpty())
                             <tr>
                                 <td colspan="6" class="text-center">Data Tidak Ditemukan</td>
                             </tr>
                         @endif
-                        </tbody>
-                    </table>
-                    <div class="d-flex justify-content-center">
-                        {{ $stock->links() }}
-                    </div>
+                    </tbody>
+                </table>
+
+                <div class="d-flex justify-content-center">
+                    {{ $stock->links() }}
+                </div>
+            </div>
         </div>
     </div>
-    <script src="{{asset('js/dashboard.js')}}"></script>
 
+    <script src="{{ asset('js/dashboard.js') }}"></script>
 @endsection

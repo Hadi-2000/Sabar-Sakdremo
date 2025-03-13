@@ -16,10 +16,10 @@
         <!-- Input Nama -->
         <div class="mb-3">
             <label for="nama">Nama Produk</label>
-            <select name="nama" id="nama">
+            <select name="nama" id="nama" class="form-control">
                 <option value="">Pilih Produk</option>
                 @foreach($produk as $p)
-                    <option value="{{$p->id }}">{{ $p->nama }}</option>
+                    <option value="{{$p->nama }}">{{ $p->nama }}</option>
                 @endforeach
             </select>
         </div>
@@ -35,9 +35,5 @@
 </div>
 <div>
     <script type="text/javascript" src="{{asset('js/formatUangInput.js')}}"></script>
-    <script type="text/javascript">
-        const urlSearch = {{route('penggilingan.stock.create.cek')}};
-        const urlAuto = {{route('penggilingan.stock.create.auto')}};
-    </script>
 </div>
 @endsection

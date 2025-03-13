@@ -11,32 +11,27 @@
     </div>
 @endif
 <div>
-    <form action="{{ route('aset.update', $produk->id) }}" method="post">
+    <form action="{{ route('stock.update', $stock->id) }}" method="post">
         @csrf
         @method('PUT')
         <!-- Input Nama -->
         <div class="mb-3">
             <label for="nama">Nama Produk</label>
-            <input type="text" class="form-control" id="nama" name="nama" required value="{{$produk->nama}}" placeholder="Masukan Nama Produk">
-        </div>
-        <!-- Input Alamat -->
-        <div class="mb-3">
-            <label for="deskripsi">Deskripsi</label>
-            <textarea type="text" class="form-control" id="deskripsi" name="deskripsi" required placeholder="Masukan Alamat">{{$produk->deskripsi}}</textarea>
-        </div>
-        <div class="mb-3">
-            <label for="jumlah">Jumlah Produk</label>
-            <input type="hidden" name="jumlah_hidden" id="jumlah_hidden"> 
-            <input type="text" class="form-control" id="jumlah" name="jumlah" value="{{$produk->jumlah}}" oninput="formatUangInput(this)" placeholder="Masukan jumlah Produk">
-        </div>
-        <div class="mb-3">
-            <label for="satuan">Satuan</label>
-            <select class="form-select" id="satuan" name="satuan" required>
-                <option value="">Pilih Satuan</option>
-                <option value="Kg" {{$produk->satuan == 'Kg' ? 'selected' : ''}}>Kilogram</option>
-                <option value="Liter" {{$produk->satuan == 'Liter' ? 'selected' : ''}}>Liter</option>
-                <option value="Buah" {{$produk->satuan == 'Buah' ? 'selected' : ''}}>Buah</option>
+            <select name="nama" id="nama" class="form-control">
+                <option value="">Pilih Produk</option>
+                @foreach($produk as $p)
+                    <option value="{{$p->nama}}" 
+                        @if($stock->nama == $p->nama) selected @endif>
+                        {{ $p->nama }}
+                    </option>
+                @endforeach
             </select>
+        </div>
+         <!-- Input Stock -->
+         <div class="mb-3">
+            <label for="jumlah">Jumlah Stock</label>
+            <input type="hidden" name="jumlah_hidden" id="jumlah_hidden"> 
+            <input type="text" class="form-control" value="{{$stock->stock}}" id="jumlah" name="jumlah" oninput="formatUangInput(this)" placeholder="Masukan Jumlah Stock">
         </div>
         <!-- Submit -->
         <button type="submit" class="btn btn-primary">Submit</button>

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use SebastianBergmann\Type\TrueType;
 
 class UpdateStockRequest extends FormRequest
 {
@@ -11,7 +12,7 @@ class UpdateStockRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +23,8 @@ class UpdateStockRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'nama'=> 'required|string|min: 1',
+            'jumlah' => 'required|string|min:2'
         ];
     }
 }

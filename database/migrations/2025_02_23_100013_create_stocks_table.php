@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('product_id');
             $table->string('nama');
             $table->integer('stock');
-            $table->decimal('harga_satuan',15,2);
+            $table->decimal('total', 15, 2);
             $table->timestamps();
         });
     }

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('deskripsi');
             $table->string('jumlah');
             $table->string('satuan');
+            $table->string('harga_satuan');
             $table->timestamps();
         });
     }
