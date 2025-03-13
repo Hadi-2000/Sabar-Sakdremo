@@ -11,7 +11,7 @@ class UpdateMesinRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,8 @@ class UpdateMesinRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'nama' => 'required|string|min:1',
+            'merek' => 'required|string|min:2',
         ];
     }
 }

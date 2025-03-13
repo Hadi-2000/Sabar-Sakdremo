@@ -13,7 +13,8 @@ class MesinController extends Controller
      */
     public function index()
     {
-        //
+        $mesin = Mesin::orderBy('nama_mesin')->paginate(10);
+        return view('tampilan.penggilingan.mesin.index', compact('mesin'));
     }
 
     /**
@@ -21,7 +22,7 @@ class MesinController extends Controller
      */
     public function create()
     {
-        //
+        return view('tampilan.penggilingan.mesin.create');
     }
 
     /**
@@ -29,7 +30,13 @@ class MesinController extends Controller
      */
     public function store(StoreMesinRequest $request)
     {
-        //
+        $data = $request->validated();
+
+        Mesin::create([
+            'nama_mesin' => $data['nama'],
+            'merek_mesin' => $data['merek'],
+        ]);
+        return redirect()->route('mesin.index')->with('success', 'Data Mesin Berhasil Ditambahkan');
     }
 
     /**
@@ -43,24 +50,38 @@ class MesinController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Mesin $mesin)
+    public function edit($id)
     {
-        //
+        $mesin = Mesin::find($id);
+        if ($mesin === null) {
+            return redirect()->route('mesin.index')->with('error', 'Data Mesin Tidak Ditemukan.');
+        }
+        return view('tampilan.penggilingan.mesin.update', compact('mesin'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateMesinRequest $request, Mesin $mesin)
+    public function update(UpdateMesinRequest $request, $id)
     {
-        //
+        $data = $request->validated();
+        $mesin = Mesin::find($id);
+        if ($mesin === null) {
+            return redirect()->route('mesin.index')->with('error', 'Data Mesin Tidak Ditemukan.');
+        }
+        $mesin->update([
+            'nama_mesin' => $data['nama'],
+           'merek_mesin' => $data['merek'],
+        ]);
+        return redirect()->route('mesin.index')->with('success', 'Data Mesin Berhasil Diubah');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Mesin $mesin)
+    public function destroy($id)
     {
-        //
+        Mesin::find($id)->delete();
+        return redirect()->route('mesin.index')->with('success', 'Data Mesin Berhasil Dihapus');
     }
 }

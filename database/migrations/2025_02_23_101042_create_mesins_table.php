@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('mesins', function (Blueprint $table) {
             $table->id();
-            $table->date('tanggal_pembelian');
             $table->string('nama_mesin');
             $table->string('merek_mesin');
             $table->timestamps();

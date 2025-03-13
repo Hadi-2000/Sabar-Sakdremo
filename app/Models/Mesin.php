@@ -9,4 +9,7 @@ class Mesin extends Model
 {
     /** @use HasFactory<\Database\Factories\MesinFactory> */
     use HasFactory;
+
+    protected $table = 'mesins';
+    protected $fillable = ['nama_mesin','merek_mesin'];
 }
