@@ -32,7 +32,7 @@
                       <li><a class="dropdown-item" href="{{route('aset.index')}}">Produk</a></li>
                       <li><a class="dropdown-item" href="{{route('stock.index')}}">Stock</a></li>
                       <li><a class="dropdown-item" href="{{route('mesin.index')}}">Mesin</a></li>
-                      <li><a class="dropdown-item" href="/dashboard/penggilingan/perbaikan">Perbaikan Mesin</a></li>
+                      <li><a class="dropdown-item" href="{{route('perbaikan.index')}}">Perbaikan Mesin</a></li>
                     </ul>
                   </li>
 

@@ -82,9 +82,8 @@ class AsetController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($id)
+    public function edit(Aset $produk)
     {
-        $produk = Aset::find($id);
         if ($produk === null) {
             return redirect()->route('aset.index')->with('error', 'Data Aset Tidak Ditemukan.');
         }
@@ -94,10 +93,9 @@ class AsetController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateAsetRequest $request,$id)
+    public function update(UpdateAsetRequest $request,Aset $aset)
     {
         $data = $request->validated();
-        $aset = Aset::find($id);
         if ($aset === null) {
             return redirect()->route('aset.index')->with('error', 'Data Aset Tidak Ditemukan.');
         }
@@ -115,9 +113,8 @@ class AsetController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(Aset $aset)
     {
-        $aset = Aset::find($id);
         if ($aset === null) {
             return redirect()->route('aset.index')->with('error', 'Data Aset Tidak Ditemukan.');
         }

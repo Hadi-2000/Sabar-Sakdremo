@@ -17,7 +17,11 @@ class PerbaikanFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'id_mesin' => '1',
+            'teknisi' => $this->faker->name(),
+            'keterangan' => $this->faker->sentence(),
+            'biaya' => $this->faker->randomFloat(2, 100000, 5000000),
+            'status' => $this->faker->randomElement(['pending','proses','selesai']),
         ];
     }
 }

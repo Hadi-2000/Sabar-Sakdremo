@@ -5,6 +5,10 @@
     <div class="judul-container">
         <h1>Data Mesin</h1>
     </div>
+    <form action="{{route('penggilingan.mesin.search')}}" method="get" class="d-flex kas-search mb-3" role="search">
+        <input class="form-control me-2" id="query" name="query" type="search" placeholder="Search" aria-label="Search">
+        <button class="btn btn-outline-success" type="submit">Search</button>
+    </form>
     @if (session('error'))
         <div class="alert alert-danger" role="alert">
             {{ session('error') }}

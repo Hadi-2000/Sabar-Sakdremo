@@ -116,9 +116,8 @@ class PenitipanBarangController extends Controller
     /**
      * Display the specified resource.
      */
-    public function edit($id)
+    public function edit(PenitipanBarang $penitipan)
     {
-        $penitipan = PenitipanBarang::find($id);
         if (!$penitipan) {
             return redirect()->back()->with('error', 'Data penitipan tidak ditemukan');
         }
@@ -132,7 +131,7 @@ class PenitipanBarangController extends Controller
     public function update(UpdatePenitipanBarangRequest $request, $id)
     {
         $data = $request->validated();
-        $pelanggan = Pelanggan::find($id);
+        $pelanggan = Pelanggan::findOrFail($id);
         $jumlah = str_replace('.','',$data['jumlah']);
         if($pelanggan){
             $penitipan = PenitipanBarang::where('id_pelanggan',$id);
@@ -148,11 +147,9 @@ class PenitipanBarangController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(PenitipanBarang $penitipan)
     {
-        $penitipan = PenitipanBarang::find($id);
         $penitipan->delete();
-
         return redirect()->route('penitipan.index')->with('success', 'Data penitipan berhasil dihapus');
     }
 }

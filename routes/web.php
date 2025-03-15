@@ -13,6 +13,7 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\MesinController;
 use App\Http\Controllers\UtangPiutangController;
 use App\Http\Controllers\PenitipanBarangController;
+use App\Http\Controllers\PerbaikanController;
 use App\Models\Aset;
 
 //tampilan login log out
@@ -80,8 +81,9 @@ Route::get('/dashboard/penggilingan/stock/create/cek-auto', [StockController::cl
 Route::resource('/penggilingan/mesin', MesinController::class)->except(['show']);
 Route::get('/dashboard/penggilingan/mesin/search', [MesinController::class,'search'])->name('penggilingan.mesin.search');
 
-//tampilan penggilingan
-Route::get('/dashboard/penggilingan/perbaikan', [ViewController::class, 'viewPenggilinganPerbaikan']);
+//perbaikan
+Route::resource('/dashboard/penggilingan/perbaikan', PerbaikanController::class)->except(['show']);
+Route::get('/dashboard/penggilingan/perbaikan/search', [PerbaikanController::class,'search'])->name('penggilingan.perbaikan.search');
 
 //tampilan profil pengguna
 Route::get('/dashboard/profil', [ViewController::class, 'viewProfile']);

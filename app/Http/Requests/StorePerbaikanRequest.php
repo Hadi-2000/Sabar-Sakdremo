@@ -11,7 +11,7 @@ class StorePerbaikanRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,11 @@ class StorePerbaikanRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'nama' => 'required|string|min:1',
+            'mesin' => 'required|string|min:1',
+            'keterangan' => 'required|string|min:2',
+            'status' => 'required|string|min:1',
+            'jumlah' => 'required'
         ];
     }
 }

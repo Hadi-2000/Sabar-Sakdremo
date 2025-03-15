@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Mesin;
+use Illuminate\Http\Request;
 use App\Http\Requests\StoreMesinRequest;
 use App\Http\Requests\UpdateMesinRequest;
 
@@ -50,9 +51,8 @@ class MesinController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($id)
+    public function edit(Mesin $mesin)
     {
-        $mesin = Mesin::find($id);
         if ($mesin === null) {
             return redirect()->route('mesin.index')->with('error', 'Data Mesin Tidak Ditemukan.');
         }
@@ -62,10 +62,9 @@ class MesinController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateMesinRequest $request, $id)
+    public function update(UpdateMesinRequest $request, Mesin $mesin)
     {
         $data = $request->validated();
-        $mesin = Mesin::find($id);
         if ($mesin === null) {
             return redirect()->route('mesin.index')->with('error', 'Data Mesin Tidak Ditemukan.');
         }
@@ -79,9 +78,19 @@ class MesinController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(Mesin $mesin)
     {
-        Mesin::find($id)->delete();
+        $mesin->delete();
         return redirect()->route('mesin.index')->with('success', 'Data Mesin Berhasil Dihapus');
     }
+    public function search(Request $request){
+    $query = $request->query('query');
+    if($query == ''){
+        return redirect()->route('mesin.index');
+    }
+    $mesin = Mesin::where('nama_mesin', 'LIKE', '%'.$query.'%')
+    ->orWhere('merek_mesin','LIKE','%' .$query. '%')
+    ->paginate(10);
+    return view('tampilan.penggilingan.mesin.index', compact('mesin'));
+}
 }

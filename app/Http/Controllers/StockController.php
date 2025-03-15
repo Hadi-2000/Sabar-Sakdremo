@@ -117,9 +117,8 @@ class StockController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit($id)
+    public function edit(Stock $stock)
     {
-        $stock = Stock::findOrFail($id); // Ambil 1 data berdasarkan ID, jika tidak ditemukan langsung error 404
         $produk = Aset::orderBy('nama')->get(); // Ambil semua produk dari tabel Aset
     
         return view('tampilan.penggilingan.stock.update', compact('stock', 'produk'));
@@ -150,9 +149,9 @@ class StockController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(Stock $stock)
     {
-        Stock::destroy($id); // Hapus 1 data berdasarkan ID
+        $stock->delete(); // Hapus 1 data berdasarkan ID
         return redirect()->route('stock.index')->with('success', 'Data berhasil dihapus.');
     }
 }

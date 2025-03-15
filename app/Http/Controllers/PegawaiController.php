@@ -77,19 +77,18 @@ class PegawaiController extends Controller
     /**
      * Display the specified resource.
      */
-    public function edit($id)
+    public function edit(Pegawai $pegawai)
     {
-        $pegawai = Pegawai::find($id);
         return view('tampilan.penggilingan.tenaga_kerja.tenaga_kerja-update', compact('pegawai'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdatePegawaiRequest $request, $id)
+    public function update(UpdatePegawaiRequest $request, Pegawai $pegawai)
     {
         $data = $request->validated();
-        $cek = Pegawai::where('id','!=',$id)
+        $cek = Pegawai::where('id','!=',$pegawai->id)
         ->where('nama',$data['nama'])
         ->where('alamat',$data['alamat'])->first();
 
@@ -97,7 +96,7 @@ class PegawaiController extends Controller
             return back()->with('error','Data Pegawai Sudah Ada');
         }
         $jumlah = str_replace('.','',$data['jumlah_hidden']);
-        Pegawai::find($id)->update([
+        $pegawai->update([
             'nama' => $data['nama'],
             'alamat' => $data['alamat'],
             'no_telp' => $data['no_telp']?? '',
@@ -109,19 +108,19 @@ class PegawaiController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(Pegawai $pegawai)
     {
-        Pegawai::find($id)->delete();
+        $pegawai->delete();
         return redirect()->route('tenaga_kerja.index')->with('success','Data Pegawai Berhasil Dihapus');
     }
-     public function hadir($id){
-        Pegawai::find($id)->update([
+     public function hadir(Pegawai $pegawai){
+        $pegawai->update([
             'kehadiran' => 'Hadir'
         ]);
         return redirect()->route('tenaga_kerja.index')->with('success','Data Pegawai Berhasil Diubah');
      }
-     public function tidakHadir($id){
-        Pegawai::find($id)->update([
+     public function tidakHadir(Pegawai $pegawai){
+        $pegawai->update([
             'kehadiran' => 'Pulang'
         ]);
         return redirect()->route('tenaga_kerja.index')->with('success','Data Pegawai Berhasil Diubah');
