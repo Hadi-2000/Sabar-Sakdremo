@@ -11,7 +11,7 @@
 @endif
         
     <div class="ms-5  me-5 p-4 border rounded shadow w-60">
-      <form action="{{route('keuangan.kas.update.proses', $arus->id)}}" method="POST">
+      <form action="{{route('kas.update', $arus->id)}}" method="POST">
         @csrf
         @method('put')
         <div class="form-group">

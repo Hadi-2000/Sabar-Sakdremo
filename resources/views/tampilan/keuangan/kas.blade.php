@@ -12,13 +12,18 @@
         </form>
         <!-- Button trigger modal -->
     <button type="button" class="btn btn-primary">
-        <a href="/dashboard/keuangan/kas/create"> + Tambah Data</a>
+        <a href="{{route('kas.create')}}"> + Tambah Data</a>
       </button>
-      @if(session('success'))
-        <p class="alert alert text-center">
-            {{ session('success') }}
+      @if (session('error'))
+        <tr class="alert alert-danger text-center">
+            <td colspan="6" class="text-center text-danger">{{ session('error') }}</td>
         </tr>
-     @endif
+        @endif
+        @if (session('success'))
+            <tr class="alert alert-success text-center">
+                <td colspan="6" class="text-center text-success">{{ session('success') }}</td>
+            </tr>
+        @endif
       <table class="table table-bordered mt-3">
         <thead>
             <tr>
@@ -32,12 +37,6 @@
             </tr>
         </thead>
         <tbody>
-            @if (session('error'))
-                <tr class="alert alert-danger text-center">
-                    <td colspan="6" class="text-center text-danger">{{ session('error') }}</td>
-                </tr>
-            @endif
-    
             @if (!$arus->isEmpty())
                 @foreach ($arus as $kas)
                     <tr>
@@ -48,10 +47,10 @@
                         <td>{{ $kas->jenis_transaksi }}</td>
                         <td>{{ "Rp. ".number_format($kas->jumlah, 0, ',', '.') }}</td>
                         <td>
-                          <a href="{{ route('keuangan.kas.update', $kas->id) }}" class="btn btn-primary">
+                          <a href="{{ route('kas.edit', $kas->id) }}" class="btn btn-primary">
                             Edit
                           </a>
-                            <form action="{{ route('keuangan.kas.destroy', $kas->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Apakah anda yakin ingin menghapus data ini?');">
+                            <form action="{{ route('kas.destroy', $kas->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Apakah anda yakin ingin menghapus data ini?');">
                               @csrf
                               @method('DELETE')
                               <button type="submit" class="btn btn-danger">Hapus</button>

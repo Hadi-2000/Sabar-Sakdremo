@@ -17,7 +17,7 @@
                       Keuangan
                     </button>
                     <ul class="dropdown-menu">
-                      <li><a class="dropdown-item" href="/dashboard/keuangan/kas">Kas</a></li>
+                      <li><a class="dropdown-item" href="{{route('kas.index')}}">Kas</a></li>
                       <li><a class="dropdown-item" href="/dashboard/keuangan/utang">UtangPiutang</a></li>
                     </ul>
                   </li>

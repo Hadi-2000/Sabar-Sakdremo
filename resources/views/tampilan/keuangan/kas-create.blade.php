@@ -6,7 +6,7 @@
 </div>
         
     <div class="ms-5  me-5 p-4 border rounded shadow w-60">
-      <form action="{{route('keuangan.kas.create.proses')}}" method="POST">
+      <form action="{{route('kas.store')}}" method="POST">
         @csrf
         <div class="form-group">
           <label for="keterangan">Keterangan</label>

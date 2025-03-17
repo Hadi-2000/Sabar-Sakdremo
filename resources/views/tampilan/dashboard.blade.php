@@ -52,7 +52,7 @@
        <!-- /.Stock -->
           <div class="card stock w-30">
             <div class="card-body">
-              <a href="dashboard/penggilingan/stock">
+              <a href="{{route('stock.index')}}">
               <h5 class="card-title">Total Stock</h5>
               <p class="card-text format" data-saldo="{{ $kasData['Stock']->saldo ?? 0 }}">
                 Rp. {{ number_format($kasData['Stock']->saldo ?? 0, 0, ',', '.') }}

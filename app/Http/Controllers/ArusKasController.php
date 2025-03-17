@@ -16,12 +16,12 @@ class ArusKasController extends Controller
         $arus = ArusKas::latest('created_at')->paginate(10);
         return view('tampilan.keuangan.kas', compact('arus'));
     }
-    public function indexCreate(){
+    public function create(){
         return view('tampilan.keuangan.kas-create');
     }
-    public function indexUpdate($id){
-        $arus = ArusKas::findOrFail($id); // Ambil data sesuai ID
-            return view('tampilan.keuangan.kas-update', compact('arus'));
+    public function edit($id) { 
+        $arus = ArusKas::find($id);
+        return view('tampilan.keuangan.kas-update', compact('arus'));
     }
     public function search(Request $request){
         if (session()->has('error')) {
@@ -48,17 +48,19 @@ class ArusKasController extends Controller
             })
             ->latest('created_at')
             ->paginate(10);
+        }else{
+            $arus = ArusKas::latest('created_at')->paginate(10);
         }
     
         // Jika data kosong, redirect dengan pesan error
         if ($arus->isEmpty()) {
-            return redirect()->route('keuangan.kas.index')->with('error', 'Data tidak ditemukan!');
+            return redirect()->route('kas.index')->with('error', 'Data tidak ditemukan!');
         }
     
         return view('tampilan.keuangan.kas', compact('arus', 'query'));
     }
 
-    public function create(StoreArus_KasRequest $request) {
+    public function store(StoreArus_KasRequest $request) {
         // Validasi input
         $data = $request->validated();
 
@@ -99,13 +101,13 @@ class ArusKasController extends Controller
             'jenis_transaksi' => $data['jenis_transaksi'],
             'jumlah' => $jumlah,
         ]);
-        return redirect()->route('keuangan.kas.index')->with('success', 'Tambah Data berhasil');
+        return redirect()->route('kas.index')->with('success', 'Tambah Data berhasil');
     }
     
     //hapus isi
     public function destroy($id){
+    $param = ArusKas::find($id);
     // Cari data kas berdasarkan idKas dari transaksi
-    $param = ArusKas::findOrFail($id);
     $kasData = Kas::whereIn('jenis_kas',['totalAsset','OnHand','Operasional'])->get()->keyBy('jenis_kas');
 
     if($param->jenis_kas == "OnHand"){
@@ -116,7 +118,7 @@ class ArusKasController extends Controller
 
         $saldoAssetFix = ($param->jenis_transaksi == 'Masuk')
         ? $kasData['totalAsset']->saldo - $param->jumlah
-        : $kasData['totalAsset'] + $param->jumlah;
+        : $kasData['totalAsset']->saldo + $param->jumlah;
 
     } elseif($param->jenis_kas == "Operasional"){
         // Hitung saldo baru
@@ -145,7 +147,8 @@ class ArusKasController extends Controller
     // edit
     public function update(StoreArus_KasRequest $request, $id)
 {
-    $arus = ArusKas::findOrFail($id);
+    // Cari data transaksi berdasarkan id
+    $arus = ArusKas::find($id);
     $kasData = Kas::whereIn('jenis_kas',['totalAsset','OnHand','Operasional'])->get()->keyBy('jenis_kas');
 
     // Validasi input
@@ -189,11 +192,11 @@ class ArusKasController extends Controller
         'idKas' => $idKas, // Pastikan nama kolom benar
         'keterangan' => $data['keterangan'],
         'jenis_kas' => $data['jenis_kas'],
-        'jenis_transaksi' => $transaksi_baru,
+        'jenis_transaksi' => $data['jenis_transaksi'],
         'jumlah' => $jumlah
     ]);
 
-    return redirect()->route('keuangan.kas.index')->with('success', 'Data berhasil diubah!');
+    return redirect()->route('kas.index')->with('success', 'Data berhasil diubah!');
 }
     
     /**
