@@ -59,7 +59,7 @@
                             <td>Rp. {{ number_format($s->total) }}</td>
                             <td class="text-nowrap">
                                 <a href="{{ route('stock.edit', $s->id) }}" class="btn btn-warning btn-sm me-1">Edit</a>
-                                <form action="{{ route('stock.destroy', $s->id) }}" method="post" style="display: inline;">
+                                <form action="{{ route('stock.destroy', $s->id) }}" onsubmit="return confirm('Apakah anda yakin ingin menghapus data ini?')" method="post" style="display: inline;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger btn-sm">Hapus</button>

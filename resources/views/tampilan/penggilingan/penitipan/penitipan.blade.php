@@ -43,7 +43,7 @@
                                 <td>{{$p->barang}}</td>
                                 <td>{{number_format($p->jumlah)}}</td>
                                 <td><a class="btn btn-primary" href="{{route('penitipan.edit', $p->id)}}">Update</a> ||
-                                    <form method="POST" action="{{route('penitipan.destroy', $p->id)}}" style="display: inline;">
+                                    <form method="POST" action="{{route('penitipan.destroy', $p->id)}}" onsubmit="return confirm('Apakah anda ykin ingin menghapus data ini?')" style="display: inline;">
                                         @csrf
                                         @method('DELETE')
                                         <button class="btn btn-danger">Hapus</button>

@@ -51,7 +51,6 @@
                             <td colspan="5" class="text-center">Data Mesin Kosong</td>
                         </tr>
                     @endif
-
                     </tbody>
         </table>
         </div>

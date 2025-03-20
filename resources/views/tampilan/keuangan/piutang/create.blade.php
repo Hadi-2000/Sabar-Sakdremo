@@ -2,11 +2,11 @@
 
 @section('container')
 <div class="judul-container">
-    <h1>Tambah Data Utang atau Piutang</h1>
+    <h1>Tambah Data Utang</h1>
 </div>
 
 <div class="ms-5 me-5 p-4 border rounded shadow w-60">
-    <form action="{{ route('keuangan.utang.create.proses') }}" method="post">
+    <form action="{{ route('piutang.store') }}" method="post">
         @csrf
         <!-- Input Nama Pelanggan -->
         <div class="mb-3">
@@ -30,7 +30,7 @@
                 </select>
             </div>
             <div class="mb-3">
-                <label for="jenis" class="form-label">Dari</label>
+                <label for="ambil" class="form-label">Dari</label>
                 <select class="form-select" id="ambil" name="ambil">
                     <option value="OnHand">OnHand</option>
                     <option value="Operasional">Opeasional</option>
@@ -39,13 +39,20 @@
             </div>
             <div class="mb-3">
                 <label for="keterangan" class="form-label">Keterangan</label>
-                <input type="text" class="form-control" id="keterangan" name="keterangan" placeholder="Masukan keterangan">
+                <textarea type="text" class="form-control" id="keterangan" name="keterangan" placeholder="Masukan keterangan"></textarea>
             </div>
 
             <div class="mb-3">
                 <label for="jumlah" class="form-label">Total (Rp)</label>
                 <input type="hidden" name="jumlah_hidden" id="jumlah_hidden">
                 <input type="text" class="form-control" id="jumlah" name="jumlah" placeholder="Masukan jumlah utang" oninput="formatUangInput(this)">
+            </div>
+            <div class="mb-3">
+                <label for="status" class="form-label">Status</label>
+                <select class="form-select" id="status" name="status">
+                    <option value="Belum Lunas">Belum Lunas</option>
+                    <option value="Lunas">Lunas</option>
+                </select>
             </div>
 
             <button type="submit" class="btn btn-success">Simpan</button>

@@ -12,8 +12,9 @@ class DashboardController extends Controller
     public function viewDashboard()
 {
     // Pastikan user login
-    if (!session()->has('key')) {
-        return redirect()->back()->with('error', 'Anda harus login terlebih dahulu');
+    if (!app('session')->has('user_id')) {
+        redirect()->route('login')->with('error', 'Anda harus login terlebih dahulu')->send();
+        exit; // Pastikan eksekusi berhenti di sini
     }
 
     // Ambil data kas dan jadikan key-nya sebagai jenis_kas

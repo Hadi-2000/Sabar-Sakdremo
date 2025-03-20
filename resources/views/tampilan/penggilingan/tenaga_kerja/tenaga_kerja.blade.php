@@ -43,9 +43,9 @@
                             <td>{{$p->status}}</td>
                             <td>
                                 @if ($p->kehadiran == 'Tidak Hadir')
-                                    <a class="btn btn-primary" href="{{route('penggilingan.tenaga_kerja.hadir',$p->id)}}">Hadir</a>
+                                    <a class="btn btn-primary" href="{{route('penggilingan.tenaga_kerja.hadir',$p->id)}}" onclick="return confirm('Apa pegawai ini benar hadir?')">Hadir</a>
                                 @elseif($p->kehadiran == 'Hadir')
-                                    <a class="btn btn-danger" href="{{route('penggilingan.tenaga_kerja.tidak_hadir', $p->id)}}">Pulang</a>
+                                    <a class="btn btn-danger" href="{{route('penggilingan.tenaga_kerja.tidak_hadir', $p->id)}}" onclick="return confirm('Apa pegawai ini sudah pulang?')">Pulang</a>
                                 @else
                                     <p>Karyawan Telah Pulang</p>
                                 @endif
@@ -53,7 +53,7 @@
                             <td>{{"Rp. ".number_format($p->gaji)}}</td>
                             <td>
                                 <a class="btn btn-primary" href="{{route('tenaga_kerja.edit', $p->id)}}">Edit</a> ||
-                                <form method="POST" action="{{route('tenaga_kerja.destroy', $p->id)}}" style="display: inline;">
+                                <form method="POST" action="{{route('tenaga_kerja.destroy', $p->id)}}" onsubmit="return confirm('Apakah anda yakin ingin menghapus data ini?')" style="display: inline;">
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn btn-danger">Hapus</button>

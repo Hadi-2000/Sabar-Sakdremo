@@ -2,7 +2,7 @@
 
 @section('container')
 <div class="judul-container">
-    <h1>Manajemen Laporan Utang Piutang</h1>
+    <h1>Manajemen Laporan Utang</h1>
 </div>
 <!-- Function -->
 <script src="{{ asset('js/dashboard.js') }}"></script>
@@ -13,7 +13,7 @@
         <input class="form-control me-2" name="query" id="query" type="search" placeholder="Search" aria-label="Search" value="{{request('query')}}">
         <button class="btn btn-outline-success" type="submit">Search</button>
     </form>
-    <a href="/dashboard/keuangan/utang/create"> + Tambah Data</a>
+    <a href="{{route('utang.create')}}"> + Tambah Data</a>
     @if(session('success'))
         <p class="alert alert text-center">
             {{ session('success') }}
@@ -26,7 +26,7 @@
                 <th>Nama</th>
                 <th>Alamat</th>
                 <th>Jumlah</th>
-                <th>Status</th>
+                <th>Status Lunas</th>
                 <th>Jenis</th>
                 <th>Aksi</th>
             </tr>
@@ -46,13 +46,20 @@
                         <td>Rp. {{number_format($item->nominal)}}</td>
                         <td>{{$item->status}}</td>
                         <td>{{$item->jenis}}</td>
-                        <td><a href="#">Lunas</a> ||
-                            <a href="#">Nyicil</a> ||
-                            <a href="#">Edit</a> ||
-                            <a href="#">Hapus</a>
+                        <td>
+                            <a class="btn btn-primary" href="{{route('utang.edit', $item->id)}}">Edit</a>
+                            <form method="post" action="{{route('utang.destroy', $item->id)}}" style="display: inline;">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="btn btn-danger">Hapus</button>
+                            </form>
                         </td>
                     </tr>
                 @endforeach
+            @else
+                <tr>
+                    <td colspan="7" class="text-center text-danger bg-white">Data Pencarian Utang tidak ditemukan.</td>
+                </tr>
             @endif
         </tbody>
     </table>

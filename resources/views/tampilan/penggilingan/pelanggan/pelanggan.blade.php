@@ -39,7 +39,7 @@
                 <td><a href="{{route('pelanggan.edit', $p->id)}}">
                         <button class="btn btn-primary">Edit</button>
                     </a> |
-                    | <form method="POST" action="{{route('pelanggan.destroy', $p->id)}}" style="display: inline;">
+                    | <form method="POST" action="{{route('pelanggan.destroy', $p->id)}}" onsubmit="return confirm('Apakah anda yakin data akan dihapus?')" style="display: inline;">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn btn-danger">Hapus</button>

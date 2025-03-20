@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('alamat');
             $table->string('keterangan');
             $table->string('jenis');
+            $table->string('ambil',25);
             $table->decimal('nominal', 15, 2);
             $table->string('status');
             $table->foreign('id_pelanggan')->references('id')->on('pelanggans');

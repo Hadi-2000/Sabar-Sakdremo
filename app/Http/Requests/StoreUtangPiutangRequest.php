@@ -11,7 +11,7 @@ class StoreUtangPiutangRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,12 @@ class StoreUtangPiutangRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'nama_pelanggan' => 'required|string|min:1',
+            'alamat_pelanggan' => 'nullable|string|min:2',
+            'ambil' => 'required|string|min:1',
+            'keterangan' => 'nullable|string|min:1',
+            'jumlah' => 'required|numeric|min:1',
+            'status' => 'required|string|min:1',
         ];
     }
 }

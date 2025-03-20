@@ -4,39 +4,58 @@ namespace App\Http\Controllers;
 
 use App\Models\pelanggan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Session;
 use App\Http\Requests\StorepelangganRequest;
-use App\Http\Requests\UpdatepelangganRequest;
 use App\Models\Pelanggan as ModelsPelanggan;
+use App\Http\Requests\UpdatepelangganRequest;
 
 class PelangganController extends Controller
 {
+    public function __construct()
+    {
+        if (!app('session')->has('user_id')) {
+            redirect()->route('login')->with('error', 'Anda harus login terlebih dahulu')->send();
+            exit; // Pastikan eksekusi berhenti di sini
+        }
+    }
     public function index()
     {
-        $pelanggan = Pelanggan::orderBy('nama')->paginate(10);
-        return view('tampilan.penggilingan.pelanggan.pelanggan',compact('pelanggan'));
+        try{
+            $pelanggan = Pelanggan::orderBy('nama')->paginate(10);
+            return view('tampilan.penggilingan.pelanggan.pelanggan',compact('pelanggan'));
+        }catch(\Exception $e){
+            Log::error('Error pada PelangganController@index : '.$e->getMessage());
+            return redirect()->back()->with('error','Terjadi kesalahan pada server');
+        }
     }
 
     public function search(Request $request){
-        if(session()->has('error')){
+        try{
 
-            session()->forget('error');
-        }
-        $query = strtolower($request->input('query'));
-
-        if (!empty($query)) {
-            $pelanggan = Pelanggan::where(function($p) use ($query) {
-            $p->where('nama', 'like', '%'.$query.'%')
-            ->orWhere('alamat', 'like', '%'.$query.'%')
-            ->orWhere('no_telepon', 'like', '%'.$query.'%');
-            })->orderBy('nama')->paginate(10);
-
+            if(session()->has('error')){
+                session()->forget('error');
+            }
+            $query = strtolower($request->input('query'));
+        
+            if (!empty($query)) {
+                $pelanggan = Pelanggan::where(function($p) use ($query) {
+                $p->where('nama', 'like', "%{$query}%")
+                ->orWhere('alamat', 'like', "%{$query}%")
+                ->orWhere('no_telepon', 'like', "%{$query}%");
+                })->orderBy('nama')->paginate(10);
+            }else{
+                $pelanggan = Pelanggan::orderBy('nama')->paginate(10);
+            }
+            if($pelanggan->isEmpty()){
+                return redirect()->back()->with('error','Data pelanggan kosong');
+            }
             return view('tampilan.penggilingan.pelanggan.pelanggan',compact('pelanggan','query'));
-    }else{
-        $pelanggan = Pelanggan::orderBy('nama')->paginate(10);
-    }
-    if($pelanggan->isEmpty()){
-        return redirect()->back()->with('error','Data pelanggan kosong');
-    }
+        }catch(\Exception $e){
+            Log::error('Error pada PelangganController@store : '.$e->getMessage());
+            return redirect()->back()->with('error','Terjadi kesalahan pada server');
+        }
 }
 
     public function create()
@@ -49,19 +68,26 @@ class PelangganController extends Controller
      */
     public function store(StorepelangganRequest $request)
     {
-        $data = $request->validated();
-        $pelanggan = Pelanggan::where('nama',$data['nama'])
-        ->orWhere('alamat',$data['alamat'])->first();
-        if($pelanggan){
-            return back()->with('error', 'Nama dan alamat pelanggan sudah dipakai.');
+        try{
+            DB::beginTransaction();
+            $data = $request->validated();
+            $pelanggan = Pelanggan::where('nama',$data['nama'])
+            ->orWhere('alamat',$data['alamat'])->first();
+            if($pelanggan){
+                return back()->with('error', 'Nama dan alamat pelanggan sudah dipakai.');
+            }
+            Pelanggan::create([
+                'nama' => $data['nama'],
+                'alamat' => $data['alamat'] ?? '',
+                'no_telepon' => $data['no_telepon'] ?? '',
+            ]);
+            DB::commit();
+            return redirect()->route('pelanggan.index')->with('success','Data pelanggan berhasil ditambahkan');
+        }catch(\Exception $e){
+            DB::rollBack();
+            Log::error('Error pada PelangganController@store : '.$e->getMessage());
+            return redirect()->back()->with('error','Terjadi kesalahan pada server');
         }
-        Pelanggan::create([
-            'nama' => $data['nama'],
-            'alamat' => $data['alamat'] ?? '',
-            'no_telepon' => $data['no_telepon'] ?? '',
-        ]);
-
-        return redirect()->route('pelanggan.index')->with('success','Data pelanggan berhasil ditambahkan');
     }
 
     public function edit(Pelanggan $pelanggan){
@@ -75,33 +101,49 @@ class PelangganController extends Controller
      */
     public function update(UpdatepelangganRequest $request, Pelanggan $pelanggan)
     {
-        $data = $request->validated();
-        $cek = Pelanggan::where('id', '!=', $pelanggan->id)
-        ->where(function ($query) use ($data) {
-            $query->where('nama', $data['nama'])
-                ->orWhere('alamat', $data['alamat']);
-        })->first();
-
-      if($cek){
-            return back()->with('error', 'Nama dan alamat pelanggan sudah dipakai.');
+        try{
+            DB::beginTransaction();
+            $data = $request->validated();
+            $cek = Pelanggan::where('id', '!=', $pelanggan->id)
+            ->where(function ($query) use ($data) {
+                $query->where('nama', $data['nama'])
+                    ->orWhere('alamat', $data['alamat']);
+            })->first();
+    
+          if($cek){
+                return back()->with('error', 'Nama dan alamat pelanggan sudah dipakai.');
+            }
+            $pelanggan->update([
+                'nama' => $data['nama'],
+                'alamat' => $data['alamat']?? '',
+                'no_telepon' => $data['no_telepon']?? '',
+            ]);
+            DB::commit();
+            return redirect()->route('pelanggan.index')->with('success','Data pelanggan berhasil diubah');
+        }catch(\PDOException $e){
+            DB::rollBack();
+            Log::error('Error pada PelangganController@update : '.$e->getMessage());
+            return redirect()->back()->with('error','Terjadi kesalahan pada server');
+        }catch(\Exception $e){
+            DB::rollBack();
+            Log::error('Error pada PelangganController@destroy : '.$e->getMessage());
+            return redirect()->back()->with('error','Terjadi kesalahan pada server');
         }
-        $pelanggan->update([
-            'nama' => $data['nama'],
-            'alamat' => $data['alamat']?? '',
-            'no_telepon' => $data['no_telepon']?? '',
-        ]);
-
-        return redirect()->route('pelanggan.index')->with('success','Data pelanggan berhasil diubah');
     }
     /**
      * Remove the specified resource from storage.
      */
     public function destroy(Pelanggan $pelanggan)
     {
-        if ($pelanggan === null) {
-            return redirect()->route('pelanggan.index')->with('error', 'Data pelanggan tidak ditemukan.');
+        try{
+            if ($pelanggan === null) {
+                return redirect()->route('pelanggan.index')->with('error', 'Data pelanggan tidak ditemukan.');
+            }
+            $pelanggan->delete();
+            return redirect()->route('pelanggan.index')->with('success','Data pelanggan berhasil dihapus');
+        }catch(\PDOException $e){
+            Log::error('Error pada PelangganController@destroy : '.$e->getMessage());
+            return redirect()->back()->with('error','Terjadi kesalahan pada server');
         }
-        $pelanggan->delete();
-        return redirect()->route('pelanggan.index')->with('success','Data pelanggan berhasil dihapus');
     }
 }

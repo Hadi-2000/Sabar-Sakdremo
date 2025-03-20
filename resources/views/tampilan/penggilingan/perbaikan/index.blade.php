@@ -38,7 +38,7 @@
                     <td>{{ $p->status }}</td>
                     <td>
                         <a href="{{ route('perbaikan.edit', $p->id) }}"><button class="btn btn-warning">Edit</button></a>
-                        <form action="{{ route('perbaikan.destroy', $p->id) }}" method="POST" style="display: inline;">
+                        <form action="{{ route('perbaikan.destroy', $p->id) }}" onsubmit="return confirm('Apakah anda yakin ingin menghapus data ini?')" method="POST" style="display: inline;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger">Hapus</button>

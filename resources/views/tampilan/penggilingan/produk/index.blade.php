@@ -43,7 +43,7 @@
                                     <td>{{$p->deskripsi}}</td>
                                     <td class="d-flex m-1">
                                         <a class="btn btn-primary me-1" href="{{route('aset.edit', $p->id)}}">Update</a>
-                                        <form method="POST" action="{{route('aset.destroy', $p->id)}}" style="display: inline;">
+                                        <form method="POST" action="{{route('aset.destroy', $p->id)}}" onsubmit="return confirm('Anda yakin ingin menghapus data ini?')" style="display: inline;">
                                             @csrf
                                             @method('DELETE')
                                             <button class="btn btn-danger">Hapus</button>
