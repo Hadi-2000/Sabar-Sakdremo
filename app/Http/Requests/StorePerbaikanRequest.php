@@ -29,4 +29,12 @@ class StorePerbaikanRequest extends FormRequest
             'jumlah' => 'required'
         ];
     }
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'nama' => trim(strip_tags($this->nama)),
+            'mesin' => trim(strip_tags($this->mesin)),
+            'keterangan' =>  trim(strip_tags($this->keterangan))
+        ]);
+    }
 }

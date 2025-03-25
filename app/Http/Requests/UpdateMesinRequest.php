@@ -26,4 +26,11 @@ class UpdateMesinRequest extends FormRequest
             'merek' => 'required|string|min:2',
         ];
     }
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'nama' => trim(strip_tags($this->nama)),
+            'merek' => trim(strip_tags($this->merek)),
+        ]);
+    }
 }

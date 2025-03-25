@@ -52,7 +52,7 @@
             </style>
         @endif
     </head>
-    <body class="font-sans antialiased dark:bg-black dark:text-white/50">
+    <body class="font-sans antialiased dark:bg-black dark:text-white/50 d-flex flex-column min-vh-100">
         @include('layouts.navbar')
         <div class="container">
             @yield('container')
@@ -61,9 +61,11 @@
         <!--bootstraps-->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <div class="footer-copyright">
-            &copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved.
-        </div>
+        <footer class="footer bg-light text-center py-3">
+            <div class="footer-copyright d-flex justify-content-center align-items-end">
+                &copy; {{ date('Y') }} {{ config('app.name') }}. All rights reserved.
+            </div>
+        </footer>
     </body>
 </html>
 

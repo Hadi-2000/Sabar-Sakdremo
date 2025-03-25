@@ -36,7 +36,9 @@ class PiutangController extends Controller
             if(session()->has('error')){
                 session()->forget('error');
             }
-            $query = $request->query('query');
+            $query = trim(strtolower(strip_tags($request->validate([
+                'query' => 'nullable|string|min:1|max:255'
+            ])['query'] ?? '')));
             // Implement your search logic here
             if(empty($query)){
                 $utang = UtangPiutang::where('jenis','Piutang')->orderBy('nama')->paginate(10);

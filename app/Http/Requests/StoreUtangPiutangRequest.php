@@ -30,4 +30,12 @@ class StoreUtangPiutangRequest extends FormRequest
             'status' => 'required|string|min:1',
         ];
     }
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'nama_pelanggan' => trim(strip_tags($this->nama_pelanggan)),
+            'alamat_pelanggan' => trim(strip_tags($this->alamat_pelanggan)),
+            'keterangan' => trim(strip_tags($this->keterangan)),
+        ]);
+    }
 }

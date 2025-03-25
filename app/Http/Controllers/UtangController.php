@@ -40,7 +40,9 @@ class UtangController extends Controller
             if(session()->has('error')){
                 session()->forget('error');
             }
-            $query = $request->query('query');
+            $query = trim(strtolower(strip_tags($request->validate([
+                'query' => 'nullable|string|min:1|max:255'
+            ])['query'] ?? '')));
             // Implement your search logic here
             if(empty($query)){
                 $utang = UtangPiutang::where('jenis','Utang')->orderBy('nama')->paginate(10);
@@ -83,15 +85,11 @@ class UtangController extends Controller
             $data = $request->validated();
             $data['jumlah'] = str_replace('.','',$data['jumlah']);
     
-            $param = pelanggan::where('nama',$data['nama_pelanggan'])->first();
-            if(!$param){
-                pelanggan::create([
-                    'nama' => $data['nama_pelanggan'],
-                    'alamat' => $data['alamat_pelanggan'],
-                ]);
-            }
-            $param = pelanggan::where('nama',$data['nama_pelanggan'])->first();
-    
+            $param = pelanggan::firstOrCreate([
+                'nama' => $data['nama_pelanggan'],
+                'alamat' => $data['alamat_pelanggan'],
+            ]);
+            
             UtangPiutang::create([
                 'id_pelanggan' => $param->id,
                 'nama' => $data['nama_pelanggan'],

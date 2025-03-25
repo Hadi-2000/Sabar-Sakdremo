@@ -29,4 +29,14 @@ class UpdateAsetRequest extends FormRequest
             'harga_satuan' => 'required|string|min:1'
         ];
     }
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'nama'=> trim(strip_tags($this->nama)),
+            'deskripsi' => trim(strip_tags($this->deskripsi)),
+            'satuan' => trim($this->satuan),
+            'jumlah' => trim($this->jumlah),
+            'harga_satuan' => trim($this->harga_satuan)
+        ]);
+    }
 }

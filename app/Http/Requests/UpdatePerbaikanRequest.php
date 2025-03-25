@@ -29,4 +29,12 @@ class UpdatePerbaikanRequest extends FormRequest
             'jumlah' => 'required|string|min:1'
         ];
     }
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'nama' => trim(strip_tags($this->nama)),
+            'mesin' => trim(strip_tags($this->mesin)),
+            'keterangan' =>  trim(strip_tags($this->keterangan))
+        ]);
+    }
 }

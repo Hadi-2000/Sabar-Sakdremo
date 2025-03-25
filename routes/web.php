@@ -4,6 +4,7 @@ use App\Models\Aset;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AsetController;
 use App\Http\Controllers\ViewController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MesinController;
 use App\Http\Controllers\StockController;
 use App\Http\Controllers\UtangController;
@@ -22,7 +23,7 @@ use App\Http\Controllers\PenitipanBarangController;
 Route::get('/', [ViewController::class, 'viewLogin']);
 Route::get('/login',  [ViewController::class, 'viewLogin'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
-Route::get('/logout', [LogoutController::class, 'logout'])->name('logout');
+Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
 
 //tampilan dashboard
 Route::middleware('auth')->group(function(){
@@ -82,7 +83,11 @@ Route::middleware('auth')->group(function(){
     Route::get('/dashboard/penggilingan/perbaikan/search', [PerbaikanController::class,'search'])->name('penggilingan.perbaikan.search');
 
     //tampilan profil pengguna
-    Route::get('/dashboard/profil', [ViewController::class, 'viewProfile']);
+    Route::get('/dashboard/profile', [ProfileController::class,'index'])->name('profile.index');
+    Route::get('/dashboard/profile/edit/data', [ProfileController::class,'editData'])->name('profile.edit.data');
+    Route::post('/dashboard/profile/edit/data', [ProfileController::class,'updateData'])->name('profile.update.data');
+    Route::get('/dashboard/profile/edit/password', [ProfileController::class,'editPassword'])->name('profile.edit.password');
+    Route::post('/dashboard/profile/edit/password', [ProfileController::class,'updatePassword'])->name('profile.update.password');
     Route::get('/dashboard/profil/pengaturan', [ViewController::class, 'viewProfilePengaturan']);
 
 });

@@ -41,7 +41,9 @@ class StockController extends Controller
             session()->forget('error');
         
             // Ambil query pencarian dan ubah ke lowercase
-            $query = strtolower($request->input('query'));
+            $query = trim(strtolower(strip_tags($request->validate([
+                'query' => 'nullable|string|min:1|max:255'
+            ])['query'] ?? '')));
         
             if (!empty($query)) {
                 // Filter data berdasarkan nama, stock, atau total

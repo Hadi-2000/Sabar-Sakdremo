@@ -28,4 +28,11 @@ class UpdatepelangganRequest extends FormRequest
             'no_telepon' => ['nullable', new ValidePhoneNumber()],
         ];
     }
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'nama' => trim(strip_tags($this->nama)),
+            'alamat' => trim(strip_tags($this->alamat)),
+        ]);
+    }
 }

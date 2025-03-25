@@ -30,4 +30,13 @@ class StorepelangganRequest extends FormRequest
             'total'=> ['nullable', 'numeric', 'regex:/^\d{1,15}(\.\d{1,2})?$/'],
         ];
     }
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'nama' => trim(strip_tags($this->nama)),
+            'alamat' => trim(strip_tags($this->alamat)),
+            'utangPiutang'=> 'nullable|string',
+            'total'=> trim($this->total),
+        ]);
+    }
 }

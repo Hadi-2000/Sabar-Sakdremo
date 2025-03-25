@@ -27,4 +27,10 @@ class UpdateStockRequest extends FormRequest
             'jumlah' => 'required|string|min:2'
         ];
     }
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'nama'=> trim(strip_tags($this->nama)),
+        ]);
+    } 
 }

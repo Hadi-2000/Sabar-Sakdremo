@@ -176,8 +176,10 @@ class PerbaikanController extends Controller
     }
     public function search(Request $request){
         try{
+            $query = trim(strtolower(strip_tags($request->validate([
+                'query' => 'nullable|string|min:1|max:255'
+            ])['query'] ?? '')));
 
-            $query = $request->query('query');
             if($query){
                 // Jika query ada, maka pencarian akan dilakukan di kolom teknisi, keterangan, dan status.
             $perbaikan = Perbaikan::where('teknisi','LIKE',"%{$query}%")

@@ -123,7 +123,9 @@ class MesinController extends Controller
     }
     public function search(Request $request){
         try{
-            $query = $request->query('query');
+            $query = trim(strtolower(strip_tags($request->validate([
+                'query' => 'nullable|string|min:1|max:255'
+            ])['query'] ?? '')));
         if(empty($query)){
             $mesin = Mesin::orderBy('nama_mesin')->paginate(10);
         }else{

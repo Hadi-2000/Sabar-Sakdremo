@@ -39,7 +39,9 @@ class PegawaiController extends Controller
             session()->forget('error');
         }
         try{
-            $query = strtolower($request->input('query'));
+            $query = trim(strtolower(strip_tags($request->validate([
+                'query' => 'nullable|string|min:1|max:255'
+            ])['query'] ?? '')));
 
             if (!empty($query)) {
                 $pegawai = Pegawai::where(function($p) use ($query) {

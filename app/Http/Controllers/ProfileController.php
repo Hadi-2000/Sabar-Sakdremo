@@ -3,15 +3,18 @@
 namespace App\Http\Controllers;
 
 use App\Models\Aset;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\StoreAsetRequest;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\UpdateAsetRequest;
 
-class AsetController extends Controller
+class ProfileController extends Controller
 {
     public function __construct()
     {
@@ -25,66 +28,91 @@ class AsetController extends Controller
      */
     public function index()
     {   
-        try {
-            $produk = Aset::orderBy('nama')->paginate(10);
-            return view('tampilan.penggilingan.produk.index', compact('produk'));
+        try { 
+            //ambil data dari user dari user yang login
+            $user = Auth::user();
+            //mengambil data id yang 
+            return view('tampilan.profile.profile', compact('user'));
         } catch (\Exception $e) {
-            Log::error('Error pada AsetController@index: ' . $e->getMessage());
-            return redirect()->route('aset.index')->with('error', 'Terjadi kesalahan pada kode.');
+            Log::error('Error pada ProfileController@index: ' . $e->getMessage());
+            return redirect()->route('aset.index')->with('error', 'Terjadi kesalahan pada server.');
         }
     }
 
     /**
      * Search for the specified resource.
      */
-    public function search(Request $request){
-        if(session()->has('error')){
-            session()->forget('error');
-        }
-        $request->validate([
-            'query' => 'nullable|string|min:2|max:255'
-        ]);
-        
-        $query = trim(strtolower(strip_tags($request->validate([
-            'query' => 'nullable|string|min:1|max:255'
-        ])['query'] ?? '')));
-        $isDate = strtotime($query) !== false;
-
-        try{
-            if (!empty($query)) {
-                $produk = Aset::where('nama', 'LIKE', "%{$query}%")
-                ->orWhere('deskripsi', 'LIKE', "%{$query}%")
-                ->orWhere('jumlah', 'LIKE', "%{$query}%")
-                ->orWhere('created_at', 'LIKE', "%{$query}%")
-                ->orderBy('nama')
-                ->paginate(10);
-                
-                if ($isDate && strtotime($query) !== false) {
-                    $produk = Aset::whereDate('created_at', '=', date('Y-m-d', strtotime($query)))
-                    ->orderBy('nama')
-                    ->paginate(10);
-                }
-                
-            } else {
-                $produk = Aset::orderBy('nama')->paginate(10);
-            }
-            if ($produk->isEmpty()) {
-                return redirect()->route('aset.index')->with('error', 'Data Tidak Ada.');
-            }
-            return view('tampilan.penggilingan.produk.index', compact('produk','query'));    
-        }catch(\Exception $e){
-            Log::error('Error pada AsetController@search: '. $e->getMessage());
-            return redirect()->route('aset.index')->with('error', 'Terjadi kesalahan pada kode.');
-        }
-    }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function editData()
     {
-        return view('tampilan.penggilingan.produk.create');
+        return view('tampilan.profile.edit-data');
     }
+    public function updateData(Request $request)
+{
+    try {
+        DB::beginTransaction();
+
+        // Debugging: Cek data request masuk
+        Log::info('Data masuk: ', $request->all());
+
+        // Validasi input
+        $data = $request->validate([
+            'foto_user' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'nama' => 'required|string|max:255',
+            'alamat' => 'nullable|string|max:255',
+            'no_hp' => 'nullable|numeric',
+        ]);
+
+        // Debugging: Cek apakah user terautentikasi
+        if (!Auth::check()) {
+            throw new \Exception('User tidak terautentikasi');
+        }
+
+        $user = Auth::user();
+        $filename = $user->foto_user; // Jika tidak ada upload, pakai yang lama
+
+        // Jika ada file gambar yang di-upload
+        if ($request->hasFile('foto_user')) {
+            $file = $request->file('foto_user');
+
+            // Gunakan md5() agar hasilnya tetap sama
+            $filename = time() . '-' . $user->id . '.' . $file->getClientOriginalExtension();
+
+            // Simpan di storage/app/public/images/profile/
+            $path = $file->storeAs('images/profile', $filename,'public');
+
+            // Debugging: Cek apakah file berhasil disimpan
+            if (!$path) {
+                throw new \Exception('Gagal menyimpan file.');
+            }
+
+            if ($user->foto_user && Storage::disk('public')->exists('images/profile/' . $user->foto_user)) {
+                Log::info('Menghapus foto: ' . $user->foto_user);
+                Storage::disk('public')->delete('images/profile/' . $user->foto_user);
+            } else {
+                Log::info('Foto tidak ditemukan: ' . $user->foto_user);
+            }
+        }
+
+        // Update data user langsung dengan model user yang sudah ditemukan
+        User::find($user->id)->update([
+            'foto_user' => $filename,
+            'nama' => $data['nama'],
+            'alamat' => $data['alamat'],
+            'no_hp' => $data['no_hp'],
+        ]);
+
+        DB::commit();
+        return redirect()->route('profile.index')->with('success', 'Profil berhasil diperbarui.');
+    } catch (\Exception $e) {
+        DB::rollback();
+        Log::error('Error pada ProfileController@updateData: ' . $e->getMessage());
+        return redirect()->route('profile.edit.data')->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+    }
+}
 
     /**
      * Store a newly created resource in storage.
@@ -111,7 +139,7 @@ class AsetController extends Controller
         }catch(\Exception $e){
             DB::rollback();
             Log::error('Error pada AsetController@store: '. $e->getMessage());
-            return redirect()->route('aset.index')->with('error', 'Terjadi kesalahan pada kode.');
+            return redirect()->route('aset.index')->with('error', 'Terjadi kesalahan pada server.');
         }
         
     }
@@ -151,7 +179,7 @@ class AsetController extends Controller
         }catch(\Exception $e){
             DB::rollback();
             Log::error('Error pada AsetController@update: '. $e->getMessage());
-            return redirect()->route('aset.index')->with('error', 'Terjadi kesalahan pada kode.');
+            return redirect()->route('aset.index')->with('error', 'Terjadi kesalahan pada server.');
         }
     }
 
@@ -165,7 +193,7 @@ class AsetController extends Controller
             return redirect()->route('aset.index')->with('success', 'Data Berhasil Dihapus.');
         }catch(\Exception $e){
             Log::error('Error pada AsetController@destroy: '. $e->getMessage());
-            return redirect()->route('aset.index')->with('error', 'Terjadi kesalahan pada kode.');
+            return redirect()->route('aset.index')->with('error', 'Terjadi kesalahan pada server.');
         }
     }
 }

@@ -25,6 +25,12 @@ class StoreStockRequest extends FormRequest
             'nama'=> 'required|string|min: 1',
             'jumlah' => 'required|string|min:2'
         ];
+    }
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'nama'=> trim(strip_tags($this->nama)),
+        ]);
     } 
 }
     

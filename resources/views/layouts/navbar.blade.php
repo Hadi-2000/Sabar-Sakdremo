@@ -67,13 +67,16 @@
             </form>
             <!-- Dropdown -->
             <button class="nav-link dropdown-toggle d-flex" data-bs-toggle="dropdown" aria-expanded="false">
-                <img src="{{ asset('images/profil/'.Auth::user()->foto_user)}}" width="40px" height="40px" alt="profil"><br>
-                <p>{{ Auth::user()->username}}</p>
+                <img src="{{ asset('storage/images/profile/' . Auth::user()->foto_user)}}" width="40px" height="40px"><br>
+                <p style="display: flex;align-items:center">{{ Auth::user()->nama}}</p>
             </button>
             <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="/dashboard/profil">profil</a></li>
+                <li><a class="dropdown-item" href="{{route('profile.index')}}">profil</a></li>
                 <li><a class="dropdown-item" href="/dashboard/profil/pengaturan">pengaturan</a></li>
-                <li><a class="dropdown-item" href="/logout">Log Out</a></li>
+                <li><form action="{{ route('logout') }}" method="POST">
+                  @csrf
+                  <button type="submit">Logout</button>
+              </form></li>
             </ul>
         </div>
     </div>

@@ -43,9 +43,9 @@ class ArusKasController extends Controller
             if (session()->has('error')) {
                 session()->forget('error');
             }
-            
-            $query = strtolower($request->input('query'));
-            
+            $query = trim(strtolower(strip_tags($request->validate([
+                'query' => 'nullable|string|min:1|max:255'
+            ])['query'] ?? '')));
             // Cek apakah query hanya berupa angka (kemungkinan pencarian tanggal)
             $isDate = strtotime($query) !== false;
         

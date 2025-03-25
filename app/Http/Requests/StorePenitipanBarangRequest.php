@@ -29,4 +29,12 @@ class StorePenitipanBarangRequest extends FormRequest
             'jumlah' => 'nullable|string',
         ];
     }
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'nama_pelanggan' => trim(strip_tags($this->nama_pelanggan)),
+            'alamat_pelanggan' => trim(strip_tags($this->alamat_pelanggan)),
+            'barang' => trim(strip_tags($this->barang))
+        ]);
+    }
 }

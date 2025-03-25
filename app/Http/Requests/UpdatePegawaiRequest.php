@@ -29,4 +29,12 @@ class UpdatePegawaiRequest extends FormRequest
             'jumlah_hidden'=>  'required|numeric|min:1',
         ];
     }
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'nama'=> trim(strip_tags($this->nama)),
+            'alamat'=> trim(strip_tags($this->alamat)),
+            'jumlah_hidden'=>  trim($this->jumlah_hidden),
+        ]);
+    }
 }

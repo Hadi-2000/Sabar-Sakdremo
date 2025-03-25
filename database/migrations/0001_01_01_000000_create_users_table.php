@@ -15,9 +15,13 @@ return new class extends Migration
             $table->id();
             $table->string("foto_user");
             $table->string("username");
+            $table->string("nama",50);
+            $table->string("alamat");
+            $table->string("no_hp",13);
             $table->string("password");
             $table->rememberToken();
             $table->timestamps();
+            $table->timestamp('remember_token_expires')->nullable();
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

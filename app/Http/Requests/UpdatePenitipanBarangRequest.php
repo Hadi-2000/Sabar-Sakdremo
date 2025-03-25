@@ -29,4 +29,11 @@ class UpdatePenitipanBarangRequest extends FormRequest
             'status'=>'required|string|min:1',
         ];
     }
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'nama_pelanggan' => trim(strip_tags($this->nama_pelanggan)),
+            'barang' => trim(strip_tags($this->barang))
+        ]);
+    }
 }

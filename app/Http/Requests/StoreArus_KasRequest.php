@@ -37,4 +37,13 @@ class StoreArus_KasRequest extends FormRequest
             'jenis_transaksi.required' => 'Jenis transaksi harus diisi'
         ];
     }
+    protected function prepareForValidation()
+    {
+        $this->merge([
+            'keterangan' => trim(strip_tags($this->keterangan)),
+            'jenis_kas' => trim($this->jenis_kas),
+            'jenis_transaksi' => trim($this->jenis_transaksi),
+            'jumlah_hidden' => trim($this->jumlah_hidden),
+        ]);
+    }
 }
