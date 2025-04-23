@@ -24,10 +24,9 @@ class StoreUtangPiutangRequest extends FormRequest
         return [
             'nama_pelanggan' => 'required|string|min:1',
             'alamat_pelanggan' => 'nullable|string|min:2',
-            'ambil' => 'required|string|min:1',
+            'ambil' => 'required|string|in:OnHand,Operasional,Stock',
             'keterangan' => 'nullable|string|min:1',
-            'jumlah' => 'required|numeric|min:1',
-            'status' => 'required|string|min:1',
+            'jumlah' => 'required_unless:ambil,Stock|numeric|min:1',
         ];
     }
     protected function prepareForValidation()

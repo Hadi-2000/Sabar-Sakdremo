@@ -17,25 +17,13 @@
     <form action="{{route('profile.update.password')}}" method="post">
         @csrf
         <div class="mb-3">
-            <label for="foto_user">Preview Foto User</label>
-            <img id="preview" src="{{ asset('storage/images/profile/' . Auth::user()->foto_user)}}" alt="User" height="100px" width="100px">
-            <input type="file" class="form-control mt-2" id="foto_user" name="foto_user" onchange="previewImage()">
-            <small id="fileHelp" class="form-text text-muted">Ukuran maksimal 2MB. Format gambar JPG/JPEG/PNG.</small>
-        </div>
-        <!-- data user -->
-        <div class="mb-3">
-            <label for="nama">Nama</label>
-            <input type="text" class="form-control" id="nama" name="nama" value="{{ Auth::user()->nama }}">
+            <label for="password_lama">Password Lama</label>
+            <input type="text" class="form-control" id="password_lama" name="password_lama" required placeholder="Masukan Password Lama">
         </div>
         <div class="mb-3">
-            <label for="alamat">Alamat</label>
-            <input type="text" class="form-control" id="alamat" name="alamat" value="{{ Auth::user()->alamat }}">
-        </div>
-        <div class="mb-3">
-            <label for="no_hp">Nomor Telepon</label>
-            <input type="text" class="form-control" id="no_hp" name="no_hp" value="{{ Auth::user()->no_hp }}">
+            <label for="password_baru">Password Baru</label>
+            <input type="password" class="form-control" id="password_baru" name="password_baru" required placeholder="Masukan Password Baru">
         </div>
         <button type="submit" class="btn btn-primary">Simpan</button>
     </form>
-    <script src="{{asset('js/previewImage.js')}}"></script>
 @endsection

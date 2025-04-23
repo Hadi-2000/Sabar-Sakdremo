@@ -26,7 +26,7 @@ Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LogoutController::class, 'logout'])->name('logout');
 
 //tampilan dashboard
-Route::middleware('auth')->group(function(){
+Route::middleware('auth','throttle:100,1')->group(function(){
     Route::get('/dashboard', [DashboardController::class, 'viewDashboard']);
 
     //tampilan keuangan kas

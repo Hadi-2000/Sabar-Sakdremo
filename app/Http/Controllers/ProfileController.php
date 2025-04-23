@@ -50,6 +50,10 @@ class ProfileController extends Controller
     {
         return view('tampilan.profile.edit-data');
     }
+    public function editPassword()
+    {
+        return view('tampilan.profile.edit-password');
+    }
     public function updateData(Request $request)
 {
     try {
@@ -111,6 +115,32 @@ class ProfileController extends Controller
         DB::rollback();
         Log::error('Error pada ProfileController@updateData: ' . $e->getMessage());
         return redirect()->route('profile.edit.data')->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+    }
+}
+public function updatePassword(Request $request){
+    try{
+        $data = $request->validate([
+            'password_lama' =>'required|string',
+            'password_baru' =>'required|string',
+        ]);
+        $user = Auth::user();
+        if(!Hash::check($data['password_lama'], $user->password)){
+            return redirect()->route('profile.edit.password')->with('error', 'Password Lama Salah.');
+        }
+        //cek user password lama dan baru sama
+        if($data['password_lama'] == $data['password_baru']){
+            return redirect()->route('profile.edit.password')->with('error', 'Password Baru Tidak Boleh Sama Dengan Password Lama.');
+        }
+        DB::beginTransaction();
+            User::find($user->id)->update([
+                'password' => Hash::make($data['password_baru'])
+            ]);
+        DB::commit();
+        return redirect()->route('profile.index')->with('success', 'Password Berhasil Diubah.');
+    }catch(\Exception $e){
+        DB::rollback();
+        Log::error('Error pada ProfileController@updatePassword: '. $e->getMessage());
+        return redirect()->route('profile.edit.password')->with('error', 'Terjadi kesalahan: '. $e->getMessage());
     }
 }
 
