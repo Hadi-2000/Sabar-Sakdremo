@@ -30,6 +30,7 @@
                         <th>Status</th>
                         <th>Kehadiran</th>
                         <th>Gaji</th>
+                        <th>Beban Gaji</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -51,6 +52,7 @@
                                 @endif
                             </td>
                             <td>{{"Rp. ".number_format($p->gaji)}}</td>
+                            <td>{{"Rp. ".number_format($p->beban_gaji)}} ,  <a class="btn btn-danger" href="{{route('penggilingan.tenaga_kerja.bayar_gaji', $p->id)}}" onclick="return confirm('Apa anda yakin akan membayar gaji tenaga kerja ini?')">Bayar Gaji</a></td>
                             <td>
                                 <a class="btn btn-primary" href="{{route('tenaga_kerja.edit', $p->id)}}">Edit</a> ||
                                 <form method="POST" action="{{route('tenaga_kerja.destroy', $p->id)}}" onsubmit="return confirm('Apakah anda yakin ingin menghapus data ini?')" style="display: inline;">

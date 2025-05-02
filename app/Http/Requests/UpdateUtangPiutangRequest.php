@@ -24,17 +24,14 @@ class UpdateUtangPiutangRequest extends FormRequest
         return [
             'nama_pelanggan' => 'required|string|min:1',
             'jenis' => 'required|string|min:1',
-            'ambil' => 'required|string|min:1',
             'keterangan' => 'nullable|string|min:1',
             'jumlah' => 'required|numeric|min:1',
-            'status' => 'required|string|min:1',
         ];
     }
     protected function prepareForValidation()
     {
         $this->merge([
             'nama_pelanggan' => trim(strip_tags($this->nama_pelanggan)),
-            'alamat_pelanggan' => trim(strip_tags($this->alamat_pelanggan)),
             'keterangan' => trim(strip_tags($this->keterangan)),
         ]);
     }

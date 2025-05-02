@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\kas;
 use App\Models\Aset;
 use App\Models\Stock;
 use Illuminate\Http\Request;
@@ -27,6 +28,19 @@ class StockController extends Controller
     {
         try{
             $stock = Stock::orderBy('nama')->paginate(10);
+            foreach($stock as $item){
+                $item->updated_at = \Carbon\Carbon::parse($item->updated_at)->format('Y-m-d');
+            }
+
+            $total = 0;
+            foreach($stock as $p){
+                $total = $total + $p->total;
+            }
+            $base = kas::where('jenis_kas','Stock')->first();
+            $base->update([
+                'saldo' => $total
+            ]);
+
             $stockNama = $stock->pluck('nama');
             $produk = Aset::whereIn('nama',$stockNama)->orderBy('nama')->paginate(10);
             return view('tampilan.penggilingan.stock.index', compact('stock','produk'));
@@ -80,6 +94,7 @@ class StockController extends Controller
     public function create()
     {
         $produk = Aset::orderBy('nama')->get();
+
         return view('tampilan.penggilingan.stock.create', compact('produk'));
     }
     public function cek(Request $request){
@@ -117,14 +132,24 @@ class StockController extends Controller
             $jumlah = str_replace('.','', $data['jumlah']);
             //ambil data produk 
             $produk = Aset::where('nama', $data['nama'])->first();
-    
-            // insert data stock
-            Stock::create([
-                'product_id' => $produk->id,
-                'nama' => $data['nama'],
-               'stock' => $jumlah,
-                'total' => $jumlah * $produk->harga_satuan
-            ]);
+            $stock = Stock::where('nama',$data['nama'])->first();
+            $total =  $jumlah * $produk->harga_satuan;
+            if(!$stock){
+                // insert data stock
+                Stock::create([
+                    'product_id' => $produk->id,
+                    'nama' => $data['nama'],
+                    'stock' => $jumlah,
+                    'total' => $total
+                ]);
+                $stock_kas = kas::where('jenis_kas','Stock')->first();
+                $stock_kas->update([
+                    'saldo' => $stock_kas->saldo + $total
+                ]);
+            }else{
+                return redirect()->route('stock.create')->with('error', 'Data sudah ada dan tidak bisa diduplikat.');
+            }
+            
             DB::commit();
     
             return redirect()->route('stock.index')->with('success', 'Data berhasil disimpan.');
@@ -153,7 +178,8 @@ class StockController extends Controller
     public function edit(Stock $stock)
     {
         $produk = Aset::orderBy('nama')->get(); // Ambil semua produk dari tabel Aset
-    
+        $stock->stock = number_format($stock->stock, 0, ',', '.');
+
         return view('tampilan.penggilingan.stock.update', compact('stock', 'produk'));
     }
 
@@ -169,13 +195,18 @@ class StockController extends Controller
             $jumlah = str_replace('.','', $data['jumlah']);
             //ambil data produk 
             $produk = Aset::where('nama', $data['nama'])->first();
-    
+            $total_baru = $jumlah * $produk->harga_satuan;
+            $total_lama = $stock->total;
             // update data stock
             $stock->update([
                 'product_id' => $produk->id,
                 'nama' => $data['nama'],
-               'stock' => $jumlah,
-                'total' => $jumlah * $produk->harga_satuan
+                'stock' => $jumlah,
+                'total' => $total_baru
+            ]);
+            $kas_stock = kas::where('jenis_kas','Stock')->first();
+            $kas_stock->update([
+                'saldo' => $kas_stock->saldo - $total_lama + $total_baru
             ]);
             DB::commit();
     
@@ -197,6 +228,10 @@ class StockController extends Controller
     public function destroy(Stock $stock)
     {
         try{
+            $kas_stock = kas::where('jenis_kas','Stock')->first();
+            $kas_stock->update([
+                'saldo' => $kas_stock->saldo - $stock->total
+            ]);
             $stock->delete(); // Hapus 1 data berdasarkan ID
             return redirect()->route('stock.index')->with('success', 'Data berhasil dihapus.');
         }catch(\Exception $e){

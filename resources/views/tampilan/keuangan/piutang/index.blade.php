@@ -47,6 +47,7 @@
                         <td>{{$item->status}}</td>
                         <td>{{$item->jenis}}</td>
                         <td>
+                            <a class="btn btn-success" href="{{route('keuangan.piutang.lunas', $item->id)}}">Lunas</a>
                             <a class="btn btn-primary" href="{{route('piutang.edit', $item->id)}}">Edit</a>
                             <form method="post" action="{{route('piutang.destroy', $item->id)}}" onsubmit="return confirm('Apakah anda yakin ingin menghapus data ini?')" style="display: inline;">
                                 @csrf

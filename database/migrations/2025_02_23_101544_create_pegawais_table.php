@@ -17,7 +17,10 @@ return new class extends Migration
             $table->string('alamat');
             $table->string('status');
             $table->string('kehadiran');
+            $table->datetime('cek_in')->nullable();
+            $table->datetime('cek_out')->nullable();
             $table->decimal('gaji',15,2);
+            $table->decimal('beban_gaji',15,2);
             $table->timestamps();
         });
     }

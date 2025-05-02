@@ -1,9 +1,14 @@
 function formatUangInput(input) {
-    let value = input.value.replace(/\D/g, ""); // Hapus semua non-angka
-    let formatted = new Intl.NumberFormat("id-ID").format(value);
+    let rawValue = input.value.replace(/\D/g, ""); // Hapus semua non-angka
+    let formatted = new Intl.NumberFormat("id-ID").format(rawValue);
+    input.value = formatted;
 
-    input.value = formatted; // Tampilkan dengan format
-    document.getElementById("jumlah_hidden").value = value; // Simpan nilai asli
+    // Simpan nilai mentah ke input hidden yang sesuai
+    if (input.id === "jumlah") {
+        document.getElementById("jumlah_hidden").value = rawValue;
+    } else if (input.id === "harga_satuan") {
+        document.getElementById("harga_satuan_hidden").value = rawValue;
+    }
 }
 
 function handleBackspace(event, input) {

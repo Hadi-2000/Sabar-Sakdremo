@@ -25,7 +25,6 @@ class UpdateAsetRequest extends FormRequest
             'nama'=> 'required|string|min:1',
             'deskripsi' => 'required|string|min:2',
             'satuan' => 'required|string|min:1',
-            'jumlah' => 'required|string|min:1',
             'harga_satuan' => 'required|string|min:1'
         ];
     }
@@ -35,7 +34,6 @@ class UpdateAsetRequest extends FormRequest
             'nama'=> trim(strip_tags($this->nama)),
             'deskripsi' => trim(strip_tags($this->deskripsi)),
             'satuan' => trim($this->satuan),
-            'jumlah' => trim($this->jumlah),
             'harga_satuan' => trim($this->harga_satuan)
         ]);
     }

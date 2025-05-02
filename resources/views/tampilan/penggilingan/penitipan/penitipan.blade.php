@@ -15,7 +15,7 @@
             {{ session('success') }}
         </div>
     @endif
-    <div class="col-md-9" id="accordion">
+    <div id="accordion">
         <!-- penitipan -->
             <form action="{{route('penggilingan.penitipan.search')}}" method="get" class="d-flex kas-search mb-3" role="search">
                 <input class="form-control me-2" name="query" id="query" type="search" placeholder="Search" aria-label="Search">
@@ -37,7 +37,7 @@
                     @if (!empty($data))
                         @foreach ($data as $p)
                             <tr>
-                                <td>{{$p->created_at}}</td>
+                                <td>{{$p->updated_at->format('Y-m-d')}}</td>
                                 <td>{{$p->nama_pelanggan}}</td>
                                 <td>{{$p->status}}</td>
                                 <td>{{$p->barang}}</td>

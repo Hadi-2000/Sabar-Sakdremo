@@ -47,8 +47,9 @@
                         <td>{{$item->status}}</td>
                         <td>{{$item->jenis}}</td>
                         <td>
+                            <a class="btn btn-success" href="{{route('keuangan.utang.lunas', $item->id)}}">Lunas</a>
                             <a class="btn btn-primary" href="{{route('utang.edit', $item->id)}}">Edit</a>
-                            <form method="post" action="{{route('utang.destroy', $item->id)}}" style="display: inline;">
+                            <form method="post" action="{{route('utang.destroy', $item->id)}}" onsubmit="return confirm('Apakah anda yakin ingin menghapus data ini?')" style="display: inline;">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger">Hapus</button>

@@ -11,5 +11,5 @@ class Mesin extends Model
     use HasFactory;
 
     protected $table = 'mesins';
-    protected $fillable = ['nama_mesin','merek_mesin'];
+    protected $fillable = ['nama_mesin','merek_mesin','deskripsi'];
 }

@@ -54,10 +54,10 @@
                       Laporan
                     </button>
                     <ul class="dropdown-menu">
-                      <li><a class="dropdown-item" href="/dashboard/laporan/arus_kas">Arus Kas</a></li>
-                      <li><a class="dropdown-item" href="/dashboard/laporan/utang_piutang">Utang Piutang</a></li>
-                      <li><a class="dropdown-item" href="/dashboard/laporan/laba_rugi">Laba Rugi</a></li>
-                      <li><a class="dropdown-item" href="/dashboard/laporan/stock">Stock</a></li>
+                      <li><a class="dropdown-item" href="{{route('laporan.kas.index')}}">Arus Kas</a></li>
+                      <li><a class="dropdown-item d-none" href="{{route('laporan.utangPiutang.index')}}">Utang Piutang</a></li>
+                      <li><a class="dropdown-item d-none" href="{{route('laporan.labaRugi.index')}}">Laba Rugi</a></li>
+                      <li><a class="dropdown-item" href="{{route('laporan.stock')}}">Stock</a></li>
                     </ul>
                   </li>
             </ul>

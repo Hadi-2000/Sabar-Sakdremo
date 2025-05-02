@@ -24,18 +24,20 @@
         <table id="mesin_table" class="table table-striped table-bordered">
             <thead>
                 <tr>
+                    <th>Tanggal</th>
                     <th>Jenis Mesin</th>
                     <th>Merk</th>
-                    <th>Tahun Pembuatan</th>
+                    <th>Deskripsi</th>
                     <th>Action</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($mesin as $m)
                     <tr>
+                        <td>{{ $m->created_at->format('Y-m-d') }}</td>
                         <td>{{ $m->nama_mesin }}</td>
                         <td>{{ $m->merek_mesin }}</td>
-                        <td>{{ $m->created_at }}</td>
+                        <td>{{ $m->deskripsi}}</td>
                         <td>
                             <a class="btn btn-primary" href="{{ route('mesin.edit', $m->id) }}">Edit</i></a>
                             <form action="{{ route('mesin.destroy', $m->id) }}" method="POST" style="display: inline;" onsubmit="return confirm('Apakah anda yakin ingin menghapus data ini?')">

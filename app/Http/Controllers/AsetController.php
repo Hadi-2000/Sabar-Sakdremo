@@ -27,6 +27,9 @@ class AsetController extends Controller
     {   
         try {
             $produk = Aset::orderBy('nama')->paginate(10);
+            foreach ($produk as $p) {
+                $p->updated_at = \Carbon\Carbon::parse($p->updated_at)->format('Y-m-d');
+            }            
             return view('tampilan.penggilingan.produk.index', compact('produk'));
         } catch (\Exception $e) {
             Log::error('Error pada AsetController@index: ' . $e->getMessage());
@@ -54,7 +57,6 @@ class AsetController extends Controller
             if (!empty($query)) {
                 $produk = Aset::where('nama', 'LIKE', "%{$query}%")
                 ->orWhere('deskripsi', 'LIKE', "%{$query}%")
-                ->orWhere('jumlah', 'LIKE', "%{$query}%")
                 ->orWhere('created_at', 'LIKE', "%{$query}%")
                 ->orderBy('nama')
                 ->paginate(10);
@@ -93,16 +95,15 @@ class AsetController extends Controller
     {
         try{
             $data = $request->validated();
-            $jumlah = str_replace('.','',$data['jumlah']);
+            $harga_satuan = str_replace('.','',$data['harga_satuan']);
 
             DB::beginTransaction();
             
             Aset::create([
                 'nama' => $data['nama'],
                 'deskripsi' => $data['deskripsi'],
-                'jumlah' => $jumlah,
                 'satuan' => $data['satuan'],
-                'harga_satuan' =>$data['harga_satuan']
+                'harga_satuan' =>$harga_satuan
             ]);
 
             DB::commit();
@@ -119,8 +120,10 @@ class AsetController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Aset $produk)
+    public function edit($id)
     {
+        $produk = Aset::where('id',$id)->first();
+        $produk->harga_satuan = number_format($produk->harga_satuan, 0, ',', '.');
         if(!$produk){
             return redirect()->route('aset.index')->with('error', 'Data Aset Tidak Ditemukan.');
         }
@@ -137,14 +140,13 @@ class AsetController extends Controller
             if ($aset === null) {
                 return redirect()->route('aset.index')->with('error', 'Data Aset Tidak Ditemukan.');
             }
-            $jumlah = str_replace('.','',$data['jumlah']);
+            $harga_satuan = str_replace('.','',$data['harga_satuan']);
             DB::beginTransaction();
             $aset->update([
                 'nama' => $data['nama'],
                 'deskripsi' => $data['deskripsi'],
-                'jumlah' => $jumlah,
                 'satuan' => $data['satuan'],
-                'harga_satuan' =>$data['harga_satuan']
+                'harga_satuan' =>$harga_satuan
             ]);
             DB::commit();
             return redirect()->route('aset.index')->with('success', 'Data Berhasil Diubah.');

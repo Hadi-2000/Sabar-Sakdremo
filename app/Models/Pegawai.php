@@ -18,7 +18,10 @@ class Pegawai extends Model
         'no_telp',
         'status',
         'kehadiran',
-        'gaji'
+        'cek_in',
+        'cek_out',
+        'gaji',
+        'beban_gaji'
     ];
 
 

@@ -16,6 +16,7 @@ use App\Http\Controllers\PelangganController;
 use App\Http\Controllers\PerbaikanController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\UtangPiutangController;
 use App\Http\Controllers\PenitipanBarangController;
 
@@ -35,17 +36,28 @@ Route::middleware('auth','throttle:100,1')->group(function(){
 
     //tampilan keuangan Utang
     Route::resource('/keuangan/utang', UtangController::class)->except(['show']);
+    Route::get('/dashboard/keuangan/utang/lunas/{id}', [UtangController::class, 'lunas'])->name('keuangan.utang.lunas');
     Route::get('/dashboard/keuangan/utang/search', [UtangController::class, 'search'])->name('keuangan.utang.search');
+    
+    //tampilan keuangan piutang
     Route::resource('/keuangan/piutang', PiutangController::class)->except(['show']);
+    Route::get('/dashboard/keuangan/piutang/lunas/{id}', [PiutangController::class, 'lunas'])->name('keuangan.piutang.lunas');
     Route::get('/dashboard/keuangan/piutang/search', [PiutangController::class, 'search'])->name('keuangan.piutang.search');
+    
     Route::get('/dashboard/keuangan/utang/create/cek-auto', [UtangPiutangController::class,'cekAuto'])->name('keuangan.utang.create.cek-auto');
     Route::get('/dashboard/keuangan/utang/create/cek-pelanggan', [UtangPiutangController::class,'checkPelanggan'])->name('keuangan.utang.create.cek-pelanggan');
 
-    //tampilan laporan
-    Route::get('/dashboard/laporan/arus_kas', [ArusKasController::class, 'index']);
-    Route::get('/dashboard/laporan/utang_piutang', [ViewController::class, 'viewLaporanUtangPiutang']);
-    Route::get('/dashboard/laporan/laba_rugi', [ViewController::class, 'viewLaporanLabaRugi']);
-    Route::get('/dashboard/laporan/stock', [ViewController::class, 'viewLaporanStock']);
+    //tampilan laporan kas
+    Route::get('/dashboard/laporan/arus_kas', [LaporanController::class, 'LaporanArusKas'])->name('laporan.kas.index');
+    Route::get('/dashboard/laporan/arus_kas/search', [LaporanController::class, 'LaporanArusKasSearch'])->name('laporan.kas.search');
+    Route::get('/dashboard/laporan/arus_kas/download', [LaporanController::class, 'LaporanArusKasDownload'])->name('laporan.kas.download');
+
+    Route::get('/dashboard/laporan/utang_piutang', [LaporanController::class, 'LaporanUtangPiutang'])->name('laporan.utangPiutang.index');
+    Route::get('/dashboard/laporan/laba_rugi', [LaporanController::class, 'LaporanLabaRugi'])->name('laporan.labaRugi.index');
+
+    //tampilan laporan stock
+    Route::get('/dashboard/laporan/stock', [LaporanController::class, 'LaporanStock'])->name('laporan.stock');
+    Route::get('/dashboard/laporan/stock/download', [LaporanController::class, 'LaporanStockDownload'])->name('laporan.stock.download');
 
     //tampilan penggilingan
     //tampilan pelanggan
@@ -56,6 +68,7 @@ Route::middleware('auth','throttle:100,1')->group(function(){
     Route::resource('/penggilingan/tenaga_kerja', PegawaiController::class)->except(['show']);
     Route::get('/penggilingan/tenaga_kerja/search',[PegawaiController::class, 'search'])->name('tenaga_kerja.search');
     Route::get('/penggilingan/tenaga_kerja/hadir/{id}', [PegawaiController::class, 'hadir'])->name('penggilingan.tenaga_kerja.hadir');
+    Route::get('/penggilingan/tenaga_kerja/bayar-gaji/{id}', [PegawaiController::class, 'bayar_gaji'])->name('penggilingan.tenaga_kerja.bayar_gaji');
     Route::get('/penggilingan/tenaga_kerja/tidak_hadir/{id}', [PegawaiController::class, 'tidakHadir'])->name('penggilingan.tenaga_kerja.tidak_hadir');
 
     //penitipan

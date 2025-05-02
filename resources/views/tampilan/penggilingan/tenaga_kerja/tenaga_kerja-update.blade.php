@@ -13,6 +13,7 @@
     <form action="{{ route('tenaga_kerja.update', $pegawai->id) }}" method="post">
         @csrf
         @method('PUT')
+        <input type="hidden" id="id" name="id" value="{{$pegawai->id}}">
         <!-- Input Nama -->
         <div class="mb-3">
             <label for="nama">Nama</label>

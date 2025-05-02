@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('jenis_kas');
             $table->decimal('saldo',15,2);
+            $table->decimal('saldo_lama',15,2);
             $table->timestamps();
         });
     }

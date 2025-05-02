@@ -2,7 +2,7 @@
 
 @section('container')
 <div class="judul-container">
-    <h1>Tambah Data Utang</h1>
+    <h1>Tambah Data Piutang</h1>
 </div>
 
 <div class="ms-5 me-5 p-4 border rounded shadow w-60">
@@ -21,16 +21,8 @@
                 <label for="alamat_pelanggan" class="form-label">Alamat Pelanggan</label>
                 <input type="text" class="form-control" id="alamat_pelanggan" name="alamat_pelanggan" placeholder="Masukan Alamat Pelanggan">
             </div>
-            <div class="mb-3">
-                <label for="ambil" class="form-label">Dari</label>
-                <select class="form-select" id="ambil" name="ambil">
-                    <option value="OnHand">OnHand</option>
-                    <option value="Operasional">Operasional</option>
-                    <option value="Stock">Stock</option>
-                </select>
-            </div>
             <!-- Input jumlah per stok jika ambil dari Stock -->
-            <div class="mb-3" id="jumlah_input_container" style="display: none;">
+            <div class="mb-3" id="jumlah_input_container">
                 <label for="jumlah" class="form-label">Total (Rp)</label>
                 <input type="hidden" name="jumlah_hidden" id="jumlah_hidden">
                 <input type="text" class="form-control" id="jumlah" name="jumlah" placeholder="Masukan jumlah" oninput="formatUangInput(this)">

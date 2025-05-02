@@ -16,8 +16,8 @@ class Pelanggan extends Model
         'nama',
         'alamat',
         'no_telepon',
-        'utangPiutang',
-        'total' => 0
+        'utang',
+        'piutang'
     ];
 }
 

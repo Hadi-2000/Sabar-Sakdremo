@@ -17,7 +17,7 @@
         <!-- Input Nama -->
         <div class="mb-3">
             <label for="nama">Nama Produk</label>
-            <select name="nama" id="nama" class="form-control">
+            <select name="nama" id="nama" class="form-control" disabled>
                 <option value="">Pilih Produk</option>
                 @foreach($produk as $p)
                     <option value="{{$p->nama}}" 
@@ -29,7 +29,7 @@
         </div>
          <!-- Input Stock -->
          <div class="mb-3">
-            <label for="jumlah">Jumlah Stock</label>
+            <label for="jumlah">Jumlah Stock yang dijual</label>
             <input type="hidden" name="jumlah_hidden" id="jumlah_hidden"> 
             <input type="text" class="form-control" value="{{$stock->stock}}" id="jumlah" name="jumlah" oninput="formatUangInput(this)" placeholder="Masukan Jumlah Stock">
         </div>

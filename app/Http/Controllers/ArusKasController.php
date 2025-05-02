@@ -36,6 +36,7 @@ class ArusKasController extends Controller
     }
     public function edit($id) { 
         $arus = ArusKas::find($id);
+        $arus->jumlah = number_format($arus->jumlah, 0, ',', '.');
         return view('tampilan.keuangan.kas-update', compact('arus'));
     }
     public function search(Request $request){

@@ -43,7 +43,7 @@
                 <tbody>
                     @foreach($stock as $s)
                         <tr>
-                            <td>{{ $s->created_at }}</td>
+                            <td>{{ $s->updated_at->format('Y-m-d') }}</td>
                             <td>{{ $s->nama }}</td>
                             <td>{{ $s->stock }}</td>
                             <td>

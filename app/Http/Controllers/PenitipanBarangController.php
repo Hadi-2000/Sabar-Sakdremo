@@ -30,6 +30,10 @@ class PenitipanBarangController extends Controller
             ->select('penitipan_barangs.*', 'pelanggans.nama as nama_pelanggan')
             ->orderBy('pelanggans.nama')
             ->paginate(10);
+
+            foreach($data as $item){
+                $item->updated_at = \Carbon\Carbon::parse($item->updated_at->format('Y-m-d'));
+            }
     
             return view('tampilan.penggilingan.penitipan.penitipan', compact('data'));
         }catch(\PDOException $e){

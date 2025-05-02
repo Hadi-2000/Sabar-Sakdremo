@@ -24,6 +24,7 @@ class StoreMesinRequest extends FormRequest
         return [
             'nama' => 'required|string|min:1',
             'merek' => 'required|string|min:2',
+            'deskripsi' => 'required|string|min:1'
         ];
     }
     protected function prepareForValidation()
@@ -31,6 +32,7 @@ class StoreMesinRequest extends FormRequest
         $this->merge([
             'nama' => trim(strip_tags($this->nama)),
             'merek' => trim(strip_tags($this->merek)),
+            'deskripsi' => trim(strip_tags($this->deskripsi)),
         ]);
     }
 }

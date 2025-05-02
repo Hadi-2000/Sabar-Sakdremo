@@ -26,8 +26,12 @@ class PerbaikanController extends Controller
     public function index()
     {
         try{
+            $mesin = Mesin::all()->keyBy('id');
             $perbaikan = Perbaikan::orderBy('teknisi')->paginate(10);
-            return view('tampilan.penggilingan.perbaikan.index', compact('perbaikan'));
+            foreach ($perbaikan as $item){
+                $item->updated_at = \Carbon\Carbon::parse($item->updated_at)->format('Y-m-d');
+            }
+            return view('tampilan.penggilingan.perbaikan.index', compact(['perbaikan','mesin']));
         }catch(\Exception $e){
             Log::error('Error pada PerbaikanController@index'.$e->getMessage());
             return redirect()->back()->with('error', 'Terjadi kesalahan pada server, silakan coba lagi.');
@@ -60,6 +64,7 @@ class PerbaikanController extends Controller
     try{
         DB::beginTransaction();
         $data = $request->validated();
+        //dd($data);
     
         // Cari mesin berdasarkan nama_mesin
         $mesin = Mesin::where('nama_mesin', $data['mesin'])->first();
@@ -87,7 +92,8 @@ class PerbaikanController extends Controller
     }catch (\Exception $e) {
         DB::rollBack();
         Log::error('Error pada PerbaikanController@store'.$e->getMessage());
-        return redirect()->back()->with('error', 'Terjadi kesalahan pada server, silakan coba lagi.');
+        dd($e->getMessage());
+        return redirect()->back()->with('error', 'Terjadi kesalahan pada Kode, silakan coba lagi.');
     }catch(\PDOException $e){
         DB::rollBack();
         Log::error('Error pada PerbaikanController@store'.$e->getMessage());
@@ -111,11 +117,12 @@ class PerbaikanController extends Controller
     {
         try {
             $mesin = Mesin::orderBy('nama_mesin')->get();
+            $perbaikan->biaya = number_format($perbaikan->biaya, 0, ',', '.');
             return view('tampilan.penggilingan.perbaikan.update', compact('mesin', 'perbaikan'));
-        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        } catch (\Exception $e) {
             Log::error('Data Perbaikan tidak ditemukan: ' . $e->getMessage());
             return redirect()->route('perbaikan.index')->with('error', 'Data Perbaikan Tidak Ditemukan.');
-        } catch (\Exception $e) {
+        } catch (\PDOException $e) {
             Log::error('Error pada PerbaikanController@edit: ' . $e->getMessage());
             return redirect()->route('perbaikan.index')->with('error', 'Terjadi kesalahan pada server.');
         }
@@ -146,7 +153,7 @@ class PerbaikanController extends Controller
         }catch(\Exception $e){
             DB::rollBack();
             Log::error('Error pada PerbaikanController@update'.$e->getMessage());
-            return redirect()->back()->with('error', 'Terjadi kesalahan pada server, silakan coba lagi.');
+            return redirect()->back()->with('error', 'Terjadi kesalahan pada kode, silakan coba lagi.');
         }catch(\PDOException $e){
             DB::rollBack();
             Log::error('Error pada PerbaikanController@update'.$e->getMessage());

@@ -8,7 +8,7 @@
     @endif
 
     <script src="{{ asset('js/dashboard.js') }}"></script>
-    <!--<script src="{{ /*asset('js/view-chart.js')*/ }}"></script> -->
+    
 
     <div class="judul-container">
       <h1>Dashboard</h1>
@@ -17,7 +17,7 @@
     <div class="card mb-3 total-asset">
         <div class="card-body">
           <h5 class="card-title">Total Asset</h5>
-          <p class="card-text format" data-saldo="{{ $kasData['totalAsset']->saldo ?? 0 }}">
+          <p class="card-text format text-dark" data-saldo="{{ $kasData['totalAsset']->saldo ?? 0 }}">
             Rp. {{ number_format($kasData['totalAsset']->saldo ?? 0, 0, ',', '.') }}
         </p>
           <p class="card-text"><small class="text-body-secondary">{{"last update ".$kasData['totalAsset']->updated_at}}</small></p>
@@ -129,39 +129,42 @@
             </div>
           </div>
       </div>
+      
+      <div class="d-none">
+        <label for="chart">Pilih Kategori: </label>
+        <select id="chart">
+            <option value="total-asset">Total Asset</option>
+            <option value="total-on-hand">Total Kas On Hand</option>
+            <option value="total-operasional">Total Kas On Operasional</option>
+            <option value="total-stock">Total Stock</option>
+            <option value="total-utang">Total Utang</option>
+            <option value="total-piutang">Total Piutang</option>
+            <option value="pengeluaran-hari-ini">Total Pengeluaran Hari ini</option>
+            <option value="pendapatan-kotor">Pendapatan Kotor</option>
+            <option value="pendapatan-bersih">Pendapatan Bersih</option>
+            <option value="selisih-keuangan">Selisih Keuangan</option>
+        </select>
 
-      <label for="chart">Pilih Kategori: </label>
-      <select id="chart">
-          <option value="total-asset">Total Asset</option>
-          <option value="total-on-hand">Total Kas On Hand</option>
-          <option value="total-operasional">Total Kas On Operasional</option>
-          <option value="total-stock">Total Stock</option>
-          <option value="total-utang">Total Utang</option>
-          <option value="total-piutang">Total Piutang</option>
-          <option value="pengeluaran-hari-ini">Total Pengeluaran Hari ini</option>
-          <option value="pendapatan-kotor">Pendapatan Kotor</option>
-          <option value="pendapatan-bersih">Pendapatan Bersih</option>
-          <option value="selisih-keuangan">Selisih Keuangan</option>
-      </select>
-
-      <!-- Input tanggal -->
-      <div class="d-flex">
-        <p>Dari : </p><input type="date" id="mulai">
-        <p> Sampai : </p><input type="date" id="akhir">
+        <!-- Input tanggal -->
+        <div class="d-flex">
+          <p>Dari : </p><input type="date" id="mulai">
+          <p> Sampai : </p><input type="date" id="akhir">
+        </div>
+        
+        <button class="btn btn-outline-success" id="loadData">Tampilkan Grafik</button>
+        <!-- /.grafik -->
+        <div class="grafik">
+          <p>Judul Grafik</p>
+      
+          <div class="chart-container isi-grafik">
+              <!-- Dropdown pilihan grafik -->
+      
+              <!-- Grafik -->
+              <canvas id="myChart"></canvas>
+          </div>
+      </div>
       </div>
       
-      <button class="btn btn-outline-success" id="loadData">Tampilkan Grafik</button>
-      <!-- /.grafik -->
-      <div class="grafik">
-        <p>Judul Grafik</p>
-    
-        <div class="chart-container isi-grafik">
-            <!-- Dropdown pilihan grafik -->
-    
-            <!-- Grafik -->
-            <canvas id="myChart"></canvas>
-        </div>
-    </div>
      
 
 @endsection

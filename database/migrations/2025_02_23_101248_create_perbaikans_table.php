@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('teknisi');
             $table->string('keterangan');
             $table->decimal('biaya',15,2);
-            $table->enum('status', ["Sedang Dikerjakan", "Selesai", "Dibatalkan"]);
+            $table->string('status',15);
             $table->date('tanggal_perbaikan');
             $table->foreign('id_mesin')->references('id')->on('mesins');
             $table->timestamps();

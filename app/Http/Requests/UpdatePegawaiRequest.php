@@ -23,9 +23,10 @@ class UpdatePegawaiRequest extends FormRequest
     public function rules(): array
     {
         return [
+            'id' => 'required',
             'nama'=> 'required|string|min:2',
             'alamat'=> 'required|string|min:2',
-            'no_telp'=> ['nullable',new ValidePhoneNumber()],
+            'no_telp'=> 'nullable|numeric',
             'jumlah_hidden'=>  'required|numeric|min:1',
         ];
     }

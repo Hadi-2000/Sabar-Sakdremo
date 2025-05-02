@@ -25,11 +25,6 @@
             <textarea type="text" class="form-control" id="deskripsi" name="deskripsi" required placeholder="Masukan Alamat">{{$produk->deskripsi}}</textarea>
         </div>
         <div class="mb-3">
-            <label for="jumlah">Jumlah Produk</label>
-            <input type="hidden" name="jumlah_hidden" id="jumlah_hidden"> 
-            <input type="text" class="form-control" id="jumlah" name="jumlah" value="{{$produk->jumlah}}" oninput="formatUangInput(this)" placeholder="Masukan jumlah Produk">
-        </div>
-        <div class="mb-3">
             <label for="satuan">Satuan</label>
             <select class="form-select" id="satuan" name="satuan" required>
                 <option value="">Pilih Satuan</option>
@@ -40,7 +35,7 @@
         </div>
         <div class="mb-3">
             <label for="harga_satuan">Harga Satuan</label>
-            <input class="form-control" type="text" name="harga_satuan" id="harga_satuan" value="{{$produk->harga_satuan}}" placeholder="Masukan Harga Per Satuan Produk">
+            <input class="form-control" type="text" name="harga_satuan" id="harga_satuan" value="{{$produk->harga_satuan}}" oninput="formatUangInput(this)" placeholder="Masukan Harga Per Satuan Produk">
         </div>
         <!-- Submit -->
         <button type="submit" class="btn btn-primary">Submit</button>

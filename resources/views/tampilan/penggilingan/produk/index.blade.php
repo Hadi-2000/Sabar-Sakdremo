@@ -15,7 +15,7 @@
 
             </div>
         @endif
-        <div class="col-md-9" id="accordion">
+        <div id="accordion">
             <!-- penitipan -->
                 <form action="{{route('penggilingan.aset.search')}}" method="get" class="d-flex kas-search mb-3" role="search">
                     <input class="form-control me-2" name="query" id="query" type="search" placeholder="Search" aria-label="Search">
@@ -28,8 +28,8 @@
                         <tr>
                             <th>Tanggal</th>
                             <th>Nama</th>
-                            <th>Jumlah</th> 
                             <th>Deskripsi</th>
+                            <th>Harga Satuan</th>
                             <th>Aksi</th>
                         </tr>
                     </thead>
@@ -37,10 +37,10 @@
                         @if (!empty($produk))
                             @foreach ($produk as $p)
                                 <tr>
-                                    <td>{{$p->updated_at}}</td>
+                                    <td class="text-nowrap">{{$p->updated_at->format('Y-m-d')}}</td>
                                     <td>{{$p->nama}}</td>
-                                    <td>{{ number_format($p->jumlah ?? 0) . " " . ($p->satuan ?? '') }}</td>
                                     <td>{{$p->deskripsi}}</td>
+                                    <td>{{$p->harga_satuan}}</td>
                                     <td class="d-flex m-1">
                                         <a class="btn btn-primary me-1" href="{{route('aset.edit', $p->id)}}">Update</a>
                                         <form method="POST" action="{{route('aset.destroy', $p->id)}}" onsubmit="return confirm('Anda yakin ingin menghapus data ini?')" style="display: inline;">

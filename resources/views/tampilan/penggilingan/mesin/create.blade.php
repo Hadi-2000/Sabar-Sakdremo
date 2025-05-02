@@ -17,12 +17,16 @@
     <form action="{{ route('mesin.store') }}" method="post">
         @csrf
         <div class="form-group">
-            <label for="nama_aset">Nama Mesin</label>
+            <label for="nama">Nama Mesin</label>
             <input type="text" class="form-control" id="nama" name="nama" required placeholder="Masukan Nama Mesin">
         </div>
-        <div class="form-group" mt-3>
-            <label for="lokasi_aset">Merek Mesin</label>
+        <div class="form-group">
+            <label for="merek">Merek Mesin</label>
             <input type="text" class="form-control" id="merek" name="merek" required placeholder="Masukan Merek Mesin">
+        </div>
+        <div class="form-group mt-3">
+            <label for="deskripsi">Deskripsi Mesin</label><br>
+            <textarea class="border p-2 form-area w-100" id="deskripsi" name="deskripsi" rows="3" required placeholder="Masukan Deskripsi Mesin"></textarea>
         </div>
         <button type="submit" class="btn btn-primary mt-3">Submit</button>
     </form>

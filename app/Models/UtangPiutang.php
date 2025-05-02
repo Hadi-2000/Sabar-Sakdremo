@@ -12,5 +12,5 @@ class UtangPiutang extends Model
 
     protected $table = 'utang_piutangs';
 
-    protected $fillable = ['id_pelanggan','nama','alamat','keterangan','jenis','ambil','nominal','status'];
+    protected $fillable = ['id_pelanggan','nama','alamat','keterangan','jenis','nominal','status'];
 }

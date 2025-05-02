@@ -28,6 +28,9 @@ class MesinController extends Controller
     {
         try{
             $mesin = Mesin::orderBy('nama_mesin')->paginate(10);
+            foreach ($mesin as $item){
+                $item->created_at = \Carbon\Carbon::parse($item->created_at)->format('Y-m-d');
+            }
             return view('tampilan.penggilingan.mesin.index', compact('mesin'));
         }catch(\Exception $e){
             Log::error('Error pada MesinController@index :'.$e->getMessage());
@@ -55,6 +58,7 @@ class MesinController extends Controller
             Mesin::create([
                 'nama_mesin' => $data['nama'],
                 'merek_mesin' => $data['merek'],
+                'deskripsi' => $data['deskripsi']
             ]);
             DB::commit();
             return redirect()->route('mesin.index')->with('success', 'Data Mesin Berhasil Ditambahkan');
@@ -97,7 +101,8 @@ class MesinController extends Controller
             DB::beginTransaction();
             $mesin->update([
                 'nama_mesin' => $data['nama'],
-            'merek_mesin' => $data['merek'],
+                'merek_mesin' => $data['merek'],
+                'deskripsi' => $data['deskripsi']
             ]);
             DB::commit();
             return redirect()->route('mesin.index')->with('success', 'Data Mesin Berhasil Diubah');
@@ -131,6 +136,7 @@ class MesinController extends Controller
         }else{
             $mesin = Mesin::where('nama_mesin', 'LIKE', "%{$query}%")
             ->orWhere('merek_mesin','LIKE',"%{$query}%")
+            ->orWhere('deskripsi','LIKE',"%{$query}%")
             ->orderBy('merek_mesin')
             ->paginate(10);
         }

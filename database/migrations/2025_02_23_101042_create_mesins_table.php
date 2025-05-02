@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('nama_mesin');
             $table->string('merek_mesin');
+            $table->string('deskripsi');
             $table->timestamps();
         });
     }

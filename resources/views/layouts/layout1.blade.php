@@ -52,7 +52,7 @@
             </style>
         @endif
     </head>
-    <body class="font-sans antialiased dark:bg-black dark:text-white/50 d-flex flex-column min-vh-100">
+    <body class="font-sans antialiased d-flex flex-column min-vh-100">
         @include('layouts.navbar')
         <div class="container">
             @yield('container')

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Throwable;
 use App\Models\kas;
 use App\Models\Aset;
 use App\Models\Stock;
@@ -78,87 +79,76 @@ class PiutangController extends Controller
      */
     public function store(StoreUtangPiutangRequest $request)
     {
-        try{
+        try {
             DB::beginTransaction();
-            $data = $request->validated();
-                $data['jumlah'] = str_replace('.','',$data['jumlah']);
-                $jumlah = $data['jumlah'];
     
-            $param = pelanggan::firstOrCreate([
-                [ 'nama' => $data['nama_pelanggan']],
-                [ 'alamat' => $data['alamat_pelanggan']],
-            ]);
-            // Perbarui alamat jika berbeda
-            if ($param->alamat !== $data['alamat_pelanggan']) {
+            $data = $request->validated();
+            $data['jumlah'] = str_replace('.', '', $data['jumlah']);
+            $jumlah = (int) $data['jumlah'];
+    
+            // Cek atau buat pelanggan berdasarkan nama
+            $param = pelanggan::firstOrCreate(
+                ['nama' => $data['nama_pelanggan']],
+                ['alamat' => $data['alamat_pelanggan']]
+            );
+    
+            // Perbarui alamat jika sudah ada tapi berbeda
+            if ($param->wasRecentlyCreated === false && $param->alamat !== $data['alamat_pelanggan']) {
                 $param->update(['alamat' => $data['alamat_pelanggan']]);
             }
     
+            // Simpan data utang/piutang
             UtangPiutang::create([
-                'id_pelanggan' => $param->id,
-                'nama' => $data['nama_pelanggan'],
-                'alamat' => $data['alamat_pelanggan'],
-                'keterangan' => $data['keterangan'],
-                'ambil' => $data['ambil'],
-                'jenis' => 'Piutang',
-                'nominal' => $jumlah,
-               'status' => 'Belum Lunas',
+                'id_pelanggan'   => $param->id,
+                'nama'           => $data['nama_pelanggan'],
+                'alamat'         => $data['alamat_pelanggan'],
+                'keterangan'     => $data['keterangan'],
+                'jenis'          => 'Piutang',
+                'nominal'        => $jumlah,
+                'status'         => 'Belum Lunas',
             ]);
-            //megatur kas di database kas 
-            $base = kas::whereIn('jenis_kas',['totalAsset','OnHand','Operasional','Utang','Piutang'])->get();
-            //juka utang jumlah kurang dari jumlah piutang
-            if($base['Utang']->saldo < $jumlah && $base['Utang']->saldo == 0){
-                $base['Piutang']->update('saldo', $jumlah - $base['Utang']->saldo);
+    
+            // Ambil semua jenis kas yang dibutuhkan
+            $kas = kas::whereIn('jenis_kas', ['totalAsset', 'OnHand', 'Operasional', 'Utang', 'Piutang', 'stock'])->get();
+    
+            // Ambil masing-masing jenis kas
+            $kasPiutang     = $kas->where('jenis_kas', 'Piutang')->first();
+            $kasUtang       = $kas->where('jenis_kas', 'Utang')->first();
+            $kasOnHand      = $kas->where('jenis_kas', 'OnHand')->first();
+            $kasOperasional = $kas->where('jenis_kas', 'Operasional')->first();
+            $kasStock       = $kas->where('jenis_kas', 'stock')->first();
+            $kasTotalAsset  = $kas->where('jenis_kas', 'totalAsset')->first();
+    
+            // Tambahkan ke saldo piutang
+            if ($kasPiutang) {
+                $kasPiutang->update(['saldo' => $kasPiutang->saldo + $jumlah]);
             }
-            //jika pelanggan memiliki utang kurang dari julah
-            if($param->utangPiutang == 'Utang' && $param->total < $jumlah){
-                $base['Utang']->update('saldo', $base['Utang']->saldo - $param->total);
-                $param->update([
-                    'utangPiutang' => 'Piutang',
-                    'total' => $jumlah - $param->total
+    
+            // Tambahkan piutang ke pelanggan
+            $param->update([
+                'piutang' => $param->piutang + $jumlah,
+            ]);
+    
+            // Update total asset
+            if ($kasTotalAsset) {
+                $kasTotalAsset->update([
+                    'saldo' => 
+                        optional($kasOnHand)->saldo +
+                        optional($kasOperasional)->saldo +
+                        optional($kasPiutang)->saldo +
+                        optional($kasStock)->saldo -
+                        optional($kasUtang)->saldo
                 ]);
-                $base['Piutang']->update('saldo', $base['Piutang']->saldo + $param->total);
-            }else if ($param->utangPiutang == 'Utang' && $param->total > $jumlah){
-                $base['Utang']->update('saldo', $base['Utang']->saldo - $jumlah);
-                $param->update('total', $param->total - $jumlah);
-            }else if($param->utangPiutang == 'Piutang'){
-                $base['Piutang']->update('saldo', $base['Piutang']->saldo + $jumlah);
-                $param->update('total', $param->total + $jumlah);
             }
-            
-            if($data['ambil'] == 'OnHand'){
-                $base['OnHand']->update('saldo', $base['OnHand']->saldo - $jumlah);
-                ArusKas::create([
-                    'idKas' => 2, // Pastikan nama kolom benar
-                    'keterangan' => 'Piutang',
-                    'jenis_kas' => 'OnHand',
-                    'jenis_transaksi' => 'Keluar',
-                    'jumlah' => $jumlah
-                ]);
-            }else if($data['ambil'] == 'Operasional'){
-                $base['Operasional']->update('saldo', $base['Operasional']->saldo - $jumlah);
-                ArusKas::create([
-                    'idKas' => 10, // Pastikan nama kolom benar
-                    'keterangan' => 'Piutang',
-                    'jenis_kas' => 'Operasional',
-                    'jenis_transaksi' => 'Keluar',
-                    'jumlah' => $jumlah
-                ]);
-            } //kurang stock belum
-           
-            $base['totalAsset']->update('saldo', $base['TotalAsset']->saldo - $jumlah);
+    
             DB::commit();
-            
-            return redirect()->route('piutang.index')->with('success', 'Data utang berhasil ditambahkan');
-        }catch(\Exception $e){
-            DB::rollback();
-            Log::error('Error pada PiutangController'.$e->getMessage());
-            return redirect()->route('piutang.index')->with('error', 'Terjadi kesalahan pada server');
-        }catch(\PDOException $e){
-            DB::rollback();
-            Log::error('Error pada PiutangController'.$e->getMessage());
+            return redirect()->route('piutang.index')->with('success', 'Data piutang berhasil ditambahkan');
+    
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Error pada PiutangController: ' . $e->getMessage());
             return redirect()->route('piutang.index')->with('error', 'Terjadi kesalahan pada server');
         }
-        
     }
 
     /**
@@ -175,6 +165,7 @@ class PiutangController extends Controller
     public function edit($id)
     {
         $utang = UtangPiutang::find($id);
+        $utang->nominal = number_format($utang->nominal,0,',','.');
         return view('tampilan.keuangan.piutang.update', compact('utang'));
     }
 
@@ -183,116 +174,79 @@ class PiutangController extends Controller
      */
     public function update(UpdateUtangPiutangRequest $request, $id)
     {
-        try{
+        try {
             DB::beginTransaction();
+    
             $data = $request->validated();
-            $base = Kas::whereIn('jenis_kas',['totalAsset','OnHand','Operasional','Utang','Piutang'])->get()->keyBy('jenis_kas');
-            $data['jumlah'] = str_replace('.','',$data['jumlah']);
+            $data['jumlah'] = (int) str_replace('.', '', $data['jumlah']);
+    
+            $base = Kas::whereIn('jenis_kas', ['totalAsset', 'OnHand', 'Operasional', 'Utang', 'Piutang', 'stock'])
+                        ->get()
+                        ->keyBy('jenis_kas');
     
             $utang = UtangPiutang::find($id);
-            $data_pelanggan = Pelanggan::where('nama',$utang->nama)->first();
-            if(!$data_pelanggan){
-                return redirect()->route('piutang.index')->with('error','Data pelanggan tidak ditemukan');
+            
+            $data_pelanggan = Pelanggan::where('nama', $utang->nama)->first();
+            
+            if (!$data_pelanggan) {
+                return redirect()->route('piutang.index')->with('error', 'Data pelanggan tidak ditemukan');
             }
-            if($utang->jenis == $data['jenis'] && $utang->jenis == 'Piutang'){
-                if($utang->ambil == $data['ambil'] && $utang->ambil == 'OnHand'){
-                    $saldo_pelanggan_lama = $data_pelanggan->total;
-
-                     //Tambah data OnHand
-                     $base['OnHand']->create([
-                        'idKas' => 2, // Pastikan nama kolom benar
-                        'keterangan' => $data['keterangan'],
-                        'jenis_kas' => $data['ambil'],
-                        'jenis_transaksi' => $data['masuk'],
-                        'jumlah' => $data['jumlah'],
+    
+            $data_lama = $utang->nominal;
+            
+            // Jika jenisnya sama
+            if ($utang->jenis === $data['jenis']) {
+                if ($data['jenis'] === 'Piutang') {
+                    $base['Piutang']->update(['saldo' => $base['Piutang']->saldo - $data_lama + $data['jumlah']]);
+                    $data_pelanggan->update([
+                        'piutang' => $data_pelanggan->piutang - $data_lama + $data['jumlah']
                     ]);
-                    //tidak lunas -> tidak lunas
-                    if($utang->status == 'Tidak Lunas'){                            
-                        //piutang -> piutang
-                        if($data_pelanggan->utangPiutang == $data['jenis'] && $data['jenis'] == 'Piutang'){
-                            if($data['status'] == 'Tidak Lunas'){
-                                $data_pelanggan->update([
-                                    'total' => $data_pelanggan->total - $utang->nominal + $data['jumlah'],
-                                ]);
-                                //update kas utama utang
-                                $base['OnHand']->update(['saldo' => $base['OnHand']->saldo + $utang->nominal - $data['jumlah']]);
-                                $base['Piutang']->update(['saldo'=> $base['Piutang']->saldo - $utang->nominal + $data['jumlah']]);   
-                            }elseif($data['status'] == 'Lunas'){
-                                if($utang->nominal == $data['jumlah']){
-                                    $data_pelanggan->update([
-                                        'total' => $data_pelanggan->total - $utang->nominal,
-                                    ]);
-                                    //update kas utama utang
-                                    $base['OnHand']->update(['saldo' => $base['OnHand']->saldo + $utang->nominal]);
-                                    $base['Piutang']->update(['saldo'=> $base['Piutang']->saldo - $utang->nominal]);
-                                }else{
-                                    $data_pelanggan->update([
-                                        'total' => $data_pelanggan->total - $utang->nominal,
-                                    ]);
-                                    //update kas utama utang
-                                    $base['OnHand']->update(['saldo' => $base['OnHand']->saldo + $utang->nominal]);
-                                    $base['Piutang']->update(['saldo'=> $base['Piutang']->saldo - $utang->nominal]);
-                                }
-                            }
-                            //piutang -> utang
-                        }elseif($data_pelanggan->utangPiutang != $data['jenis'] && $data['jenis'] == 'Utang'){
-                            //update kas utama utang
-                            $base['OnHand']->update(['saldo' => $base['OnHand']->saldo + $utang->nominal - $data['jumlah']]);
-                            $base['Piutang']->update(['saldo' => $base['Piutang']->saldo - $data_pelanggan->total]);
-                            $base['Utang']->update([['saldo'] => $base['Utang']->saldo + $data['jumlah'] - $data_pelanggan->total]);
-                            $utang->update(['jenis' => 'Utang']);
-                            $data_pelanggan->update([
-                                'utangPiutang' => 'Utang',
-                                'total' => $data['jumlah'],
-                            ]);
-                        }
-                        
-                        //bagian bawah direnov
-                    //tidak lunas -> lunas
-                    }elseif($utang->status == 'Tidak Lunas'){
-                        $utang->update(['status' => 'Lunas']); 
-                        //piutang -> piutang
-                        if($data_pelanggan->utangPiutang == $data['jenis'] && $data['jenis'] == 'Piutang'){
-                            //update kas utama utang
-                            $base['OnHand']->update(['saldo' => $base['OnHand']->saldo + $data['jumlah']]);
-                            $base['Piutang']->update(['saldo' => $base['Piutang']->saldo - $data['jumlah']]);
-                            $data_pelanggan->update([
-                                'total' => $data_pelanggan->total - $utang->nominal
-                            ]);
-                            //piutang -> utang
-                        }elseif($data_pelanggan->utangPiutang != $data['jenis'] && $data['jenis'] == 'Utang'){
-                            //update kas utama utang
-                            $base['OnHand']->update(['saldo' => $base['OnHand']->saldo + $data['jumlah']]);
-                            $base['Piutang']->update(['saldo' => $base['Piutang']->saldo - $data_pelanggan->total]);
-                            $base['Utang']->update([['saldo'] => $base['Utang']->saldo + $data['jumlah']]);
-                            $base['totalAsset']->update(['saldo' => $base['OnHand'] + $base['Operasional'] + $base['Piutang'] - $base['Utang']]);
-
-                            $data_pelanggan->update([
-                                'utangPiutang' => 'Utang',
-                                'total' => $data['jumlah'],
-                            ]);
-                    }
+                } elseif ($data['jenis'] === 'Utang') {
+                    $base['Utang']->update(['saldo' => $base['Utang']->saldo - $data_lama + $data['jumlah']]);
+                    $data_pelanggan->update([
+                        'utang' => $data_pelanggan->utang - $data_lama + $data['jumlah']
+                    ]);
+                }
             }
+            // Jika jenis diubah
+            else {
+                if ($data['jenis'] === 'Piutang') {
+                    $base['Utang']->update(['saldo' => $base['Utang']->saldo - $data_lama]);
+                    $base['Piutang']->update(['saldo' => $base['Piutang']->saldo + $data['jumlah']]);
+                    $data_pelanggan->update([
+                        'utang'   => $data_pelanggan->utang - $data_lama,
+                        'piutang' => $data_pelanggan->piutang + $data['jumlah']
+                    ]);
+                } elseif ($data['jenis'] === 'Utang') {
+                    $base['Utang']->update(['saldo' => $base['Utang']->saldo + $data['jumlah']]);
+                    $base['Piutang']->update(['saldo' => $base['Piutang']->saldo - $data_lama]);
+                    $data_pelanggan->update([
+                        'piutang' => $data_pelanggan->piutang - $data_lama,
+                        'utang'   => $data_pelanggan->utang + $data['jumlah']
+                    ]);
+                }
+                $utang->update(['jenis' => $data['jenis']]);
+            }
+    
+            // Update data utang/piutang
             $utang->update([
                 'keterangan' => $data['keterangan'],
-                'ambil' => $data['ambil'],
-                'nominal' => $data['jumlah'],
+                'nominal'    => $data['jumlah'],
             ]);
-            $base['totalAsset']->update(['saldo' => $base['OnHand'] + $base['Operasional'] + $base['Piutang'] - $base['Utang']]);
-        }
-                DB::commit();
-                return redirect()->route('piutang.index')->with('success', 'Data utang berhasil diubah');
-            } else {
-                return redirect()->route('piutang.index')->with('error', 'Data utang tidak ditemukan.');
-            }
-        }catch(\Exception $e){
-            DB::rollback();
-            Log::error('Error pada PiutangController'.$e->getMessage());
-            return redirect()->route('piutang.index')->with('error', 'Terjadi kesalahan pada server');
-        }catch(\PDOException $e){
-            DB::rollback();
-            Log::error('Error pada PiutangController'.$e->getMessage());
-            return redirect()->route('piutang.index')->with('error', 'Terjadi kesalahan pada server');
+    
+            DB::commit();
+            return redirect()->route('piutang.index')->with('success', 'Data utang berhasil diubah');
+        } catch (Throwable $e) {
+            DB::rollBack();
+            Log::error('Gagal update data utang/piutang', [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+                'utang_id' => $id,
+                'input_data' => $request->all(),
+            ]);
+            return redirect()->route('piutang.index')->with('error', 'Terjadi kesalahan saat memproses data');
         }
     }
 
@@ -300,17 +254,91 @@ class PiutangController extends Controller
      * Remove the specified resource from storage.
      */
     public function destroy($id)
-    {
-        try{
-            $utang = UtangPiutang::find($id);
-            if ($utang === null) {
-                return redirect()->route('piutang.index')->with('error', 'Data Utang Tidak Ditemukan.');
-            }
-            $utang->delete();
-            return redirect()->route('piutang.index')->with('success', 'Data Utang Berhasil Dihapus.');
-           }catch(\Exception $e){
-            Log::error('Error pada PiutangController'.$e->getMessage());
-            return redirect()->route('piutang.index')->with('error', 'Terjadi kesalahan pada server');
-           }
+{
+    try {
+        DB::beginTransaction();
+        $utang = UtangPiutang::find($id);
+
+        if (!$utang) {
+            return redirect()->route('piutang.index')->with('error', 'Data Utang Tidak Ditemukan.');
         }
+
+        $data_pelanggan = Pelanggan::where('nama', $utang->nama)->first();
+        $base = Kas::whereIn('jenis_kas', ['totalAsset', 'OnHand', 'Operasional', 'Utang', 'Piutang', 'stock'])->get()->keyBy('jenis_kas');
+
+        if ($utang->jenis == 'Piutang') {
+            $base['Piutang']->update(['saldo' => $base['Piutang']->saldo - $utang->nominal]);
+            $data_pelanggan->update([
+                'piutang' => $data_pelanggan->piutang - $utang->nominal
+            ]);
+        } elseif ($utang->jenis == 'Utang') {
+            $base['Utang']->update(['saldo' => $base['Utang']->saldo - $utang->nominal]);
+            $data_pelanggan->update([
+                'utang' => $data_pelanggan->utang - $utang->nominal
+            ]);
+        }
+
+        $base['totalAsset']->update([
+            'saldo' =>
+                $base['OnHand']->saldo +
+                $base['Operasional']->saldo +
+                $base['Piutang']->saldo +
+                ($base['stock']->saldo ?? 0) -
+                $base['Utang']->saldo
+        ]);
+
+        $utang->delete();
+
+        DB::commit();
+        return redirect()->route('piutang.index')->with('success', 'Data Utang Berhasil Dihapus.');
+    } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error('Error pada PiutangController: ' . $e->getMessage());
+        return redirect()->route('piutang.index')->with('error', 'Terjadi kesalahan pada server');
+    }
+}
+public function lunas($id)
+{
+    try {
+        DB::beginTransaction();
+        $utang = UtangPiutang::find($id);
+
+        if (!$utang) {
+            return redirect()->route('piutang.index')->with('error', 'Data tidak ditemukan.');
+        }
+
+        $data_pelanggan = Pelanggan::where('nama', $utang->nama)->first();
+        $base = Kas::whereIn('jenis_kas', ['totalAsset', 'OnHand', 'Operasional', 'Utang', 'Piutang', 'stock'])->get()->keyBy('jenis_kas');
+        if($utang->status == 'Belum Lunas'){
+            if ($utang->jenis == 'Utang') {
+                $base['Utang']->update(['saldo' => $base['Utang']->saldo - $utang->nominal]);
+                $data_pelanggan->update([
+                    'utang' => $data_pelanggan->utang - $utang->nominal
+                ]);
+            } elseif ($utang->jenis == 'Piutang') {
+                $base['Piutang']->update(['saldo' => $base['Piutang']->saldo - $utang->nominal]);
+                $data_pelanggan->update([
+                    'piutang' => $data_pelanggan->piutang - $utang->nominal
+                ]);
+            }
+    
+            $utang->update(['status' => 'Lunas']);    
+        }
+        $base['totalAsset']->update([
+            'saldo' =>
+                $base['OnHand']->saldo +
+                $base['Operasional']->saldo +
+                $base['Piutang']->saldo +
+                ($base['stock']->saldo ?? 0) -
+                $base['Utang']->saldo
+        ]);
+        DB::commit();
+        return redirect()->route('piutang.index')->with('success', 'Data Utang sudah Lunas.');
+    } catch (\Exception $e) {
+        DB::rollBack();
+        Log::error('Error pada PiutangController: ' . $e->getMessage());
+        return redirect()->route('piutang.index')->with('error', 'Terjadi kesalahan pada server');
+    }
+}
+
 }

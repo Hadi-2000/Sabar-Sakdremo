@@ -40,8 +40,8 @@
             @if (!$arus->isEmpty())
                 @foreach ($arus as $kas)
                     <tr>
-                        <td>{{ $kas->created_at }}</td>
-                        <td>{{ $kas->updated_at }}</td>
+                        <td>{{ $kas->created_at->format('Y-m-d') }}</td>
+                        <td>{{ $kas->updated_at->format('Y-m-d') }}</td>
                         <td>{{ $kas->keterangan }}</td>
                         <td>{{ $kas->jenis_kas }}</td>
                         <td>{{ $kas->jenis_transaksi }}</td>

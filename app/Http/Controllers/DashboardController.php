@@ -17,8 +17,16 @@ class DashboardController extends Controller
         exit; // Pastikan eksekusi berhenti di sini
     }
 
+    $tgl = date('Y-m-d');
+    $base = kas::where('jenis_kas', 'totalAsset')->first();
+
+    if($base->updated_at->format('Y-m-d') != $tgl){
+        $base->update(['saldo_lama'=> $base->saldo]);
+    }
+    $base->update(['saldo_lama' => $base->saldo]);
+
     // Ambil data kas dan jadikan key-nya sebagai jenis_kas
-    $kasData = Kas::whereIn('jenis_kas', [
+    $kasData = kas::whereIn('jenis_kas', [
         'totalAsset', 'OnHand', 'Operasional', 'Stock',
         'Utang', 'Piutang', 'labaBersih', 'labaKotor',
         'pengeluaran', 'selisih'

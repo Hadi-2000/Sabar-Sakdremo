@@ -23,8 +23,10 @@
         <thead>
             <tr>
                 <th>Tanggal</th>
+                <th>Nama Mesin</th>
                 <th>Nama Teknisi</th>
                 <th>Keterangan</th>
+                <th>Biaya</th>
                 <th>Status</th>
                 <th>Aksi</th>
             </tr>
@@ -32,9 +34,11 @@
         <tbody>
             @foreach ($perbaikan as $p)
                 <tr>
-                    <td>{{ $p->created_at }}</td>
+                    <td>{{ $p->updated_at->format('Y-m-d') }}</td>
+                    <td>{{$mesin[$p->id_mesin]->nama_mesin." - ".$mesin[$p->id_mesin]->merek_mesin}}</td>
                     <td>{{ $p->teknisi }}</td>
                     <td>{{ $p->keterangan }}</td>
+                    <td>{{ "Rp. ".number_format($p->biaya, 0, ',','.')}}</td>
                     <td>{{ $p->status }}</td>
                     <td>
                         <a href="{{ route('perbaikan.edit', $p->id) }}"><button class="btn btn-warning">Edit</button></a>
