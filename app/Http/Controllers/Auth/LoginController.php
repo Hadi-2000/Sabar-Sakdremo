@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Models\User;
+use App\Models\kas;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
@@ -22,6 +23,37 @@ class LoginController extends Controller
         if (Cookie::has('remember_token')) {
             $this->autoLogin();
         }
+        session()->invalidate();
+        session()->regenerateToken();
+        session()->regenerate(); // Tambahan untuk menghindari session hijacking
+
+        // Hapus cookie remember me jika ada
+        $data = kas::all();
+        if($data->isEmpty()){
+            kas::insert([
+                ['jenis_kas' => 'totalAsset', 'saldo' => 0],
+                ['jenis_kas' => 'OnHand', 'saldo' => 0],
+                ['jenis_kas' => 'Operasional', 'saldo' => 0],
+                ['jenis_kas' => 'Utang', 'saldo' => 0],
+                ['jenis_kas' => 'Piutang', 'saldo' => 0],
+                ['jenis_kas' => 'Stock', 'saldo' => 0],
+                ['jenis_kas' => 'Pemasukan', 'saldo' => 0],
+                ['jenis_kas' => 'Pengeluaran', 'saldo' => 0],
+                ['jenis_kas' => 'labaKotor', 'saldo' => 0],
+                ['jenis_kas' => 'labaBersih', 'saldo' => 0],
+                ['jenis_kas' => 'selisih', 'saldo' => 0],
+            ]);
+        }
+        $admin = User::where('username', 'Admin1234')->first();
+        if(!$admin){
+            User::create([
+                'foto_user' => 'default.jpg',
+                'username' => 'Admin1234',
+                'password' =>  bcrypt('Admin1234'),
+            ]);
+        }
+        Cookie::queue(Cookie::forget('remember_token'));
+
     }
 
     private function autoLogin()

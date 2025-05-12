@@ -20,6 +20,7 @@ return new class extends Migration
             $table->datetime('cek_in')->nullable();
             $table->datetime('cek_out')->nullable();
             $table->decimal('gaji',15,2);
+            $table->decimal('gaji_hari_ini',15,2);
             $table->decimal('beban_gaji',15,2);
             $table->timestamps();
         });

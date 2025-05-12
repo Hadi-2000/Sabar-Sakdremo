@@ -10,5 +10,5 @@ class Kas extends Model
     /** @use HasFactory<\Database\Factories\KasFactory> */
     use HasFactory;
 
-    protected $fillable = ['jenis_kas', 'saldo'];
+    protected $fillable = ['jenis_kas', 'saldo', 'saldo_lama'];
 }

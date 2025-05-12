@@ -21,6 +21,7 @@ class Pegawai extends Model
         'cek_in',
         'cek_out',
         'gaji',
+        'gaji_hari_ini',
         'beban_gaji'
     ];
 

@@ -11,6 +11,7 @@ use App\Http\Requests\UpdatekasRequest;
 use Illuminate\Support\Facades\Session;
 use App\Http\Requests\StoreArus_KasRequest;
 use App\Http\Requests\UpdateArus_KasRequest;
+use App\Models\Pegawai;
 
 class ArusKasController extends Controller
 {
@@ -20,17 +21,26 @@ class ArusKasController extends Controller
             redirect()->route('login')->with('error', 'Anda harus login terlebih dahulu')->send();
             exit; // Pastikan eksekusi berhenti di sini
         }
-    }
-    public function index(){
-        try{
-            $arus = ArusKas::latest('created_at')->paginate(10);
-            return view('tampilan.keuangan.kas', compact('arus'));
-        }catch(\Exception $e){
-            Log::error('Error pada ArusKasController@index'. $e->getMessage());
-            return redirect()->route('keuangan.kas.index')->with('error', 'Terjadi kesalahan saat mengambil data.');
-        }
         
     }
+    public function index(){
+        try {
+            $arus = ArusKas::latest('created_at')->paginate(10);
+    
+            $kasData = Kas::whereIn('jenis_kas', [
+                'totalAsset', 'OnHand', 'Operasional', 'Stock',
+                'Utang', 'Piutang', 'labaBersih', 'labaKotor',
+                'pengeluaran', 'selisih', 'pemasukan'
+            ])->get()->keyBy('jenis_kas');
+             //$this->kas();
+            return view('tampilan.keuangan.kas', compact('arus'));
+    
+        } catch (\Exception $e) {
+            Log::error('Error pada ArusKasController@index: '. $e->getMessage());
+            return redirect()->route('kas.index')->with('error', 'Terjadi kesalahan saat mengambil data.');
+        }
+    }
+    
     public function create(){
         return view('tampilan.keuangan.kas-create');
     }
@@ -73,7 +83,7 @@ class ArusKasController extends Controller
             if ($arus->isEmpty()) {
                 return redirect()->route('kas.index')->with('error', 'Data tidak ditemukan!');
             }
-        
+            
             return view('tampilan.keuangan.kas', compact('arus', 'query'));
         }catch(\Exception $e){
             Log::error('Error pada ArusKasController@search'. $e->getMessage());
@@ -86,13 +96,18 @@ class ArusKasController extends Controller
             DB::beginTransaction();
             // Validasi input
             $data = $request->validated();
-    
-            $jumlah = str_replace('.', '', $data['jumlah_hidden']); // Hapus titik format rupiah
+             $tgl =  date('Y-m-d');
+          
+            $jumlah = str_replace('.', '', $data['jumlah_hidden']); 
+             $jumlah2 = ($data['jenis_transaksi'] == 'Masuk')
+            ?  $jumlah
+            : -$jumlah;
     
             // Cek apakah jenis kas ada di database
-            $kasData = Kas::whereIn('jenis_kas', [$data['jenis_kas'], 'totalAsset'])->get()->keyBy('jenis_kas');
-            $kas = ($kasData[$data['jenis_kas']] == 'OnHand') ? "OnHand" : "Operasional";
-            $idKas = ($data['jenis_kas'] == 'OnHand') ? 2 : 10;
+            $kasData = kas::whereIn('jenis_kas', [
+                'totalAsset', 'OnHand', 'Operasional', 'Stock',
+                'Utang', 'Piutang', 'labaBersih', 'labaKotor',
+                'pengeluaran', 'selisih', 'pemasukan'])->get()->keyBy('jenis_kas');
                 
             // Hitung saldo baru
             if(isset($kasData[$data['jenis_kas']])){
@@ -106,6 +121,10 @@ class ArusKasController extends Controller
             $saldoAssetFix = ($data['jenis_transaksi'] == 'Masuk')
             ? $kasData['totalAsset']->saldo + $jumlah
             : $kasData['totalAsset']->saldo - $jumlah;
+
+             $jumlah = ($data['jenis_transaksi'] == 'Masuk')
+            ?  $jumlah
+            : -$jumlah;
         
             // Pastikan saldo tidak negatif jika transaksi "Keluar"
             if ($jumlahFix2 < 0 || $saldoAssetFix < 0) {
@@ -114,15 +133,14 @@ class ArusKasController extends Controller
         
             // Update saldo di tabel Kas
             $kasData[$data['jenis_kas']]->update(['saldo' => $jumlahFix2]);
-            $kasData['totalAsset']->update(['saldo' => $saldoAssetFix]);
         
             // Simpan transaksi ke ArusKas
             ArusKas::create([
-                'idKas' => $idKas, // Pastikan nama kolom benar
+                'idKas' =>  $kasData[$data['jenis_kas']]->id,
                 'keterangan' => $data['keterangan'],
-                'jenis_kas' => $kas,
+                'jenis_kas' => $data['jenis_kas'],
                 'jenis_transaksi' => $data['jenis_transaksi'],
-                'jumlah' => $jumlah,
+                'jumlah' => $jumlah2,
             ]);
             DB::commit();
             return redirect()->route('kas.index')->with('success', 'Tambah Data berhasil');
@@ -142,38 +160,41 @@ class ArusKasController extends Controller
         try{
             DB::beginTransaction();
             $param = ArusKas::find($id);
-            // Cari data kas berdasarkan idKas dari transaksi
-            $kasData = Kas::whereIn('jenis_kas',['totalAsset','OnHand','Operasional'])->get()->keyBy('jenis_kas');
-        
-            if($param->jenis_kas == "OnHand"){
-                // Hitung saldo baru
-                $jumlahFix2 = ($param->jenis_transaksi == 'Masuk')
-                ? $kasData['OnHand']->saldo - $param->jumlah
-                : $kasData['OnHand']->saldo + $param->jumlah;
-        
-                $saldoAssetFix = ($param->jenis_transaksi == 'Masuk')
-                ? $kasData['totalAsset']->saldo - $param->jumlah
-                : $kasData['totalAsset']->saldo + $param->jumlah;
-        
-            } elseif($param->jenis_kas == "Operasional"){
-                // Hitung saldo baru
-                $jumlahFix2 = ($param->jenis_transaksi == 'Masuk')
-                ? $kasData['Operasional']->saldo - $param->jumlah
-                : $kasData['Operasional']->saldo + $param->jumlah;
-        
-                $saldoAssetFix = ($param->jenis_transaksi == 'Masuk')
-                ? $kasData['totalAsset']->saldo - $param->jumlah
-                : $kasData['totalAsset']->saldo + $param->jumlah;
+
+            if(!$param){
+                return redirect()->back()->with('error','Data tidak ditemukan');
             }
+            // Cari data kas berdasarkan idKas dari transaksi
+           $kasData = kas::whereIn('jenis_kas', [
+                'totalAsset', 'OnHand', 'Operasional', 'Stock',
+                'Utang', 'Piutang', 'labaBersih', 'labaKotor',
+                'pengeluaran', 'selisih', 'pemasukan'])->get()->keyBy('jenis_kas');
+        
+            
+            $jumlahFix2 = ($param->jenis_transaksi == 'Masuk')
+            ? $kasData[$param->jenis_kas]->saldo - $param->jumlah
+            : $kasData[$param->jenis_kas]->saldo + $param->jumlah;
+        
+            $saldoAssetFix = ($param->jenis_transaksi == 'Masuk')
+            ? $kasData['totalAsset']->saldo - $param->jumlah
+            : $kasData['totalAsset']->saldo + $param->jumlah;
+        
             if ($jumlahFix2 < 0 || $saldoAssetFix < 0) {
                 return redirect()->back()->with('error', 'Saldo tidak mencukupi untuk menghapus transaksi!');
             } else{
                 // Update saldo di tabel Kas
                 $kasData['Operasional']->update(['saldo' => $jumlahFix2]);
-                $kasData['totalAsset']->update(['saldo' => $saldoAssetFix]);
+                $totalAsset = $kasData['OnHand']->saldo + 
+                $kasData['Operasional']->saldo + 
+               $kasData['Piutang']->saldo + 
+                $kasData['Stock']->saldo - 
+                $kasData['Utang']->saldo;
+            
+                if ($kasData['totalAsset']->saldo != $totalAsset) {
+                    $kasData['totalAsset']->update(['saldo' => $totalAsset]);
+                }
             }
-
-        
+    
             // Hapus transaksi di ArusKas
             $param->delete();
             DB::commit();
@@ -197,52 +218,64 @@ class ArusKasController extends Controller
         DB::beginTransaction();
         // Cari data transaksi berdasarkan id
         $arus = ArusKas::find($id);
-        $kasData = Kas::whereIn('jenis_kas',['totalAsset','OnHand','Operasional'])->get()->keyBy('jenis_kas');
-    
+        if(!$arus){
+            return redirect()->back()->with('error','Data tidak ditemukan');
+        }
+        $kasData = kas::whereIn('jenis_kas', [
+                'totalAsset', 'OnHand', 'Operasional', 'Stock',
+                'Utang', 'Piutang', 'labaBersih', 'labaKotor',
+                'pengeluaran', 'selisih', 'pemasukan'])->get()->keyBy('jenis_kas');
+        
         // Validasi input
         $data = $request->validated();
     
         // Format jumlah dari input
         $jumlah = str_replace('.', '', $data['jumlah_hidden']);
+        $jumlah2 = ($data['jenis_transaksi'] == 'Masuk') ? $jumlah : -$jumlah;
         if ($jumlah <= 0) {
             return back()->with('error', 'Jumlah tidak valid!');
         }
-        [$jumlah_sebelum, $jenis_kas_lama, $jenis_kas_baru, $transaksi_lama, $transaksi_baru] =
-        tap($arus, fn($a) => [$a->jumlah, $a->jenis_kas, $data['jenis_kas'], $a->jenis_transaksi, $data['jenis_transaksi']]);
     
         // Hitung faktor perubahan saldo
-        $factor = ($transaksi_baru == $transaksi_lama) ? 1 : -1;
-        $factor = ($transaksi_lama == 'Masuk') ? -$factor : $factor;
+        $factor = ($data['jenis_transaksi'] == $arus->jenis_transaksi) ? 1 : -1;
+        $factor = ($arus->jenis_transaksi == 'Masuk') ? -$factor : $factor;
     
         // Jika jenis kas berubah, saldo jenis kas sebelumnya juga ikut diperbarui
-        if ($jenis_kas_lama !== $jenis_kas_baru) {
-            $kas_jumlah = Kas::whereIn('jenis_kas',[$jenis_kas_lama,$jenis_kas_baru])->get()->keyBy('jenis_kas');
+        if ($arus->jenis_kas !== $data['jenis_kas']) {
     
-            if ($kas_jumlah[$jenis_kas_lama]) {
-                $kas_jumlah[$jenis_kas_lama]->update(['saldo' => $kas_jumlah[$jenis_kas_lama]->saldo - ($factor * $jumlah_sebelum)]);
+            if ($kasData[$arus->jenis_kas]) {
+                $kasData[$arus->jenis_kas]->update(['saldo' => $kasData[$arus->jenis_kas]->saldo - ($factor * $arus->jumlah)]);
             }
-            if ($kas_jumlah[$jenis_kas_baru]) {
-                $kas_jumlah[$jenis_kas_baru]->update(['saldo' => $kas_jumlah[$jenis_kas_baru]->saldo + ($factor * $jumlah)]);
+            if ($kasData[$data['jenis_kas']]) {
+                $kasData[$data['jenis_kas']]->update(['saldo' => $kasData[$data['jenis_kas']]->saldo + ($factor * $jumlah)]);
             }
         } else {
             // Jika jenis kas tetap sama, hanya update saldo di kas target
-            if ($jenis_kas_lama == 'OnHand') {
-                $this->updateSaldo($kasData['OnHand'], $kasData['totalAsset'], $jumlah_sebelum, $jumlah, $factor);
-            } elseif ($jenis_kas_lama == 'Operasional') {
-                $this->updateSaldo($kasData['Operasional'], $kasData['totalAsset'], $jumlah_sebelum, $jumlah, $factor);
+            if ($arus->jenis_kas == 'OnHand') {
+                $this->updateSaldo($kasData['OnHand'], $kasData['totalAsset'], $arus->jumlah, $jumlah, $factor);
+            } elseif ($arus->jenis_kas == 'Operasional') {
+                $this->updateSaldo($kasData['Operasional'], $kasData['totalAsset'], $arus->jumlah, $jumlah, $factor);
             }
         }
     
-        $idKas = ($data['jenis_kas'] == 'OnHand') ? 2 : 10;
-    
         // Update data transaksi
         $arus->update([
-            'idKas' => $idKas, // Pastikan nama kolom benar
+            'idKas' =>$kasData[$data['jenis_kas']]->id, // Pastikan nama kolom benar
             'keterangan' => $data['keterangan'],
             'jenis_kas' => $data['jenis_kas'],
             'jenis_transaksi' => $data['jenis_transaksi'],
-            'jumlah' => $jumlah
+            'jumlah' => $jumlah2
         ]);
+
+         $totalAsset = $kasData['OnHand']->saldo + 
+                $kasData['Operasional']->saldo + 
+               $kasData['Piutang']->saldo + 
+                $kasData['Stock']->saldo - 
+                $kasData['Utang']->saldo;
+            
+        if ($kasData['totalAsset']->saldo != $totalAsset) {
+            $kasData['totalAsset']->update(['saldo' => $totalAsset]);
+        }
         DB::commit();
     
         return redirect()->route('kas.index')->with('success', 'Data berhasil diubah!');
@@ -263,9 +296,48 @@ class ArusKasController extends Controller
     private function updateSaldo($kas_target, $kas_asset, $jumlah_sebelum, $jumlah, $factor)
     {
         DB::transaction(function () use ($kas_target, $kas_asset, $jumlah_sebelum, $jumlah, $factor){
-            $kas_target->update(['saldo' => $kas_target->saldo + $factor * ($jumlah_sebelum + $jumlah)]);
-            $kas_asset->update(['saldo' => $kas_asset->saldo + $factor * ($jumlah_sebelum + $jumlah)]);
+            $kas_target->update(['saldo' => $kas_target->saldo - ($factor * $jumlah_sebelum) + ($factor * $jumlah)]);
+            $kas_asset->update(['saldo' => $kas_asset->saldo - ($factor * $jumlah_sebelum) + ($factor * $jumlah)]);
         });
+    }
+    
+    private function kas(){
+         $tgl =  date('Y-m-d');
+         $kasData = kas::whereIn('jenis_kas', [
+                'totalAsset', 'OnHand', 'Operasional', 'Stock',
+                'Utang', 'Piutang', 'labaBersih', 'labaKotor',
+                'pengeluaran', 'selisih', 'pemasukan'])->get()->keyBy('jenis_kas');
+         // Update saldo di tabel Kas totalAsset
+            $totalAsset = $kasData['OnHand']->saldo + 
+                $kasData['Operasional']->saldo + 
+               $kasData['Piutang']->saldo + 
+                $kasData['Stock']->saldo - 
+                $kasData['Utang']->saldo;
+            
+            if ($kasData['totalAsset']->saldo != $totalAsset) {
+                $kasData['totalAsset']->update(['saldo' => $totalAsset]);
+            }
+            //update pemasukan,pengeluaran
+            $pemasukan = ArusKas::where('updated_at', $tgl)->where('jenis_transaksi', 'Masuk')->sum('jumlah');
+            if($kasData['pemasukan']->saldo != $pemasukan){
+                $kasData['pemasukan']->update(['saldo' => $pemasukan]);
+            }
+             $pengeluaran = ArusKas::where('updated_at', $tgl)->where('jenis_transaksi', 'Keluar')->sum('jumlah');
+            if($kasData['pengeluaran']->saldo != $pengeluaran){
+                $kasData['pengeluaran']->update(['saldo' => $pengeluaran]);
+            }
+            $labaKotor = $pemasukan + $pengeluaran;
+            if($kasData['labaKotor']->saldo != $labaKotor){
+                $kasData['labaKotor']->update(['saldo' => $labaKotor]);
+            }
+            $pegawai = Pegawai::where('kehadiran','Pulang')->where('updated_at',$tgl)->sum('gaji_hari_ini');
+            if($kasData['labaBersih']->saldo != $labaKotor - $pegawai){
+                $kasData['labaBersih']->update(['saldo' => $labaKotor - $pegawai]);
+            }
+            $selisih = ArusKas::where('keterangan','gap')->sum('jumlah');
+            if($kasData['selisih']->saldo != $selisih){
+                $kasData['selisih']->update(['saldo' => $selisih]);
+            }
     }
     
     }

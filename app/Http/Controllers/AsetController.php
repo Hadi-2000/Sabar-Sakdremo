@@ -15,10 +15,10 @@ class AsetController extends Controller
 {
     public function __construct()
     {
-        if (!app('session')->has('user_id')) {
-            redirect()->route('login')->with('error', 'Anda harus login terlebih dahulu')->send();
-            exit; // Pastikan eksekusi berhenti di sini
-        }
+        // if (!app('session')->has('user_id')) {
+        //     redirect()->route('login')->with('error', 'Anda harus login terlebih dahulu')->send();
+        //     exit; // Pastikan eksekusi berhenti di sini
+        // }
     }
     /**
      * Display a listing of the resource.

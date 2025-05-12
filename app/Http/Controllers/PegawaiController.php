@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use App\Http\Requests\StorePegawaiRequest;
 use App\Http\Requests\UpdatePegawaiRequest;
+use App\Models\UtangPiutang;
 
 class PegawaiController extends Controller
 {
@@ -33,41 +34,54 @@ class PegawaiController extends Controller
         DB::beginTransaction();
 
         $pegawaiList = Pegawai::all();
+        $beban_gaji = 0;
 
         foreach ($pegawaiList as $p) {
+            $pelanggan = Pelanggan::where('nama',$p->nama)->first();
+                if(!$pelanggan){
+                    pelanggan::create(
+                        ['nama' => $p->nama],
+                        ['alamat' => $p->alamat]
+                    );
+                    $pelanggan->fresh();
+                }
+            if ($p->cek_in >= '08:00:00' && $p->cek_in <= '09:00:00') {
+                if ($p->cek_out >= '11:30:00' && $p->cek_out <= '13:00:00') {
+                    $beban_gaji = $p->gaji / 2;
+                } elseif ($p->cek_out >= '15:00:00' && $p->cek_out <= '18:00:00') {
+                    $beban_gaji = $p->gaji;
+                }
+                } elseif ($p->cek_in >= '11:30:00' && $p->cek_in <= '13:00:00') {
+                    if ($p->cek_out >= '15:00:00' && $p->cek_out <= '18:00:00') {
+                        $beban_gaji = $p->gaji / 2;
+                    }
+                }
             if ($p->updated_at->format('Y-m-d') !== $tanggal) {
                 if ($p->kehadiran === 'Pulang' && $p->cek_in && $p->cek_out) {
-                    $beban_gaji = 0;
-
-                    if ($p->cek_in >= '08:00:00' && $p->cek_in <= '09:00:00') {
-                        if ($p->cek_out >= '11:30:00' && $p->cek_out <= '13:00:00') {
-                            $beban_gaji = $p->gaji / 2;
-                        } elseif ($p->cek_out >= '15:00:00' && $p->cek_out <= '18:00:00') {
-                            $beban_gaji = $p->gaji;
-                        }
-                    } elseif ($p->cek_in >= '11:30:00' && $p->cek_in <= '13:00:00') {
-                        if ($p->cek_out >= '15:00:00' && $p->cek_out <= '18:00:00') {
-                            $beban_gaji = $p->gaji / 2;
-                        }
-                    }
-
-                    $p->update([
-                        'beban_gaji' => $p->beban_gaji + $beban_gaji
+                    UtangPiutang::create([
+                        'id_pelanggan'   => $pelanggan->id,
+                        'nama'           => $p->nama,
+                        'alamat'         => $p->alamat,
+                        'keterangan'     => 'Gaji',
+                        'jenis'          => 'Utang',
+                        'nominal'        => $beban_gaji,
+                        'status'         => 'Belum Lunas',
                     ]);
+                    $pelanggan->update(['utang' => $pelanggan->utang + $beban_gaji]);
+            }elseif($p->updated_at->format('Y-m-d') == $tanggal){
+                if ($p->kehadiran === 'Pulang' && $p->cek_in && $p->cek_out){
+                    $p->update(['gaji_hari_ini' => $beban_gaji]);
                 }
+            }
 
                 // Reset harian
                 $p->update([
                     'kehadiran' => 'Tidak Hadir',
                     'cek_in' => null,
-                    'cek_out' => null
+                    'cek_out' => null,
+                    'gaji_hari_ini' => 0,
                 ]);
             }
-            $p->update([
-                'kehadiran' => 'Tidak Hadir',
-                'cek_in' => null,
-                'cek_out' => null
-            ]);
         }
 
         $pegawai = Pegawai::orderBy('nama')->paginate(10);

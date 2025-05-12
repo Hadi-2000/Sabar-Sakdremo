@@ -8,7 +8,7 @@
             <a class="navbar-brand" href="/dashboard">Sabar Sakdremo</a>
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 <li class="nav-item">
-                    <a class="nav-link" aria-current="page" href="/dashboard">Home</a>
+                    <a class="nav-link" aria-current="page" href="{{route('dashboard')}}">Home</a>
                 </li>
 
                 <!--Keuangan-->
